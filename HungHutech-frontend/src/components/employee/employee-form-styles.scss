@@ -1,0 +1,44 @@
+@import "@/assets/styles/_variables.scss";
+
+.orangehrm-contact-info,
+.orangehrm-job-info,
+.orangehrm-salary-info,
+.orangehrm-report-info,
+.orangehrm-qualifications {
+  min-height: 400px;
+}
+
+.orangehrm-form-section {
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  border-bottom: 1px solid $border-color;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.orangehrm-section-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text-primary;
+  margin: 0 0 $spacing-lg 0;
+}
+
+.orangehrm-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  margin-top: $spacing-xl;
+  padding-top: $spacing-xl;
+  border-top: 1px solid $border-color;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: $spacing-lg;
+}
+
+:deep(.el-form-item__label) {
+  font-weight: $font-weight-medium;
+  color: $text-secondary;
+}

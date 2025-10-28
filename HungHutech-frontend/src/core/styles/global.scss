@@ -1,0 +1,198 @@
+:root {
+  /* Main Theme Colors: Classic Blue & White/Light Grey */
+  --oxd-primary-one-color: #4A90E2;
+  --oxd-primary-gradient-start-color: #6AACF8;
+  --oxd-primary-gradient-end-color: #4A90E2;
+
+  /* Using a very light grey for secondary elements instead of a second color */
+  --oxd-secondary-four-color: #F5F5F5;
+  --oxd-secondary-gradient-start-color: #FFFFFF;
+  --oxd-secondary-gradient-end-color: #F0F0F0;
+
+  /* Text Colors */
+  --oxd-primary-font-color: #333333;
+  --oxd-secondary-font-color: #757575;
+
+  /* Derived color variations based on the new primary blue */
+  --oxd-primary-one-lighten-5-color: #6AACF8;
+  --oxd-primary-one-lighten-30-color: #C9DFFC;
+  --oxd-primary-one-darken-5-color: #357ABD;
+  --oxd-primary-one-alpha-10-color: rgba(74, 144, 226, 0.1);
+  --oxd-primary-one-alpha-15-color: rgba(74, 144, 226, 0.15);
+  --oxd-primary-one-alpha-20-color: rgba(74, 144, 226, 0.2);
+  --oxd-primary-one-alpha-50-color: rgba(74, 144, 226, 0.5);
+
+  /* Derived color variations for the new light grey secondary color */
+  --oxd-secondary-four-lighten-5-color: #FFFFFF;
+  --oxd-secondary-four-darken-5-color: #E0E0E0;
+  --oxd-secondary-four-alpha-10-color: rgba(245, 245, 245, 0.1);
+  --oxd-secondary-four-alpha-15-color: rgba(245, 245, 245, 0.15);
+  --oxd-secondary-four-alpha-20-color: rgba(245, 245, 245, 0.2);
+}
+
+.orangehrm-header-container,
+.orangehrm-dialog-header-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  & .oxd-button {
+    white-space: nowrap;
+  }
+}
+
+.orangehrm-header-container {
+  padding: 25px;
+}
+
+.orangehrm-dialog-header-container {
+  padding: 1.2rem;
+}
+
+.orangehrm-main-title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.orangehrm-sub-title {
+  padding: 0.25rem 0 !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+.orangehrm-left-space {
+  margin-left: 10px;
+}
+
+.orangehrm-card-container {
+  background-color: $oxd-white-color;
+  border-radius: 1.2rem;
+  padding: 25px;
+
+  @media screen and (max-width: 400px) {
+    .oxd-form-actions {
+      gap: 5px 0;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.orangehrm-container {
+  background-color: $oxd-interface-gray-lighten-2-color;
+  /*border-radius: 1.2rem;*/
+  padding: 0.5rem;
+
+  & .oxd-table-header-cell {
+    & .oxd-checkbox-input {
+      border: $oxd-border $oxd-interface-gray-color;
+    }
+  }
+
+  & .oxd-table-card {
+    .card-header-slot-content .data {
+      font-size: 1rem;
+    }
+  }
+}
+
+.orangehrm-paper-container {
+  background-color: $oxd-white-color;
+  border-radius: 1.2rem;
+}
+
+.orangehrm-horizontal-padding {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.orangehrm-dialog-horizontal-padding {
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+}
+
+.orangehrm-vertical-padding {
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.orangehrm-dialog-vertical-padding {
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+}
+
+.orangehrm-top-padding {
+  padding-top: 25px;
+}
+
+.orangehrm-horizontal-margin {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+.orangehrm-dialog-horizontal-margin {
+  margin-left: 1.2rem;
+  margin-right: 1.2rem;
+}
+
+.orangehrm-bottom-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding: 25px;
+}
+
+.orangehrm-background-container {
+  padding: 1.5rem 0;
+  flex: 1;
+}
+
+.orangehrm-input-hint {
+  font-size: 0.75rem;
+  margin-top: -15px;
+  padding-bottom: 1rem;
+}
+
+.orangehrm-clear-margins {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.orangehrm-copyright-wrapper {
+  margin: 0.5rem 0;
+}
+
+.orangehrm-copyright {
+  font-size: 0.8rem;
+  text-align: center;
+
+  & a {
+    color: $oxd-interface-gray-darken-2-color;
+  }
+}
+
+.orangehrm-form-action {
+  gap: 5px;
+  flex-wrap: wrap !important;
+}
+
+.orangehrm-dialog-modal {
+  width: 90%;
+  max-width: 600px;
+}
+
+.orangehrm-dialog-popup {
+  max-width: 450px;
+}
+
+.orangehrm-input-field-bottom-space {
+  margin-bottom: 1rem;
+}
+
+.oxd-tab-bar {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
