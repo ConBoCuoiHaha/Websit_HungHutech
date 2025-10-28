@@ -1,0 +1,71 @@
+/**
+ * Hung Hutech Theme - Màu xanh nhạt
+ * Match với PHP OrangeHRM design nhưng dùng màu xanh
+ */
+
+// Import variables
+@import './_variables.scss';
+
+// Override Element Plus theme
+:root {
+  --el-color-primary: #{$primary-color};
+  --el-color-primary-light-3: #{$primary-hover};
+  --el-color-primary-light-5: #{$primary-light};
+  --el-color-primary-dark-2: #{$primary-active};
+
+  --el-color-success: #{$success-color};
+  --el-color-warning: #{$warning-color};
+  --el-color-danger: #{$danger-color};
+  --el-color-info: #{$info-color};
+
+  --el-border-radius-base: #{$border-radius};
+  --el-border-color: #{$border-color};
+
+  --el-font-size-base: #{$font-size-base};
+  --el-text-color-primary: #{$text-primary};
+  --el-text-color-regular: #{$text-secondary};
+  --el-text-color-disabled: #{$text-disabled};
+
+  --el-bg-color: #{$bg-white};
+  --el-fill-color-blank: #{$bg-white};
+}
+
+// Global styles
+body {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  color: $text-primary;
+  background-color: $bg-light;
+  margin: 0;
+  padding: 0;
+}
+
+// Gradient background cho topbar
+.hung-hutech-gradient {
+  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+}
+
+// Card style giống OrangeHRM
+.hung-hutech-card {
+  background: $bg-white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow-sm;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+// Button override
+.el-button--primary {
+  background-color: $primary-color;
+  border-color: $primary-color;
+
+  &:hover {
+    background-color: $primary-hover;
+    border-color: $primary-hover;
+  }
+
+  &:active {
+    background-color: $primary-active;
+    border-color: $primary-active;
+  }
+}
