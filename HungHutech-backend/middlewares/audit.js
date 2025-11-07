@@ -1,4 +1,4 @@
-const AuditLog = require('../schemas/audit.model');
+const AuditLog = require('../schemas/auditLog.model');
 
 async function audit(action, entity, entity_id, data = {}, req = null) {
   try {

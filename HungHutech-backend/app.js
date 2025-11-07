@@ -45,6 +45,9 @@ const adminConfigRoutes = require('./routes/adminConfig.routes.js');
 const performanceTrackerRoutes = require('./routes/performanceTracker.routes.js');
 const maintenanceRoutes = require('./routes/maintenance.routes.js');
 const userRoutes = require('./routes/user.routes.js');
+const siteRoutes = require('./routes/site.routes.js');
+const mobileSiteRoutes = require('./routes/mobile/site.routes.js');
+const auditLogRoutes = require('./routes/auditLog.routes.js');
 
 // CORS must be configured BEFORE helmet
 app.use(cors({
@@ -84,6 +87,10 @@ app.use('/api', (req, res, next) => {
   return auth(req, res, next);
 });
 
+// Audit logging middleware (sau authentication)
+const auditLogger = require('./middlewares/auditLogger');
+app.use('/api', auditLogger);
+
 // Protected API Routes
 app.use('/api/nhanvien', nhanVienRoutes);
 app.use('/api/chucdanh', chucDanhRoutes);
@@ -116,6 +123,13 @@ app.use('/api/admin', adminConfigRoutes);
 app.use('/api/performance/trackers', performanceTrackerRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/sites', siteRoutes);
+app.use('/api/mobile/sites', mobileSiteRoutes);
+const mobileDeviceRoutes = require('./routes/mobile/device.routes.js');
+const mobileAttendanceRoutes = require('./routes/mobile/attendance.routes.js');
+app.use('/api/mobile/devices', mobileDeviceRoutes);
+app.use('/api/mobile/attendance', mobileAttendanceRoutes);
+app.use('/api/audit-logs', auditLogRoutes);
 app.use('/api', i18nRoutes);
 
 // Swagger API Documentation
@@ -147,4 +161,13 @@ app.use((req, res, next) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
+// Auto checkout scheduler
+const { autoCheckoutOverdueRecords } = require('./utils/autoCheckout');
+setInterval(() => { autoCheckoutOverdueRecords().catch(err => console.error('autoCheckout error', err)); }, 15 * 60 * 1000);
+// Initial run at startup
+autoCheckoutOverdueRecords().catch(()=>{});
+
 module.exports = app;
+
+
+

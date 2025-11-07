@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HungHutech HRM</string>
+    <string name="login">Đăng nhập</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="sign_in">Đăng nhập</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="check_in">Chấm công vào</string>
+    <string name="check_out">Chấm công ra</string>
+    <string name="get_nearest_site">Lấy địa điểm gần nhất</string>
+    <string name="status">Trạng thái</string>
+    <string name="history">Lịch sử</string>
+    <string name="profile">Hồ sơ</string>
+</resources>

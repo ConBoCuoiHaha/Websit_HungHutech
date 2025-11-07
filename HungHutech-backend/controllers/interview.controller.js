@@ -242,15 +242,15 @@ exports.getSchedule = async (req, res) => {
   try {
     const { nguoi_phong_van_id, tu_ngay, den_ngay, view } = req.query;
 
-    if (!nguoi_phong_van_id) {
-      return res.status(400).json({ msg: 'Thiếu thông tin người phỏng vấn' });
-    }
-
     const filter = {
       da_xoa: false,
-      'nguoi_phong_van.nhan_vien_id': nguoi_phong_van_id,
       trang_thai: { $nin: ['Đã hủy'] },
     };
+
+    // Filter theo người phỏng vấn nếu có
+    if (nguoi_phong_van_id) {
+      filter['nguoi_phong_van.nhan_vien_id'] = nguoi_phong_van_id;
+    }
 
     // Xác định khoảng thời gian
     if (tu_ngay && den_ngay) {

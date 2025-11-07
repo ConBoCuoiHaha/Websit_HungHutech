@@ -133,6 +133,8 @@
             <el-menu-item index="/admin/nguoi-dung">Người dùng</el-menu-item>
             <el-menu-item index="/admin/dia-diem">Địa điểm</el-menu-item>
             <el-menu-item index="/admin/bac-luong">Bậc lương</el-menu-item>
+            <el-menu-item index="/admin/sites">📍 Địa điểm Chấm công</el-menu-item>
+            <el-menu-item index="/admin/audit-logs">📊 Lịch sử Truy cập</el-menu-item>
             <el-menu-item index="/phong-ban">Phòng ban</el-menu-item>
             <el-menu-item index="/chuc-danh">Chức danh</el-menu-item>
           </el-sub-menu>

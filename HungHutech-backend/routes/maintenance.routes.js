@@ -10,6 +10,7 @@ const {
   purgeCandidate,
   getPurgeLogs
 } = require('../controllers/maintenance.controller.js');
+const { autoCheckoutOverdueRecords } = require('../utils/autoCheckout');
 
 // All maintenance routes require admin role
 router.use(allowRoles('admin'));
@@ -42,5 +43,16 @@ router.post(
 
 // Audit logs
 router.get('/logs', getPurgeLogs);
+
+// Admin: trigger auto-checkout immediately
+router.post('/auto-checkout', async (req, res) => {
+  try {
+    await autoCheckoutOverdueRecords();
+    res.json({ success: true, msg: 'Đã auto-checkout các bản ghi mở đến 17:30' });
+  } catch (e) {
+    console.error('maintenance auto-checkout error', e);
+    res.status(500).json({ msg: 'Lỗi máy chủ', error: e.message });
+  }
+});
 
 module.exports = router;

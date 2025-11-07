@@ -3,7 +3,17 @@
     "allow": [
       "Bash(curl:*)",
       "Bash(node bin/www:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(tree:*)",
+      "Bash(node scripts/setup-atlas.js:*)",
+      "Bash(node scripts/migrate-to-atlas.js:*)",
+      "Bash(npm start)",
+      "Bash(taskkill:*)",
+      "Bash(del \"C:\\Users\\ADMIN\\Desktop\\HungHutech\\HungHutech-backend\\schemas\\audit.model.js\")",
+      "Bash(node:*)",
+      "Bash(del \"C:\\Users\\ADMIN\\Desktop\\HungHutech\\fix-postman-auth.js\")",
+      "Bash(del \"C:\\Users\\ADMIN\\Desktop\\HungHutech\\HungHutech_FINAL_TEST.postman_collection.json\")",
+      "Bash(del \"C:\\Users\\ADMIN\\Desktop\\HungHutech\\HUONG_DAN_TEST_POSTMAN.md\")"
     ],
     "deny": [],
     "ask": []

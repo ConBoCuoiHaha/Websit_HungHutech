@@ -1,5 +1,6 @@
 const ChamCong = require('../schemas/chamCong.model.js');
 const {parseListParams} = require('../utils/pagination');
+const NhanVien = require('../schemas/nhanVien.model');
 
 // Lấy ngày hiện tại (local), bỏ giờ/phút/giây
 const getToday = () => {
@@ -70,10 +71,36 @@ exports.getAttendanceHistory = async (req, res) => {
 exports.getAllAttendance = async (req, res) => {
   try {
     const { from, to, nhan_vien_id } = req.query;
-    const { limit, skip, page } = parseListParams(req.query);
+    const { limit, skip, page, q } = parseListParams(req.query);
     const filter = {};
 
-    if (nhan_vien_id) filter.nhan_vien_id = nhan_vien_id;
+    // Build employee filter by dept and/or search query q
+    let idsByDept = null;
+    if (Array.isArray(req.employeeIdsForDept) && req.employeeIdsForDept.length) idsByDept = req.employeeIdsForDept.map(String);
+
+    let idsByQ = null;
+    if (q) {
+      const regex = new RegExp(q, 'i');
+      const matches = await NhanVien.find({
+        da_xoa: false,
+        $or: [
+          { ma_nhan_vien: regex },
+          { ho_dem: regex },
+          { ten: regex },
+        ],
+      }).select('_id');
+      idsByQ = matches.map((m) => String(m._id));
+    }
+
+    let finalIds = null;
+    if (idsByDept && idsByQ) {
+      const set = new Set(idsByDept);
+      finalIds = idsByQ.filter((x) => set.has(x));
+    } else if (idsByDept) finalIds = idsByDept;
+    else if (idsByQ) finalIds = idsByQ;
+
+    if (finalIds && finalIds.length) filter.nhan_vien_id = { $in: finalIds };
+    else if (nhan_vien_id) filter.nhan_vien_id = nhan_vien_id;
     if (from && to) {
       filter.ngay = { $gte: new Date(from), $lte: new Date(to) };
     }
@@ -106,4 +133,3 @@ exports.updateAttendanceRecord = async (req, res) => {
     res.status(500).json({ msg: 'Lỗi máy chủ', error: err.message });
   }
 };
-
