@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light blue + white palette to match website -->
+    <color name="primaryBlue">#4A90E2</color>
+    <color name="primaryBlueDark">#357ABD</color>
+    <color name="accentBlue">#5DA9F6</color>
+    <color name="bgLight">#F7FBFF</color>
+    <color name="textPrimary">#1F2D3D</color>
+    <color name="textSecondary">#6B7C93</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="errorRed">#E74C3C</color>
+    <color name="successGreen">#27AE60</color>
+</resources>

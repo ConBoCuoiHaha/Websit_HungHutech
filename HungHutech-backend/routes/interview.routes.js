@@ -19,7 +19,7 @@ const {
 router.get(
   '/schedule',
   [
-    query('nguoi_phong_van_id').isMongoId().withMessage('ID người phỏng vấn không hợp lệ'),
+    query('nguoi_phong_van_id').optional().isMongoId().withMessage('ID người phỏng vấn không hợp lệ'),
     query('tu_ngay').optional().isISO8601().withMessage('Ngày bắt đầu không hợp lệ'),
     query('den_ngay').optional().isISO8601().withMessage('Ngày kết thúc không hợp lệ'),
     query('view').optional().isIn(['week', 'month', 'day']).withMessage('View không hợp lệ'),

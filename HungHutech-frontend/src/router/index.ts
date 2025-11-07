@@ -204,6 +204,18 @@ const routes: Array<RouteRecordRaw> = [
         name: 'PayGradeList',
         component: () => import('@/pages/PayGradeList.vue'),
       },
+      {
+        path: 'admin/sites',
+        name: 'SitesManagement',
+        component: () => import('@/pages/SitesManagement.vue'),
+        meta: {requiresRole: ['admin']},
+      },
+      {
+        path: 'admin/audit-logs',
+        name: 'AuditLogs',
+        component: () => import('@/pages/AuditLogs.vue'),
+        meta: {requiresRole: ['admin']},
+      },
       // Reports Routes
       {
         path: 'bao-cao',
