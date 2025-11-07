@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
 const config = require('./config');
@@ -149,17 +150,25 @@ const { notFound, errorHandler } = require('./utils/errorHandler');
 app.use('/api', notFound);
 app.use('/api', errorHandler);
 
-// Serve Frontend (Vue.js HRM App)
-const frontendPath = path.join(__dirname, '../HungHutech-frontend/dist');
-app.use(express.static(frontendPath));
+// Basic health check
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// SPA fallback: Send all other non-API routes to index.html for Vue Router
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api')) {
-    return next();
-  }
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
+// Serve Frontend (Vue.js HRM App) if build exists
+const frontendPath = path.join(__dirname, '../HungHutech-frontend/dist');
+const hasFrontend = fs.existsSync(path.join(frontendPath, 'index.html'));
+if (hasFrontend) {
+  app.use(express.static(frontendPath));
+  // SPA fallback: Send all other non-API routes to index.html for Vue Router
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+} else {
+  // No frontend available (e.g., Render backend-only service)
+  app.get('/', (req, res) => res.send('HungHutech API server running'));
+}
 
 // Auto checkout scheduler
 const { autoCheckoutOverdueRecords } = require('./utils/autoCheckout');
