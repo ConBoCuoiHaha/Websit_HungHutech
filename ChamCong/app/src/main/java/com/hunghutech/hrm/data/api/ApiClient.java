@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hunghutech.hrm.BuildConfig;
+import com.hunghutech.hrm.utils.DynamicServer;
 import com.hunghutech.hrm.utils.ServerConfig;
 import com.hunghutech.hrm.utils.TokenStore;
 
@@ -20,9 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
     private static Retrofit retrofit;
 
-    public static synchronized void reset() {
-        retrofit = null;
-    }
+    public static synchronized void reset() { retrofit = null; }
 
     public static Retrofit get(Context context) {
         if (retrofit != null) return retrofit;
@@ -51,7 +50,12 @@ public class ApiClient {
                 .readTimeout(20, TimeUnit.SECONDS)
                 .build();
 
-        String base = ServerConfig.getBaseUrl(context);
+        // Priority: user override -> NSD cache -> hotspot gateway (192.168.137.x) -> fallback BuildConfig
+        String override = ServerConfig.getBaseUrl(context);
+        String discovered = DynamicServer.getBaseUrl(context, null);
+        String gatewayBase = com.hunghutech.hrm.utils.GatewayHelper.makeBaseUrl(context, 5000);
+        boolean hotspotLikely = gatewayBase != null && gatewayBase.contains("://192.168.137.");
+        String base = override != null ? override : (discovered != null ? discovered : (hotspotLikely ? gatewayBase : BuildConfig.BASE_URL));
         android.util.Log.i("ApiClient", "BASE_URL=" + base);
         retrofit = new Retrofit.Builder()
                 .baseUrl(base)

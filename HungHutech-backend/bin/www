@@ -88,4 +88,14 @@ function onListening() {
     : 'port ' + addr.port;
   console.log('Server is listening on ' + bind);
   debug('Listening on ' + bind);
+  try {
+    if (process.env.ENABLE_MDNS === 'true') {
+      const { start } = require('../utils/serviceDiscovery');
+      if (addr && addr.port) start(addr.port);
+    } else {
+      console.log('mDNS discovery is disabled (set ENABLE_MDNS=true to enable)');
+    }
+  } catch (e) {
+    console.warn('mDNS start failed:', e.message);
+  }
 }

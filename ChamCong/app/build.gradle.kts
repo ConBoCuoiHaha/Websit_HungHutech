@@ -15,9 +15,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Base URL for backend API (change as needed for device/emulator)
-        // Base URL for real device on LAN
+        // Base URL mặc định cho LAN hiện tại (PC: 192.168.88.50)
         buildConfigField("String", "BASE_URL", "\"http://192.168.88.50:5000/api/\"")
+        // Allowed Wi-Fi SSIDs for attendance (comma-separated).
+        buildConfigField("String", "ALLOWED_WIFI_SSIDS", "\"HUTECH-Office\"")
+        buildConfigField("boolean", "RESTRICT_WIFI", "false")
     }
 
     buildTypes {

@@ -3,28 +3,26 @@ package com.hunghutech.hrm.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.hunghutech.hrm.BuildConfig;
-
 public class ServerConfig {
     private static final String PREFS = "hrm_server_config";
-    private static final String KEY_BASE_URL_OVERRIDE = "base_url_override";
+    private static final String KEY_BASE = "base_url_override";
 
     public static String getBaseUrl(Context ctx) {
-        SharedPreferences prefs = ctx.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String override = prefs.getString(KEY_BASE_URL_OVERRIDE, null);
-        String base = (override != null && !override.isEmpty()) ? override : BuildConfig.BASE_URL;
-        if (base != null && !base.endsWith("/")) base = base + "/";
-        return base;
+        SharedPreferences p = ctx.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String v = p.getString(KEY_BASE, null);
+        if (v != null && !v.endsWith("/")) v = v + "/";
+        return v;
     }
 
-    public static void setBaseUrlOverride(Context ctx, String url) {
+    public static void setBaseUrl(Context ctx, String url) {
+        if (url == null) return;
         ctx.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                .edit().putString(KEY_BASE_URL_OVERRIDE, url).apply();
+                .edit().putString(KEY_BASE, url).apply();
     }
 
-    public static void clearOverride(Context ctx) {
+    public static void clear(Context ctx) {
         ctx.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-                .edit().remove(KEY_BASE_URL_OVERRIDE).apply();
+                .edit().remove(KEY_BASE).apply();
     }
 }
 
