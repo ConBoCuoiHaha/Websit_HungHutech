@@ -56,6 +56,12 @@ public class CheckInActivity extends AppCompatActivity {
             LocationHelper.requestLocationPermission(this);
             return;
         }
+        // Chính sách chỉ cho phép khi đang kết nối Wi‑Fi công ty
+        if (com.hunghutech.hrm.BuildConfig.RESTRICT_WIFI && !com.hunghutech.hrm.utils.WifiGuard.isOnAllowedWifi(this)) {
+            try { com.google.android.material.snackbar.Snackbar.make(tvStatus, "Chỉ chấm công khi kết nối Wi‑Fi công ty", com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show(); } catch (Exception ignored) {}
+            tvStatus.setText("Chỉ chấm công khi kết nối Wi‑Fi công ty");
+            return;
+        }
         progress.setVisibility(View.VISIBLE);
         LocationHelper.getSingleLocation(this, new LocationHelper.Callback() {
             @Override
@@ -96,6 +102,12 @@ public class CheckInActivity extends AppCompatActivity {
     private void doCheck(boolean isCheckIn) {
         if (!LocationHelper.hasLocationPermission(this)) {
             LocationHelper.requestLocationPermission(this);
+            return;
+        }
+        // Chính sách chỉ cho phép khi đang kết nối Wi‑Fi công ty
+        if (com.hunghutech.hrm.BuildConfig.RESTRICT_WIFI && !com.hunghutech.hrm.utils.WifiGuard.isOnAllowedWifi(this)) {
+            try { com.google.android.material.snackbar.Snackbar.make(tvStatus, "Chỉ chấm công khi kết nối Wi‑Fi công ty", com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show(); } catch (Exception ignored) {}
+            tvStatus.setText("Chỉ chấm công khi kết nối Wi‑Fi công ty");
             return;
         }
         progress.setVisibility(View.VISIBLE);

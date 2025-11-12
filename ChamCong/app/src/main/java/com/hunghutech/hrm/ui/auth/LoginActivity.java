@@ -47,6 +47,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // Thử discover server trong LAN (không chặn UI). Khi tìm thấy sẽ cache và ApiClient.reset().
+        com.hunghutech.hrm.utils.DynamicServer.discover(this, base -> {
+            if (base != null) {
+                com.hunghutech.hrm.data.api.ApiClient.reset();
+            }
+        });
         btnLogin.setOnClickListener(v -> doLogin());
         btnServer.setOnClickListener(v -> startActivity(new Intent(this, com.hunghutech.hrm.ui.settings.SettingsActivity.class)));
     }
@@ -90,8 +96,39 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                // Thử NSD trước, nếu không có sẽ quét LAN để tìm backend qua /health rồi login lại 1 lần
+                com.hunghutech.hrm.utils.DynamicServer.discover(LoginActivity.this, base -> {
+                    if (base == null) {
+                        com.hunghutech.hrm.utils.LanScanner.discover(LoginActivity.this, 5000, found -> {
+                            if (found != null) com.hunghutech.hrm.utils.DynamicServer.saveBaseUrl(LoginActivity.this, found);
+                            retryLogin(found != null, email, password);
+                        });
+                    } else {
+                        retryLogin(true, email, password);
+                    }
+                });
+            }
+        });
+    }
+
+    private void retryLogin(boolean hasNewBase, String email, String password) {
+        if (hasNewBase) com.hunghutech.hrm.data.api.ApiClient.reset();
+        AuthService s2 = ApiClient.get(this).create(AuthService.class);
+        s2.login(new LoginRequest(email, password)).enqueue(new Callback<LoginResponse>() {
+            @Override public void onResponse(Call<LoginResponse> call2, Response<LoginResponse> response2) {
                 progress.setVisibility(View.GONE);
-                Toast.makeText(LoginActivity.this, t.getMessage()+". Kiểm tra Cài đặt máy chủ.", Toast.LENGTH_SHORT).show();
+                if (response2.isSuccessful() && response2.body()!=null) {
+                    TokenStore.getInstance(LoginActivity.this).saveToken(response2.body().token);
+                    try { org.json.JSONObject u = new org.json.JSONObject(new com.google.gson.Gson().toJson(response2.body().user)); com.hunghutech.hrm.utils.SessionStore.get(LoginActivity.this).saveUser(u);} catch (Exception ignored) {}
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override public void onFailure(Call<LoginResponse> call2, Throwable t2) {
+                progress.setVisibility(View.GONE);
+                Toast.makeText(LoginActivity.this, t2.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

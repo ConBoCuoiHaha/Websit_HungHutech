@@ -12,44 +12,83 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.hunghutech.hrm.R;
 import com.hunghutech.hrm.data.api.ApiClient;
+import com.hunghutech.hrm.utils.DynamicServer;
+import com.hunghutech.hrm.utils.GatewayHelper;
 import com.hunghutech.hrm.utils.ServerConfig;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class SettingsActivity extends AppCompatActivity {
+    private EditText etUrl;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        EditText etUrl = findViewById(R.id.etBaseUrl);
-        View btnSave = findViewById(R.id.btnSave);
-        View btnReset = findViewById(R.id.btnReset);
+        etUrl = findViewById(R.id.etBaseUrl);
+        String current = ServerConfig.getBaseUrl(this);
+        if (current == null) current = GatewayHelper.makeBaseUrl(this, 5000);
+        if (current == null) current = com.hunghutech.hrm.BuildConfig.BASE_URL;
+        etUrl.setText(current);
 
-        // Pre-fill with current
-        etUrl.setText(ServerConfig.getBaseUrl(this));
+        Button btnSave = findViewById(R.id.btnSave);
+        Button btnReset = findViewById(R.id.btnReset);
+        Button btnAuto = findViewById(R.id.btnAuto);
+        Button btnTest = findViewById(R.id.btnTest);
 
         btnSave.setOnClickListener(v -> {
             String url = etUrl.getText().toString().trim();
-            if (TextUtils.isEmpty(url)) {
-                Toast.makeText(this, "Nhập URL máy chủ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                Toast.makeText(this, "URL phải bắt đầu bằng http:// hoặc https://", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            if (TextUtils.isEmpty(url)) { toast("Nhập URL"); return; }
             if (!url.endsWith("/")) url = url + "/";
-            ServerConfig.setBaseUrlOverride(this, url);
+            ServerConfig.setBaseUrl(this, url);
             ApiClient.reset();
-            Toast.makeText(this, "Đã lưu. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+            toast("Đã lưu máy chủ");
             finish();
         });
 
         btnReset.setOnClickListener(v -> {
-            ServerConfig.clearOverride(this);
+            ServerConfig.clear(this);
             ApiClient.reset();
-            Toast.makeText(this, "Đã dùng mặc định.", Toast.LENGTH_SHORT).show();
+            toast("Đã xoá URL tuỳ chỉnh");
             finish();
         });
+
+        btnAuto.setOnClickListener(v -> {
+            // Thử NSD, nếu không có sẽ quét LAN
+            DynamicServer.discover(this, base -> {
+                if (base != null) {
+                    etUrl.setText(base);
+                    toast("Tìm thấy: " + base);
+                } else {
+                    com.hunghutech.hrm.utils.LanScanner.discover(this, 5000, found -> {
+                        runOnUiThread(() -> {
+                            if (found != null) { etUrl.setText(found); toast("Tìm thấy: " + found); }
+                            else toast("Không tìm thấy server trong LAN");
+                        });
+                    });
+                }
+            });
+        });
+
+        btnTest.setOnClickListener(v -> {
+            new Thread(() -> {
+                try {
+                    String base = etUrl.getText().toString().trim();
+                    if (!base.endsWith("/")) base += "/";
+                    OkHttpClient c = new OkHttpClient.Builder().build();
+                    Response r = c.newCall(new Request.Builder().url(base.replace("/api/","/") + "health").build()).execute();
+                    final boolean ok = r.isSuccessful();
+                    runOnUiThread(() -> toast(ok ? "Kết nối OK" : ("Lỗi: " + r.code())));
+                } catch (Exception e) {
+                    runOnUiThread(() -> toast("Lỗi: " + e.getMessage()));
+                }
+            }).start();
+        });
     }
+
+    private void toast(String s) { Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); }
 }
 

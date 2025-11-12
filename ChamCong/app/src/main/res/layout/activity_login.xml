@@ -43,11 +43,13 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
+
     <Button
         android:id="@+id/btnServerSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cài đặt máy chủ"
         android:layout_marginTop="12dp"/>
+
 
 </LinearLayout>
