@@ -102,6 +102,7 @@ exports.getAllNhanVien = async (req, res) => {
         .populate('thong_tin_cong_viec.chuc_danh_id', 'ten_chuc_danh')
         .populate('thong_tin_cong_viec.trang_thai_lao_dong_id', 'ten')
         .populate('thong_tin_cong_viec.phong_ban_id', 'ten')
+        .populate('thong_tin_cong_viec.ca_lam_viec_id', 'ten_ca gio_bat_dau gio_ket_thuc')
         .populate('thong_tin_cong_viec.dia_diem_lam_viec_ids', 'ten')
         .sort(buildSort(sort))
         .skip(skip)
@@ -125,6 +126,7 @@ exports.getNhanVienById = async (req, res) => {
       .populate('thong_tin_cong_viec.chuc_danh_id', 'ten_chuc_danh')
       .populate('thong_tin_cong_viec.trang_thai_lao_dong_id', 'ten')
       .populate('thong_tin_cong_viec.phong_ban_id', 'ten')
+      .populate('thong_tin_cong_viec.ca_lam_viec_id', 'ten_ca gio_bat_dau gio_ket_thuc')
       .populate('thong_tin_cong_viec.dia_diem_lam_viec_ids', 'ten')
       .populate('thong_tin_cong_viec.quan_ly_truc_tiep_ids', 'ho_dem ten');
 
@@ -180,6 +182,7 @@ exports.updateNhanVien = async (req, res) => {
       if (ttcv.chuc_danh_id && typeof ttcv.chuc_danh_id === 'object') ttcv.chuc_danh_id = ttcv.chuc_danh_id._id;
       if (ttcv.phong_ban_id && typeof ttcv.phong_ban_id === 'object') ttcv.phong_ban_id = ttcv.phong_ban_id._id;
       if (ttcv.trang_thai_lao_dong_id && typeof ttcv.trang_thai_lao_dong_id === 'object') ttcv.trang_thai_lao_dong_id = ttcv.trang_thai_lao_dong_id._id;
+      if (ttcv.ca_lam_viec_id && typeof ttcv.ca_lam_viec_id === 'object') ttcv.ca_lam_viec_id = ttcv.ca_lam_viec_id._id;
       if (ttcv.quan_ly_truc_tiep_ids && Array.isArray(ttcv.quan_ly_truc_tiep_ids)) {
         ttcv.quan_ly_truc_tiep_ids = ttcv.quan_ly_truc_tiep_ids.map(id => typeof id === 'object' && id._id ? id._id : id);
       }

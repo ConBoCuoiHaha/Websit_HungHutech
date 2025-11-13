@@ -139,6 +139,7 @@ const NhanVienSchema = new Schema({
     chuc_danh_id: { type: Schema.Types.ObjectId, ref: 'ChucDanh' },
     trang_thai_lao_dong_id: { type: Schema.Types.ObjectId, ref: 'TrangThaiLaoDong' },
     phong_ban_id: { type: Schema.Types.ObjectId, ref: 'PhongBan' },
+    ca_lam_viec_id: { type: Schema.Types.ObjectId, ref: 'CaLamViec' },
     dia_diem_lam_viec_ids: [{ type: Schema.Types.ObjectId, ref: 'DiaDiem' }],
     quan_ly_truc_tiep_ids: [{ type: Schema.Types.ObjectId, ref: 'NhanVien' }],
   },
