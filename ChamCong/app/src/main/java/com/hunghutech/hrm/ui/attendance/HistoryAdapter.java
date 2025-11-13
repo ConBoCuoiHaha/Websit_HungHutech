@@ -46,7 +46,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         HistoryResponse.Item it = items.get(position);
-        // Date label
         String d = it.ngay;
         if (d != null && d.length() >= 10) {
             String y = d.substring(0, 4), m = d.substring(5, 7), day = d.substring(8, 10);
@@ -55,35 +54,47 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.VH> {
             h.tvDate.setText(d != null ? d : "-");
         }
 
-        java.util.Date in = parseIso(it.thoi_gian_vao);
-        java.util.Date out = parseIso(it.thoi_gian_ra);
+        Date in = parseIso(it.thoi_gian_vao);
+        Date out = parseIso(it.thoi_gian_ra);
         String inStr = in != null ? outTime.format(in) : "-";
         String outStr = out != null ? outTime.format(out) : "-";
-        h.tvTimes.setText("Vào: " + inStr + (out != null ? ("  •  Ra: " + outStr) : ""));
+        h.tvTimes.setText("Vào: " + inStr + (out != null ? ("    Ra: " + outStr) : ""));
 
-        // Status: đúng giờ / trễ / không chấm công (>30')
+        HistoryResponse.Flags flags = it.flags;
         String status;
         int color;
+
         if (in == null) {
             status = "Không chấm công";
             color = android.graphics.Color.parseColor("#E74C3C");
+        } else if (flags != null) {
+            int lateMinutes = flags.lateMinutes != null ? flags.lateMinutes : 0;
+            if (flags.lateOver30) {
+                status = "Không chấm công (trễ > 30')";
+                color = android.graphics.Color.parseColor("#E74C3C");
+            } else if (flags.isLate || lateMinutes > 5) {
+                status = "Trễ " + lateMinutes + " phút";
+                color = android.graphics.Color.parseColor("#F39C12");
+            } else {
+                status = "Đúng giờ";
+                color = android.graphics.Color.parseColor("#27AE60");
+            }
         } else {
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            if (in != null) cal.setTime(in);
-            // Threshold 08:30 local
             java.util.Calendar threshold = java.util.Calendar.getInstance();
             if (d != null && d.length() >= 10) {
                 try {
-                    int year = Integer.parseInt(d.substring(0,4));
-                    int month = Integer.parseInt(d.substring(5,7)) - 1;
-                    int day = Integer.parseInt(d.substring(8,10));
+                    int year = Integer.parseInt(d.substring(0, 4));
+                    int month = Integer.parseInt(d.substring(5, 7)) - 1;
+                    int day = Integer.parseInt(d.substring(8, 10));
                     threshold.set(year, month, day, 8, 30, 0);
                     threshold.set(java.util.Calendar.MILLISECOND, 0);
-                } catch (Exception ignored) { threshold.setTime(in); }
+                } catch (Exception ignored) {
+                    threshold.setTime(in);
+                }
             } else threshold.setTime(in);
 
             long diffMin = (in.getTime() - threshold.getTimeInMillis()) / (60 * 1000);
-            if (diffMin <= 5) { // grace 5'
+            if (diffMin <= 5) {
                 status = "Đúng giờ";
                 color = android.graphics.Color.parseColor("#27AE60");
             } else if (diffMin <= 30) {
@@ -94,11 +105,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.VH> {
                 color = android.graphics.Color.parseColor("#E74C3C");
             }
         }
+
         h.tvStatus.setText(status);
         h.tvStatus.setTextColor(color);
     }
 
-    private java.util.Date parseIso(String s) {
+    private Date parseIso(String s) {
         if (s == null) return null;
         try { return isoMillis.parse(s); } catch (Exception ignored) {}
         try { return isoNoMillis.parse(s); } catch (Exception ignored) {}
@@ -118,3 +130,4 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.VH> {
         }
     }
 }
+

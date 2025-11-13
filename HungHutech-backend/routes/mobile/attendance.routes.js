@@ -7,6 +7,8 @@ const Nonce = require('../../schemas/nonce.model');
 const Device = require('../../schemas/device.model');
 const Site = require('../../schemas/site.model');
 const ChamCong = require('../../schemas/chamCong.model');
+const NhanVien = require('../../schemas/nhanVien.model');
+const CaLamViec = require('../../schemas/caLamViec.model');
 
 const router = express.Router();
 
@@ -38,6 +40,49 @@ router.get('/nonce', async (req, res) => {
 });
 
 // POST body validator
+const SHIFT_EARLY_MINUTES = 30;
+
+function combineTimeWithDate(baseDate, hhmm) {
+  if (!hhmm) return null;
+  const [h, m] = hhmm.split(':').map(Number);
+  const dt = new Date(baseDate);
+  dt.setHours(h || 0, m || 0, 0, 0);
+  return dt;
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+async function getShiftContext(employeeId, today) {
+  try {
+    const nv = await NhanVien.findById(employeeId).select('thong_tin_cong_viec.ca_lam_viec_id');
+    const shiftId = nv?.thong_tin_cong_viec?.ca_lam_viec_id;
+    if (!shiftId) return null;
+    const shift = await CaLamViec.findById(shiftId).lean();
+    if (!shift) return null;
+    const shiftStart = combineTimeWithDate(today, shift.gio_bat_dau);
+    const shiftEnd = combineTimeWithDate(today, shift.gio_ket_thuc);
+    const earliestCheckIn = shiftStart ? new Date(shiftStart.getTime() - SHIFT_EARLY_MINUTES * 60000) : null;
+    return { shift, shiftStart, shiftEnd, earliestCheckIn };
+  } catch (err) {
+    console.error('getShiftContext error:', err);
+    return null;
+  }
+}
+
+function buildDefaultShift(today) {
+  const shiftStart = combineTimeWithDate(today, '08:30');
+  const shiftEnd = combineTimeWithDate(today, '17:30');
+  const earliestCheckIn = new Date(shiftStart.getTime() - SHIFT_EARLY_MINUTES * 60000);
+  return {
+    shift: { ten_ca: 'Ca mặc định', gio_bat_dau: '08:30', gio_ket_thuc: '17:30', _id: null },
+    shiftStart,
+    shiftEnd,
+    earliestCheckIn,
+  };
+}
+
 const checkBodyValidators = [
   body('deviceIdHash').isString().trim().isLength({ min: 10 }),
   body('nonce').isString().trim().isLength({ min: 10 }),
@@ -106,21 +151,44 @@ async function processCheck(req, res, type) {
     const now = new Date();
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
-    let flags = { isLate: false, lateOver30: false, isMock: false };
-    if (type === 'check_in') {
-      const threshold = new Date(today);
-      threshold.setHours(8, 30, 0, 0);
-      const late30 = new Date(threshold);
-      late30.setMinutes(threshold.getMinutes() + 30);
-      flags.isLate = now > threshold;
-      flags.lateOver30 = now > late30;
+    const shiftContext = (await getShiftContext(employeeId, today)) || buildDefaultShift(today);
+
+    if (type === 'check_in' && shiftContext.earliestCheckIn && now < shiftContext.earliestCheckIn) {
+      return res.status(400).json({
+        msg: `Chưa tới giờ chấm công. Chỉ được chấm sớm tối đa ${SHIFT_EARLY_MINUTES} phút (từ ${formatTime(shiftContext.earliestCheckIn)}).`,
+        type: 'too_early',
+      });
+    }
+
+    let flags = { isLate: false, lateOver30: false, lateMinutes: 0, shiftName: shiftContext.shift?.ten_ca || 'Ca mặc định' };
+    if (shiftContext.shiftStart) {
+      const lateMinutes = Math.max(0, Math.round((now - shiftContext.shiftStart) / 60000));
+      flags.isLate = lateMinutes > 5;
+      flags.lateOver30 = lateMinutes > 30;
+      flags.lateMinutes = lateMinutes;
+      flags.shiftStart = shiftContext.shiftStart;
+      flags.earliestCheckIn = shiftContext.earliestCheckIn;
     }
 
     // 7) Ghi nhận vào collection cham_cong hiện có
     let record = await ChamCong.findOne({ nhan_vien_id: employeeId, ngay: today });
     if (type === 'check_in') {
       if (record) return res.status(400).json({ msg: 'Hôm nay bạn đã check-in rồi' });
-      record = new ChamCong({ nhan_vien_id: employeeId, ngay: today, thoi_gian_vao: now, ghi_chu: `site:${site.siteId};dist:${Math.round(distance)}m` });
+      record = new ChamCong({
+        nhan_vien_id: employeeId,
+        ca_lam_viec_id: shiftContext.shift?._id || null,
+        ngay: today,
+        thoi_gian_vao: now,
+        ghi_chu: `site:${site.siteId};dist:${Math.round(distance)}m`,
+        shift_snapshot: shiftContext.shift
+          ? {
+              ten_ca: shiftContext.shift.ten_ca,
+              gio_bat_dau: shiftContext.shift.gio_bat_dau,
+              gio_ket_thuc: shiftContext.shift.gio_ket_thuc,
+            }
+          : undefined,
+        flags,
+      });
       await record.save();
     } else {
       if (!record) return res.status(404).json({ msg: 'Bạn chưa check-in hôm nay' });
@@ -134,13 +202,14 @@ async function processCheck(req, res, type) {
 
     res.json({
       distance,
-      flags,
+      flags: record.flags || flags,
       attendance: {
         _id: record._id,
         employeeId: String(employeeId),
         type,
         time: now,
         siteId: site.siteId,
+        shift: record.shift_snapshot || shiftContext.shift || null,
       },
     });
   } catch (err) {
@@ -193,7 +262,8 @@ router.get('/history', async (req, res) => {
     }
     const items = await ChamCong.find(filter)
       .sort({ ngay: -1 })
-      .limit(Math.min(Number(limit) || 60, 200));
+      .limit(Math.min(Number(limit) || 60, 200))
+      .lean();
     res.json({ data: items, total: items.length });
   } catch (err) {
     console.error('Error history attendance:', err);
