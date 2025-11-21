@@ -54,10 +54,10 @@
             </el-select>
           </el-col>
           <el-col :span="6">
-            <el-button type="primary" @click="handleSearch" :icon="Search">
+            <el-button type="primary" :icon="Search" @click="handleSearch">
               Tìm kiếm
             </el-button>
-            <el-button @click="handleResetFilters" :icon="Refresh">
+            <el-button :icon="Refresh" @click="handleResetFilters">
               Đặt lại
             </el-button>
           </el-col>
@@ -71,8 +71,8 @@
         border
         class="orangehrm-timesheet-table"
         style="margin-top: 20px"
-        @row-click="handleRowClick"
         :row-class-name="getRowClassName"
+        @row-click="handleRowClick"
       >
         <el-table-column label="Nhân viên" min-width="180" prop="nhan_vien_id">
           <template #default="scope">
@@ -88,7 +88,9 @@
           <template #default="scope">
             <div class="week-info">
               <el-icon><Calendar /></el-icon>
-              <span style="margin-left: 8px">{{ formatWeek(scope.row.tuan_bat_dau) }}</span>
+              <span style="margin-left: 8px">{{
+                formatWeek(scope.row.tuan_bat_dau)
+              }}</span>
             </div>
           </template>
         </el-table-column>
@@ -101,7 +103,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Trạng thái" width="140" align="center" prop="trang_thai">
+        <el-table-column
+          label="Trạng thái"
+          width="140"
+          align="center"
+          prop="trang_thai"
+        >
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.trang_thai)">
               {{ getStatusText(scope.row.trang_thai) }}
@@ -115,7 +122,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Thao tác" width="180" align="center" fixed="right">
+        <el-table-column
+          label="Thao tác"
+          width="180"
+          align="center"
+          fixed="right"
+        >
           <template #default="scope">
             <el-button
               size="small"
@@ -165,7 +177,9 @@
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="Tổng giờ">
-            <strong>{{ calculateTotalHours(selectedTimesheet.entries) }} giờ</strong>
+            <strong
+              >{{ calculateTotalHours(selectedTimesheet.entries) }} giờ</strong
+            >
           </el-descriptions-item>
           <el-descriptions-item label="Ngày tạo">
             {{ formatDate(selectedTimesheet.ngay_tao) }}
@@ -176,7 +190,7 @@
         </el-descriptions>
 
         <!-- Timesheet Grid -->
-        <div class="timesheet-grid" v-if="timesheetGrid.length > 0">
+        <div v-if="timesheetGrid.length > 0" class="timesheet-grid">
           <h3 style="margin: 20px 0 10px 0">Bảng chấm công chi tiết</h3>
           <el-table
             :data="timesheetGrid"
@@ -202,13 +216,21 @@
               align="center"
             >
               <template #default="scope">
-                <span class="hours-cell" :class="{'has-hours': scope.row.days[day.date] > 0}">
+                <span
+                  class="hours-cell"
+                  :class="{'has-hours': scope.row.days[day.date] > 0}"
+                >
                   {{ scope.row.days[day.date] || '-' }}
                 </span>
               </template>
             </el-table-column>
 
-            <el-table-column label="Tổng" width="100" align="center" fixed="right">
+            <el-table-column
+              label="Tổng"
+              width="100"
+              align="center"
+              fixed="right"
+            >
               <template #default="scope">
                 <el-tag type="info" size="small">
                   {{ scope.row.total }}h
@@ -227,7 +249,10 @@
         </div>
 
         <!-- Approval Actions -->
-        <div v-if="selectedTimesheet.trang_thai === 'Cho duyet'" class="approval-actions">
+        <div
+          v-if="selectedTimesheet.trang_thai === 'Cho duyet'"
+          class="approval-actions"
+        >
           <el-divider />
           <h4>Duyệt Timesheet</h4>
           <el-form :model="approvalForm" label-width="120px">
@@ -242,17 +267,17 @@
             <el-form-item>
               <el-button
                 type="success"
-                @click="handleApprove"
                 :loading="approving"
                 :icon="Check"
+                @click="handleApprove"
               >
                 Duyệt
               </el-button>
               <el-button
                 type="danger"
-                @click="handleReject"
                 :loading="rejecting"
                 :icon="Close"
+                @click="handleReject"
               >
                 Từ chối
               </el-button>
@@ -270,7 +295,14 @@
 
 <script setup lang="ts">
 import {ref, reactive, computed, onMounted} from 'vue';
-import {Search, Refresh, View, Calendar, Check, Close} from '@element-plus/icons-vue';
+import {
+  Search,
+  Refresh,
+  View,
+  Calendar,
+  Check,
+  Close,
+} from '@element-plus/icons-vue';
 import {ElMessage, ElMessageBox} from 'element-plus';
 import timesheetService from '@/services/timesheetService';
 import nhanVienService from '@/services/nhanVienService';
@@ -335,14 +367,26 @@ const timesheetGrid = computed(() => {
   const grouped = new Map<string, any>();
 
   selectedTimesheet.value.entries.forEach((entry: any) => {
-    const projectId = typeof entry.project_id === 'object' ? entry.project_id._id : entry.project_id;
-    const activityId = typeof entry.activity_id === 'object' ? entry.activity_id._id : entry.activity_id;
+    const projectId =
+      typeof entry.project_id === 'object'
+        ? entry.project_id._id
+        : entry.project_id;
+    const activityId =
+      typeof entry.activity_id === 'object'
+        ? entry.activity_id._id
+        : entry.activity_id;
     const key = `${projectId}-${activityId}`;
 
     if (!grouped.has(key)) {
       grouped.set(key, {
-        projectName: typeof entry.project_id === 'object' ? entry.project_id.ten : entry.project_id,
-        activityName: typeof entry.activity_id === 'object' ? entry.activity_id.ten : entry.activity_id,
+        projectName:
+          typeof entry.project_id === 'object'
+            ? entry.project_id.ten
+            : entry.project_id,
+        activityName:
+          typeof entry.activity_id === 'object'
+            ? entry.activity_id.ten
+            : entry.activity_id,
         days: {} as Record<string, number>,
         total: 0,
       });
@@ -454,7 +498,7 @@ const handleApprove = async () => {
         confirmButtonText: 'Duyệt',
         cancelButtonText: 'Hủy',
         type: 'success',
-      }
+      },
     );
 
     approving.value = true;
@@ -485,7 +529,7 @@ const handleReject = async () => {
         confirmButtonText: 'Từ chối',
         cancelButtonText: 'Hủy',
         type: 'error',
-      }
+      },
     );
 
     rejecting.value = true;
@@ -524,7 +568,9 @@ const formatWeek = (date: string) => {
   const start = dayjs(date).startOf('isoWeek');
   const end = start.add(6, 'day');
   const weekNum = start.isoWeek();
-  return `Tuần ${weekNum} (${start.format('DD/MM')} - ${end.format('DD/MM/YYYY')})`;
+  return `Tuần ${weekNum} (${start.format('DD/MM')} - ${end.format(
+    'DD/MM/YYYY',
+  )})`;
 };
 
 const formatDate = (date?: string) => {
@@ -567,7 +613,10 @@ const getTimesheetSummaries = (param: any) => {
       return;
     }
     if (index === columns.length - 1) {
-      const total = timesheetGrid.value.reduce((sum, row) => sum + row.total, 0);
+      const total = timesheetGrid.value.reduce(
+        (sum, row) => sum + row.total,
+        0,
+      );
       sums[index] = `${total.toFixed(1)}h`;
       return;
     }
@@ -575,7 +624,10 @@ const getTimesheetSummaries = (param: any) => {
     const dayIndex = index - 1;
     if (dayIndex >= 0 && dayIndex < weekDaysHeaders.value.length) {
       const date = weekDaysHeaders.value[dayIndex].date;
-      const total = timesheetGrid.value.reduce((sum, row) => sum + (row.days[date] || 0), 0);
+      const total = timesheetGrid.value.reduce(
+        (sum, row) => sum + (row.days[date] || 0),
+        0,
+      );
       sums[index] = total > 0 ? `${total.toFixed(1)}h` : '-';
     } else {
       sums[index] = '';
@@ -593,7 +645,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-timesheet-approval {
   padding: $spacing-xl;

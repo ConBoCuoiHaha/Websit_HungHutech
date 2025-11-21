@@ -10,6 +10,14 @@ const LoaiNgayNghiSchema = new Schema({
   mo_ta: {
     type: String,
   },
+  so_ngay_mac_dinh: {
+    type: Number,
+    default: 0,
+  },
+  co_luong: {
+    type: Boolean,
+    default: true,
+  },
   da_xoa: {
     type: Boolean,
     default: false,

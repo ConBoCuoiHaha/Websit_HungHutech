@@ -4,7 +4,7 @@
       <template #header>
         <div class="orangehrm-card-header">
           <h2 class="orangehrm-card-title">Quản lý Địa điểm</h2>
-          <el-button type="primary" @click="handleAdd" :icon="Plus">
+          <el-button type="primary" :icon="Plus" @click="handleAdd">
             Thêm Địa điểm
           </el-button>
         </div>
@@ -24,7 +24,7 @@
             />
           </el-col>
           <el-col :span="4">
-            <el-button type="primary" @click="handleSearch" :icon="Search">
+            <el-button type="primary" :icon="Search" @click="handleSearch">
               Tìm kiếm
             </el-button>
           </el-col>
@@ -42,7 +42,11 @@
         <el-table-column prop="ten" label="Tên địa điểm" min-width="200" />
         <el-table-column prop="thanh_pho" label="Thành phố" min-width="150" />
         <el-table-column prop="quoc_gia" label="Quốc gia" min-width="120" />
-        <el-table-column prop="so_dien_thoai" label="Số điện thoại" min-width="130" />
+        <el-table-column
+          prop="so_dien_thoai"
+          label="Số điện thoại"
+          min-width="130"
+        />
         <el-table-column label="Số nhân viên" width="120" align="center">
           <template #default="scope">
             <el-tag type="info">{{ scope.row.so_nhan_vien || 0 }}</el-tag>
@@ -50,10 +54,15 @@
         </el-table-column>
         <el-table-column label="Thao tác" width="180" align="center">
           <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.row)" :icon="Edit">
+            <el-button size="small" :icon="Edit" @click="handleEdit(scope.row)">
               Sửa
             </el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.row)" :icon="Delete">
+            <el-button
+              size="small"
+              type="danger"
+              :icon="Delete"
+              @click="handleDelete(scope.row)"
+            >
               Xóa
             </el-button>
           </template>
@@ -120,7 +129,10 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="Số điện thoại" prop="so_dien_thoai">
-              <el-input v-model="form.so_dien_thoai" placeholder="028-12345678" />
+              <el-input
+                v-model="form.so_dien_thoai"
+                placeholder="028-12345678"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -128,7 +140,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Email" prop="email">
-              <el-input v-model="form.email" type="email" placeholder="office@company.com" />
+              <el-input
+                v-model="form.email"
+                type="email"
+                placeholder="office@company.com"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -150,7 +166,7 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editMode ? 'Cập nhật' : 'Thêm mới' }}
         </el-button>
       </template>
@@ -191,7 +207,9 @@ const form = reactive({
 });
 
 const formRules: FormRules = {
-  ten: [{required: true, message: 'Vui lòng nhập tên địa điểm', trigger: 'blur'}],
+  ten: [
+    {required: true, message: 'Vui lòng nhập tên địa điểm', trigger: 'blur'},
+  ],
   email: [{type: 'email', message: 'Email không hợp lệ', trigger: 'blur'}],
 };
 
@@ -207,7 +225,9 @@ const loadLocations = async () => {
     total.value = response.total || 0;
   } catch (err: any) {
     console.error('Error loading locations:', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải danh sách địa điểm');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải danh sách địa điểm',
+    );
   } finally {
     loading.value = false;
   }
@@ -252,7 +272,7 @@ const handleDelete = async (row: any) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     await diaDiemService.delete(row._id);
@@ -323,7 +343,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-location-list {
   padding: $spacing-xl;

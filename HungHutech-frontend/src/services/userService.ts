@@ -17,8 +17,12 @@ export interface User {
 class UserService {
   private readonly BASE_URL = '/users';
 
-  async getAll(params?: PaginationParams & {role?: string}): Promise<PaginatedResponse<User>> {
-    const response = await api.get<PaginatedResponse<User>>(this.BASE_URL, {params});
+  async getAll(
+    params?: PaginationParams & {role?: string},
+  ): Promise<PaginatedResponse<User>> {
+    const response = await api.get<PaginatedResponse<User>>(this.BASE_URL, {
+      params,
+    });
     return response.data;
   }
 
@@ -41,7 +45,11 @@ class UserService {
     await api.delete(`${this.BASE_URL}/${id}`);
   }
 
-  async changePassword(id: string, oldPassword: string, newPassword: string): Promise<void> {
+  async changePassword(
+    id: string,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> {
     await api.put(`${this.BASE_URL}/${id}/change-password`, {
       oldPassword,
       newPassword,

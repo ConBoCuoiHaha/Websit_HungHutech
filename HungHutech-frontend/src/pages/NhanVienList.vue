@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Danh sách Nhân viên</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm nhân viên
         </el-button>
       </div>
@@ -56,21 +56,30 @@
         :empty-text="error || 'Không có dữ liệu'"
       >
         <el-table-column label="Ảnh" width="80">
-          <template #default="{ row }">
-            <el-avatar :size="40" :src="row.avatar_url ? uploadService.getFileUrl(row.avatar_url) : undefined">
+          <template #default="{row}">
+            <el-avatar
+              :size="40"
+              :src="
+                row.avatar_url
+                  ? uploadService.getFileUrl(row.avatar_url)
+                  : undefined
+              "
+            >
               <el-icon><User /></el-icon>
             </el-avatar>
           </template>
         </el-table-column>
 
         <el-table-column prop="ma_nhan_vien" label="Mã NV" min-width="120">
-          <template #default="{ row }">
-            <strong class="orangehrm-employee-id">{{ row.ma_nhan_vien }}</strong>
+          <template #default="{row}">
+            <strong class="orangehrm-employee-id">{{
+              row.ma_nhan_vien
+            }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Họ và tên" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-employee-name">
               <span class="orangehrm-name-primary">
                 {{ row.ho_dem }} {{ row.ten }}
@@ -83,43 +92,38 @@
         </el-table-column>
 
         <el-table-column label="Email" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.lien_he?.email_cong_viec || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Số điện thoại" min-width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.lien_he?.di_dong || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Chức danh" min-width="150">
-          <template #default="{ row }">
-            {{
-              row.thong_tin_cong_viec?.chuc_danh_id?.ten_chuc_danh ||
-              '-'
-            }}
+          <template #default="{row}">
+            {{ row.thong_tin_cong_viec?.chuc_danh_id?.ten_chuc_danh || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Phòng ban" min-width="150">
-          <template #default="{ row }">
-            {{
-              row.thong_tin_cong_viec?.phong_ban_id?.ten ||
-              '-'
-            }}
+          <template #default="{row}">
+            {{ row.thong_tin_cong_viec?.phong_ban_id?.ten || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Ca làm việc" min-width="160">
+          <template #default="{row}">
+            {{ row.thong_tin_cong_viec?.ca_lam_viec_id?.ten_ca || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="180" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="View"
-                @click="handleView(row._id)"
-              >
+              <el-button size="small" :icon="View" @click="handleView(row._id)">
                 Xem
               </el-button>
               <el-button
@@ -181,7 +185,10 @@
         </el-form-item>
 
         <el-form-item label="Biệt danh" prop="biet_danh">
-          <el-input v-model="form.biet_danh" placeholder="Nhập biệt danh (nếu có)" />
+          <el-input
+            v-model="form.biet_danh"
+            placeholder="Nhập biệt danh (nếu có)"
+          />
         </el-form-item>
 
         <el-divider content-position="left">Thông tin liên hệ</el-divider>
@@ -200,11 +207,33 @@
             placeholder="Nhập số điện thoại"
           />
         </el-form-item>
+
+        <el-divider content-position="left">Thông tin công việc</el-divider>
+
+        <el-form-item
+          label="Ca làm việc"
+          prop="thong_tin_cong_viec.ca_lam_viec_id"
+        >
+          <el-select
+            v-model="form.thong_tin_cong_viec.ca_lam_viec_id"
+            placeholder="Chọn ca làm việc"
+            clearable
+            filterable
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in caLamViecOptions"
+              :key="item._id"
+              :label="`${item.ten_ca} (${item.gio_bat_dau} - ${item.gio_ket_thuc})`"
+              :value="item._id"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleCreate" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleCreate">
           Lưu
         </el-button>
       </template>
@@ -226,7 +255,8 @@ import {
 import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
 import nhanVienService from '@/services/nhanVienService';
 import uploadService from '@/services/uploadService';
-import {NhanVien} from '@/types';
+import caLamViecService from '@/services/caLamViecService';
+import {NhanVien, CaLamViec} from '@/types';
 
 const router = useRouter();
 
@@ -247,6 +277,8 @@ const pagination = reactive({
   total: 0,
 });
 
+const caLamViecOptions = ref<CaLamViec[]>([]);
+
 const form = reactive({
   ma_nhan_vien: '',
   ho_dem: '',
@@ -256,18 +288,17 @@ const form = reactive({
     email_cong_viec: '',
     di_dong: '',
   },
+  thong_tin_cong_viec: {
+    ca_lam_viec_id: '',
+  },
 });
 
 const formRules: FormRules = {
   ma_nhan_vien: [
     {required: true, message: 'Vui lòng nhập mã nhân viên', trigger: 'blur'},
   ],
-  ho_dem: [
-    {required: true, message: 'Vui lòng nhập họ đệm', trigger: 'blur'},
-  ],
-  ten: [
-    {required: true, message: 'Vui lòng nhập tên', trigger: 'blur'},
-  ],
+  ho_dem: [{required: true, message: 'Vui lòng nhập họ đệm', trigger: 'blur'}],
+  ten: [{required: true, message: 'Vui lòng nhập tên', trigger: 'blur'}],
 };
 
 const loadData = async () => {
@@ -290,6 +321,18 @@ const loadData = async () => {
     ElMessage.error(error.value);
   } finally {
     loading.value = false;
+  }
+};
+
+const loadCaLamViecs = async () => {
+  try {
+    const response = await caLamViecService.getAll({limit: 100});
+    caLamViecOptions.value = response.data || response.items || [];
+  } catch (err: any) {
+    console.error('Error loading work shifts:', err);
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải danh sách ca làm việc',
+    );
   }
 };
 
@@ -323,9 +366,7 @@ const handleCreate = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error creating employee:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể tạo nhân viên',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể tạo nhân viên');
     } finally {
       saving.value = false;
     }
@@ -354,9 +395,7 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting employee:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa nhân viên',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể xóa nhân viên');
     }
   }
 };
@@ -376,10 +415,12 @@ const resetForm = () => {
   form.biet_danh = '';
   form.lien_he.email_cong_viec = '';
   form.lien_he.di_dong = '';
+  form.thong_tin_cong_viec.ca_lam_viec_id = '';
 };
 
 onMounted(() => {
   loadData();
+  loadCaLamViecs();
 });
 </script>
 

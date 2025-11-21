@@ -4,9 +4,7 @@ import {Project, PaginatedResponse, PaginationParams} from '@/types';
 class ProjectService {
   private readonly BASE_URL = '/projects';
 
-  async getAll(
-    params?: PaginationParams,
-  ): Promise<PaginatedResponse<Project>> {
+  async getAll(params?: PaginationParams): Promise<PaginatedResponse<Project>> {
     const response = await api.get<PaginatedResponse<Project>>(this.BASE_URL, {
       params,
     });

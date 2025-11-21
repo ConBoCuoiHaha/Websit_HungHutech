@@ -7,9 +7,12 @@ class LoaiNgayNghiService {
   async getAll(
     params?: PaginationParams,
   ): Promise<PaginatedResponse<LoaiNgayNghi>> {
-    const response = await api.get<PaginatedResponse<LoaiNgayNghi>>(this.BASE_URL, {
-      params,
-    });
+    const response = await api.get<PaginatedResponse<LoaiNgayNghi>>(
+      this.BASE_URL,
+      {
+        params,
+      },
+    );
     return response.data;
   }
 
@@ -24,7 +27,10 @@ class LoaiNgayNghiService {
   }
 
   async update(id: string, data: Partial<LoaiNgayNghi>): Promise<LoaiNgayNghi> {
-    const response = await api.put<LoaiNgayNghi>(`${this.BASE_URL}/${id}`, data);
+    const response = await api.put<LoaiNgayNghi>(
+      `${this.BASE_URL}/${id}`,
+      data,
+    );
     return response.data;
   }
 

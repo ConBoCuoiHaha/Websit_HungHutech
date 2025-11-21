@@ -18,6 +18,70 @@ export interface LoginResponse {
 }
 
 // Nhân Viên Types
+export interface CaLamViec {
+  _id: string;
+  ten_ca: string;
+  gio_bat_dau: string;
+  gio_ket_thuc: string;
+  thoi_gian_nghi?: number;
+  mo_ta?: string;
+}
+
+export interface ShiftSnapshot {
+  ten_ca?: string;
+  gio_bat_dau?: string;
+  gio_ket_thuc?: string;
+  thoi_gian_nghi?: number;
+}
+
+export interface ShiftAssignment {
+  _id: string;
+  nhan_vien_id: string | NhanVien;
+  ngay: string;
+  ca_lam_viec_id: string | CaLamViec;
+  shift_snapshot?: ShiftSnapshot;
+  ghi_chu?: string;
+  ngay_tao?: string;
+  ngay_cap_nhat?: string;
+}
+
+export interface DailyTimeSummary {
+  _id?: string;
+  nhan_vien_id: string | NhanVien;
+  ngay: string;
+  shift_snapshot?: ShiftSnapshot;
+  check_in?: string;
+  check_out?: string;
+  work_minutes?: number;
+  paid_minutes?: number;
+  leave_minutes?: number;
+  ot_minutes?: number;
+  ot_hours?: number;
+  ot_multiplier?: number;
+  late_minutes?: number;
+  early_minutes?: number;
+  status:
+    | 'NoData'
+    | 'OnTime'
+    | 'Late'
+    | 'EarlyOut'
+    | 'LateEarly'
+    | 'Leave'
+    | 'Absent'
+    | 'MissingCheckin'
+    | 'MissingCheckout';
+  violations?: string[];
+  notes?: string;
+  ngay_tao?: string;
+  ngay_cap_nhat?: string;
+}
+
+export interface TimeRuleViolationStat {
+  _id?: string;
+  status: DailyTimeSummary['status'];
+  count: number;
+}
+
 export interface NhanVien {
   _id: string;
   ma_nhan_vien: string;
@@ -32,14 +96,90 @@ export interface NhanVien {
     di_dong?: string;
     dien_thoai_nha?: string;
   };
+  bao_hiem?: {
+    so_bhxh?: string;
+    so_bhyt?: string;
+    muc_luong_bhxh?: number | {$numberDecimal: string};
+    muc_luong_bhyt?: number | {$numberDecimal: string};
+    ti_le_bhxh_nv?: number;
+    ti_le_bhxh_dn?: number;
+    ti_le_bhyt_nv?: number;
+    ti_le_bhyt_dn?: number;
+    ti_le_bhtn_nv?: number;
+    ti_le_bhtn_dn?: number;
+  };
   thong_tin_cong_viec?: {
     ngay_vao_lam?: string;
     chuc_danh_id?: ChucDanh;
     phong_ban_id?: PhongBan;
     trang_thai_lao_dong_id?: TrangThaiLaoDong;
+    ca_lam_viec_id?: string | CaLamViec;
   };
+  luong?: Array<{
+    ten_luong?: string;
+    so_tien?: number | {$numberDecimal: string};
+    don_vi_tien_te?: string;
+    ky_tra_luong?: string;
+    ghi_chu?: string;
+  }>;
+  nguoi_phu_thuoc?: Array<{
+    ten?: string;
+    moi_quan_he?: string;
+    ngay_sinh?: string;
+  }>;
   ngay_tao?: string;
   ngay_cap_nhat?: string;
+}
+
+export type ProfileRequestType = 'personal' | 'contact' | 'dependents';
+
+export interface ProfileRequest {
+  _id: string;
+  nhan_vien_id?: string | NhanVien;
+  type: ProfileRequestType;
+  payload: Record<string, any>;
+  note?: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  approver_note?: string;
+  reviewed_by?: string | NhanVien;
+  reviewed_at?: string;
+  ngay_tao?: string;
+  ngay_cap_nhat?: string;
+}
+
+export type ConsentStatus = 'Accepted' | 'Withdrawn' | 'Pending';
+
+export interface ConsentPurpose {
+  key: string;
+  name: string;
+  description: string;
+  required: boolean;
+  legal_basis?: string;
+  data_types?: string[];
+  recipients?: string[];
+  retention?: string;
+}
+
+export interface ConsentView extends ConsentPurpose {
+  status: ConsentStatus;
+  granted_at?: string | null;
+  withdrawn_at?: string | null;
+  note?: string;
+}
+
+export interface ConsentOverviewItem {
+  key: string;
+  name: string;
+  required: boolean;
+  accepted: number;
+  withdrawn: number;
+  pending: number;
+}
+
+export interface ConsentAdminRow {
+  nhan_vien: NhanVien;
+  phong_ban?: PhongBan | null;
+  purposes: ConsentView[];
 }
 
 // Chức Danh Types
@@ -85,8 +225,8 @@ export interface TrangThaiLaoDong {
 export interface BacLuong {
   _id: string;
   ten_bac_luong: string;
-  muc_luong_toi_thieu?: number | { $numberDecimal: string };
-  muc_luong_toi_da?: number | { $numberDecimal: string };
+  muc_luong_toi_thieu?: number | {$numberDecimal: string};
+  muc_luong_toi_da?: number | {$numberDecimal: string};
   don_vi_tien_te?: 'VND' | 'USD';
   ghi_chu?: string;
   ngay_tao?: string;
@@ -118,6 +258,27 @@ export interface DashboardSummary {
   }>;
 }
 
+export interface OvertimeAlertItem {
+  nhan_vien_id: string;
+  ho_ten: string;
+  ma_nhan_vien: string;
+  phong_ban?: string;
+  hours: number;
+  percent: number;
+  limit: number;
+}
+
+export interface OvertimeAlertGroup {
+  limit: number;
+  items: OvertimeAlertItem[];
+}
+
+export interface OvertimeAlertGroups {
+  day: OvertimeAlertGroup;
+  month: OvertimeAlertGroup;
+  year: OvertimeAlertGroup;
+}
+
 // Pagination Types
 export interface PaginatedResponse<T> {
   items: T[];
@@ -126,11 +287,30 @@ export interface PaginatedResponse<T> {
   total: number;
 }
 
+export interface ListResponse<T> {
+  data: T[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages?: number;
+  };
+}
+
 export interface PaginationParams {
   page?: number;
   limit?: number;
   q?: string;
   sort?: string;
+}
+
+export interface CandidateQueryParams extends PaginationParams {
+  vacancy_id?: string;
+  trang_thai?: Candidate['trang_thai'];
+  nguon?: string;
+  tag?: string;
+  pipeline_stage?: Candidate['pipeline_stage'];
+  ky_nang?: string;
 }
 
 // Leave Management Types
@@ -216,13 +396,30 @@ export interface Claim {
 }
 
 // Recruitment (Tuyển dụng) Types
+export interface VacancyChannel {
+  channel_key: string;
+  channel_name: string;
+  trang_thai: 'Cho dang' | 'Dang dang' | 'Thanh cong' | 'That bai';
+  posted_url?: string;
+  reference_code?: string;
+  posted_at?: string;
+  error_message?: string;
+}
+
 export interface Vacancy {
   _id: string;
   tieu_de: string;
   mo_ta?: string;
+  yeu_cau?: string;
+  so_luong?: number;
+  muc_luong?: string;
+  ky_nang?: string[];
+  nganh_nghe?: string;
+  han_nop?: string;
   hiring_manager_id: string | NhanVien;
   trang_thai: 'Mo' | 'Dong';
   dia_diem_id?: string | DiaDiem;
+  channels?: VacancyChannel[];
   da_xoa?: boolean;
   ngay_tao?: string;
   ngay_cap_nhat?: string;
@@ -234,6 +431,45 @@ export interface Candidate {
   email: string;
   dien_thoai?: string;
   ghi_chu?: string;
+  nguon?: string;
+  trang_thai?: 'Moi' | 'Dang_lien_he' | 'Phong_van' | 'Duoc_tuyen' | 'Khong_phu_hop';
+  pipeline_stage?:
+    | 'CV_moi'
+    | 'Screening'
+    | 'Phong_van_v1'
+    | 'Phong_van_v2'
+    | 'Offer'
+    | 'Rejected'
+    | 'Hired';
+  pipeline_history?: Array<{
+    stage: string;
+    ghi_chu?: string;
+    nguoi_cap_nhat_id?: string | NhanVien | null;
+    thoi_gian?: string;
+    score?: number;
+  }>;
+  tags?: string[];
+  ky_nang?: string[];
+  kinh_nghiem_nam?: number;
+  vi_tri_mong_muon?: string;
+  ngay_lien_he_cuoi?: string;
+  score?: number;
+  cv_file?: {
+    filename?: string;
+    originalname?: string;
+    mimetype?: string;
+    size?: number;
+    url?: string;
+  };
+  parsed_fields?: {
+    tom_tat?: string;
+    email?: string;
+    dien_thoai?: string;
+    dia_chi?: string;
+    ky_nang?: string[];
+    hoc_van?: string[];
+    kinh_nghiem?: string[];
+  };
   da_xoa?: boolean;
   ngay_tao?: string;
   ngay_cap_nhat?: string;
@@ -274,12 +510,22 @@ export interface Interview {
   _id: string;
   ung_vien_id: string | Candidate;
   vi_tri_tuyen_dung_id: string | Vacancy;
-  loai_phong_van: 'Sơ tuyển' | 'Phỏng vấn chuyên môn' | 'Phỏng vấn quản lý' | 'Phỏng vấn cuối cùng';
+  loai_phong_van:
+    | 'Sơ tuyển'
+    | 'Phỏng vấn chuyên môn'
+    | 'Phỏng vấn quản lý'
+    | 'Phỏng vấn cuối cùng';
   ngay_gio: string;
   dia_diem?: string;
   hinh_thuc?: 'Trực tiếp' | 'Trực tuyến' | 'Điện thoại';
   nguoi_phong_van?: InterviewerInfo[];
-  trang_thai: 'Đã lên lịch' | 'Đang chờ xác nhận' | 'Đã xác nhận' | 'Đã hoàn thành' | 'Đã hủy' | 'Ứng viên vắng mặt';
+  trang_thai:
+    | 'Đã lên lịch'
+    | 'Đang chờ xác nhận'
+    | 'Đã xác nhận'
+    | 'Đã hoàn thành'
+    | 'Đã hủy'
+    | 'Ứng viên vắng mặt';
   link_phong_van?: string;
   ghi_chu?: string;
   ket_qua_phong_van?: InterviewResult;
@@ -310,6 +556,16 @@ export interface Rating {
   ghi_chu?: string;
 }
 
+export type PerformanceRatingLabel = 'A' | 'B' | 'C' | 'D' | 'E';
+
+export interface PerformanceReviewPayrollHistory {
+  payroll_run_id?: string;
+  payroll_entry_id?: string;
+  so_tien?: number;
+  ky_luong?: string;
+  ngay_chuyen?: string;
+}
+
 export interface PerformanceReview {
   _id: string;
   nhan_vien_id: string | NhanVien;
@@ -319,6 +575,10 @@ export interface PerformanceReview {
   trang_thai: 'Draft' | 'InReview' | 'Completed';
   ratings: Rating[];
   diem_tong: number;
+  xep_loai?: PerformanceRatingLabel | null;
+  thuong_hieu_suat?: number;
+  da_chuyen_payroll?: boolean;
+  payroll_history?: PerformanceReviewPayrollHistory[];
   ngay_tao?: string;
   ngay_cap_nhat?: string;
 }
@@ -379,10 +639,148 @@ export interface Timesheet {
   ngay_cap_nhat?: string;
 }
 
+// Payroll Types
+export type PayrollRunStatus = 'Draft' | 'Cho_duyet' | 'Da_duyet' | 'Da_chi';
+
+export interface PayrollMoneyItem {
+  ten: string;
+  so_tien: number;
+  ghi_chu?: string;
+  reference_type?: string;
+  reference_id?: string;
+}
+
+export interface PayrollTaxBreakdown {
+  bac: number;
+  muc_chiu_thue: number;
+  thue_suat: number;
+  tien_thue: number;
+}
+
+export interface PayrollEntry {
+  _id?: string;
+  nhan_vien_id: string | NhanVien;
+  ma_nhan_vien?: string;
+  ho_ten?: string;
+  luong_co_ban: number;
+  phu_cap: PayrollMoneyItem[];
+  thuong: PayrollMoneyItem[];
+  ot: PayrollMoneyItem[];
+  khoan_khau_tru: PayrollMoneyItem[];
+  tong_phu_cap: number;
+  tong_thuong: number;
+  tong_ot: number;
+  tong_khau_tru_khac: number;
+  tong_thu_nhap: number;
+  bhxh: number;
+  bhyt: number;
+  bhtn: number;
+  kpcd: number;
+  tong_khau_tru_bat_buoc: number;
+  giam_tru_ban_than: number;
+  giam_tru_phu_thuoc: number;
+  so_nguoi_phu_thuoc: number;
+  thu_nhap_tinh_thue: number;
+  thue_tncn: number;
+  chi_tiet_thue: PayrollTaxBreakdown[];
+  tong_khau_tru: number;
+  luong_thuc_nhan: number;
+  trang_thai: 'Cho_duyet' | 'Da_duyet' | 'Da_chi';
+  ghi_chu?: string;
+}
+
+export interface PayrollSettings {
+  ti_le_bhxh: number;
+  ti_le_bhyt: number;
+  ti_le_bhtn: number;
+  ti_le_kpcd: number;
+  ap_dung_kpcd: boolean;
+  giam_tru_ban_than: number;
+  giam_tru_phu_thuoc: number;
+}
+
+export interface PayrollRun {
+  _id: string;
+  ky_luong: string;
+  loai_ky: 'Thang' | 'Tuan' | 'Tuy_chinh';
+  ngay_bat_dau: string;
+  ngay_ket_thuc: string;
+  trang_thai: PayrollRunStatus;
+  currency: string;
+  settings: PayrollSettings;
+  entries: PayrollEntry[];
+  tong_so_nhan_vien: number;
+  tong_thu_nhap: number;
+  tong_khau_tru: number;
+  tong_thue_tncn: number;
+  tong_net: number;
+  nguoi_tao_id?: string | NhanVien;
+  ghi_chu?: string;
+  ngay_tao?: string;
+  ngay_cap_nhat?: string;
+}
+
+export interface PayrollRunListResponse {
+  data: PayrollRun[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface PayrollPayslip {
+  run_id: string;
+  ky_luong: string;
+  loai_ky: 'Thang' | 'Tuan' | 'Tuy_chinh';
+  ngay_bat_dau: string;
+  ngay_ket_thuc: string;
+  currency: string;
+  trang_thai_run: PayrollRunStatus;
+  entry: PayrollEntry;
+}
+
+export interface PayrollPreviewEntry {
+  nhan_vien_id: string;
+  ma_nhan_vien: string;
+  ho_ten?: string;
+  luong_co_ban: number;
+  so_nguoi_phu_thuoc?: number;
+  phu_cap: PayrollMoneyItem[];
+  thuong: PayrollMoneyItem[];
+  ot: PayrollMoneyItem[];
+  khoan_khau_tru: PayrollMoneyItem[];
+  metadata?: {
+    tong_gio_timesheet?: number;
+    tong_gio_ot?: number;
+    so_ngay_nghi?: number;
+  };
+}
+
+export interface PayrollPreviewResponse {
+  data: PayrollPreviewEntry[];
+  summary?: {
+    totalEmployees: number;
+    totalOtHours: number;
+    totalLeaveDays: number;
+  };
+}
+
 // Report Types
 export interface ReportCriteria {
   truong: string;
-  dieu_kien: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'IN' | 'NOT IN' | 'BETWEEN';
+  dieu_kien:
+    | '='
+    | '!='
+    | '>'
+    | '<'
+    | '>='
+    | '<='
+    | 'LIKE'
+    | 'IN'
+    | 'NOT IN'
+    | 'BETWEEN';
   gia_tri: any;
 }
 
@@ -394,7 +792,13 @@ export interface ReportSort {
 export interface Report {
   _id: string;
   ten_bao_cao: string;
-  loai_bao_cao: 'Nhan vien' | 'Cham cong' | 'Nghi phep' | 'Boi hoan' | 'Luong' | 'Hieu suat';
+  loai_bao_cao:
+    | 'Nhan vien'
+    | 'Cham cong'
+    | 'Nghi phep'
+    | 'Boi hoan'
+    | 'Luong'
+    | 'Hieu suat';
   tieu_chi: ReportCriteria[];
   cot_hien_thi: string[];
   sap_xep?: ReportSort;
@@ -404,7 +808,13 @@ export interface Report {
 }
 
 export interface GenerateReportRequest {
-  loai_bao_cao: 'Nhan vien' | 'Cham cong' | 'Nghi phep' | 'Boi hoan' | 'Luong' | 'Hieu suat';
+  loai_bao_cao:
+    | 'Nhan vien'
+    | 'Cham cong'
+    | 'Nghi phep'
+    | 'Boi hoan'
+    | 'Luong'
+    | 'Hieu suat';
   tieu_chi?: ReportCriteria[];
   cot_hien_thi?: string[];
   sap_xep?: ReportSort;
@@ -495,7 +905,12 @@ export interface PerformanceGoal {
   ten_muc_tieu: string;
   mo_ta?: string;
   trong_so?: number;
-  trang_thai: 'Chưa bắt đầu' | 'Đang thực hiện' | 'Hoàn thành' | 'Quá hạn' | 'Đã hủy';
+  trang_thai:
+    | 'Chưa bắt đầu'
+    | 'Đang thực hiện'
+    | 'Hoàn thành'
+    | 'Quá hạn'
+    | 'Đã hủy';
   tien_do?: number;
   diem_danh_gia?: number;
   nhan_xet?: string;
@@ -568,6 +983,23 @@ export interface PurgeableCandidate extends Candidate {
   days_since_update: number;
   reason: string;
   can_purge: boolean;
+}
+
+export interface ComplianceReportLog {
+  _id: string;
+  type: string;
+  report_name: string;
+  requested_by?: NhanVien;
+  params?: {
+    from_date?: string;
+    to_date?: string;
+    contributions?: Record<string, number>;
+  };
+  total_rows?: number;
+  format?: string;
+  exported_at?: string;
+  ngay_tao?: string;
+  ngay_cap_nhat?: string;
 }
 
 export interface PurgeLog {

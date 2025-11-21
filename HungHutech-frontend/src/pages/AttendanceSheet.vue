@@ -4,7 +4,7 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Bảng chấm công</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
         <el-button type="primary" :icon="Download" @click="exportToExcel">
           Xuất Excel
         </el-button>
@@ -63,7 +63,11 @@
     </el-card>
 
     <!-- Summary Cards -->
-    <el-row v-if="selectedEmployeeId && summary" :gutter="16" class="orangehrm-summary-row">
+    <el-row
+      v-if="selectedEmployeeId && summary"
+      :gutter="16"
+      class="orangehrm-summary-row"
+    >
       <el-col :xs="12" :sm="6">
         <el-card class="orangehrm-stat-card" shadow="hover">
           <el-statistic title="Tổng số ngày" :value="summary.total_days">
@@ -118,7 +122,7 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column prop="ngay" label="Ngày" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong>{{ formatDate(row.ngay) }}</strong>
             <br />
             <span class="orangehrm-day-name">{{ getDayName(row.ngay) }}</span>
@@ -126,7 +130,7 @@
         </el-table-column>
 
         <el-table-column label="Giờ vào" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-time-cell">
               <el-icon color="#67C23A"><VideoPlay /></el-icon>
               <strong>{{ formatTime(row.thoi_gian_vao) }}</strong>
@@ -135,7 +139,7 @@
         </el-table-column>
 
         <el-table-column label="Giờ ra" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div v-if="row.thoi_gian_ra" class="orangehrm-time-cell">
               <el-icon color="#E6A23C"><VideoPause /></el-icon>
               <strong>{{ formatTime(row.thoi_gian_ra) }}</strong>
@@ -145,13 +149,13 @@
         </el-table-column>
 
         <el-table-column label="Số giờ" width="100">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="info">{{ calculateHours(row) }} giờ</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row)" size="small">
               {{ getStatus(row) }}
             </el-tag>
@@ -159,7 +163,7 @@
         </el-table-column>
 
         <el-table-column label="Ghi chú" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tooltip
               v-if="row.ghi_chu && row.ghi_chu.length > 50"
               :content="row.ghi_chu"
@@ -172,12 +176,8 @@
         </el-table-column>
 
         <el-table-column label="Hành động" width="150" fixed="right">
-          <template #default="{ row }">
-            <el-button
-              size="small"
-              :icon="Edit"
-              @click="handleEdit(row)"
-            >
+          <template #default="{row}">
+            <el-button size="small" :icon="Edit" @click="handleEdit(row)">
               Sửa
             </el-button>
           </template>
@@ -241,7 +241,7 @@
 
       <template #footer>
         <el-button @click="closeEditDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleUpdate" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleUpdate">
           Cập nhật
         </el-button>
       </template>
@@ -339,8 +339,7 @@ const loadData = async () => {
     );
   } catch (err: any) {
     console.error('Error loading attendance:', err);
-    error.value =
-      err.response?.data?.msg || 'Không thể tải bảng chấm công';
+    error.value = err.response?.data?.msg || 'Không thể tải bảng chấm công';
     ElMessage.error(error.value);
   } finally {
     loading.value = false;
@@ -391,9 +390,7 @@ const handleUpdate = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error updating attendance:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể cập nhật bản ghi',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật bản ghi');
     } finally {
       saving.value = false;
     }

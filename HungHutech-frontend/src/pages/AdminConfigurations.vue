@@ -9,50 +9,32 @@
       <el-tabs v-model="activeTab" type="border-card">
         <!-- Employment Statuses -->
         <el-tab-pane label="Trạng thái làm việc" name="employment-statuses">
-          <ConfigTable
-            :config="employmentStatusConfig"
-            @refresh="loadData"
-          />
+          <ConfigTable :config="employmentStatusConfig" @refresh="loadData" />
         </el-tab-pane>
 
         <!-- Job Categories -->
         <el-tab-pane label="Danh mục công việc" name="job-categories">
-          <ConfigTable
-            :config="jobCategoryConfig"
-            @refresh="loadData"
-          />
+          <ConfigTable :config="jobCategoryConfig" @refresh="loadData" />
         </el-tab-pane>
 
         <!-- Nationalities -->
         <el-tab-pane label="Quốc tịch" name="nationalities">
-          <ConfigTable
-            :config="nationalityConfig"
-            @refresh="loadData"
-          />
+          <ConfigTable :config="nationalityConfig" @refresh="loadData" />
         </el-tab-pane>
 
         <!-- Skills -->
         <el-tab-pane label="Kỹ năng" name="skills">
-          <ConfigTable
-            :config="skillConfig"
-            @refresh="loadData"
-          />
+          <ConfigTable :config="skillConfig" @refresh="loadData" />
         </el-tab-pane>
 
         <!-- Education Levels -->
         <el-tab-pane label="Trình độ học vấn" name="education-levels">
-          <ConfigTable
-            :config="educationLevelConfig"
-            @refresh="loadData"
-          />
+          <ConfigTable :config="educationLevelConfig" @refresh="loadData" />
         </el-tab-pane>
 
         <!-- Languages -->
         <el-tab-pane label="Ngôn ngữ" name="languages">
-          <ConfigTable
-            :config="languageConfig"
-            @refresh="loadData"
-          />
+          <ConfigTable :config="languageConfig" @refresh="loadData" />
         </el-tab-pane>
       </el-tabs>
     </el-card>
@@ -60,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ConfigTable from '@/components/admin/ConfigTable.vue';
 import adminConfigService from '@/services/adminConfigService';
 
@@ -71,11 +53,16 @@ const employmentStatusConfig = {
   title: 'Trạng thái làm việc',
   service: adminConfigService.employmentStatus,
   fields: [
-    { key: 'ten_trang_thai', label: 'Tên trạng thái', type: 'text', required: true },
-    { key: 'mo_ta', label: 'Mô tả', type: 'textarea' },
-    { key: 'thu_tu_sap_xep', label: 'Thứ tự sắp xếp', type: 'number' }
+    {
+      key: 'ten_trang_thai',
+      label: 'Tên trạng thái',
+      type: 'text',
+      required: true,
+    },
+    {key: 'mo_ta', label: 'Mô tả', type: 'textarea'},
+    {key: 'thu_tu_sap_xep', label: 'Thứ tự sắp xếp', type: 'number'},
   ],
-  displayField: 'ten_trang_thai'
+  displayField: 'ten_trang_thai',
 };
 
 // Config cho Job Categories
@@ -83,10 +70,10 @@ const jobCategoryConfig = {
   title: 'Danh mục công việc',
   service: adminConfigService.jobCategory,
   fields: [
-    { key: 'ten_danh_muc', label: 'Tên danh mục', type: 'text', required: true },
-    { key: 'mo_ta', label: 'Mô tả', type: 'textarea' }
+    {key: 'ten_danh_muc', label: 'Tên danh mục', type: 'text', required: true},
+    {key: 'mo_ta', label: 'Mô tả', type: 'textarea'},
   ],
-  displayField: 'ten_danh_muc'
+  displayField: 'ten_danh_muc',
 };
 
 // Config cho Nationalities
@@ -94,10 +81,20 @@ const nationalityConfig = {
   title: 'Quốc tịch',
   service: adminConfigService.nationality,
   fields: [
-    { key: 'ten_quoc_tich', label: 'Tên quốc tịch', type: 'text', required: true },
-    { key: 'ma_quoc_gia', label: 'Mã quốc gia (ISO)', type: 'text', maxlength: 3 }
+    {
+      key: 'ten_quoc_tich',
+      label: 'Tên quốc tịch',
+      type: 'text',
+      required: true,
+    },
+    {
+      key: 'ma_quoc_gia',
+      label: 'Mã quốc gia (ISO)',
+      type: 'text',
+      maxlength: 3,
+    },
   ],
-  displayField: 'ten_quoc_tich'
+  displayField: 'ten_quoc_tich',
 };
 
 // Config cho Skills
@@ -105,16 +102,16 @@ const skillConfig = {
   title: 'Kỹ năng',
   service: adminConfigService.skill,
   fields: [
-    { key: 'ten_ky_nang', label: 'Tên kỹ năng', type: 'text', required: true },
-    { key: 'mo_ta', label: 'Mô tả', type: 'textarea' },
+    {key: 'ten_ky_nang', label: 'Tên kỹ năng', type: 'text', required: true},
+    {key: 'mo_ta', label: 'Mô tả', type: 'textarea'},
     {
       key: 'loai_ky_nang',
       label: 'Loại kỹ năng',
       type: 'select',
-      options: ['Kỹ thuật', 'Quản lý', 'Giao tiếp', 'Ngoại ngữ', 'Khác']
-    }
+      options: ['Kỹ thuật', 'Quản lý', 'Giao tiếp', 'Ngoại ngữ', 'Khác'],
+    },
   ],
-  displayField: 'ten_ky_nang'
+  displayField: 'ten_ky_nang',
 };
 
 // Config cho Education Levels
@@ -122,11 +119,11 @@ const educationLevelConfig = {
   title: 'Trình độ học vấn',
   service: adminConfigService.educationLevel,
   fields: [
-    { key: 'ten_trinh_do', label: 'Tên trình độ', type: 'text', required: true },
-    { key: 'mo_ta', label: 'Mô tả', type: 'textarea' },
-    { key: 'cap_do', label: 'Cấp độ', type: 'number', min: 0 }
+    {key: 'ten_trinh_do', label: 'Tên trình độ', type: 'text', required: true},
+    {key: 'mo_ta', label: 'Mô tả', type: 'textarea'},
+    {key: 'cap_do', label: 'Cấp độ', type: 'number', min: 0},
   ],
-  displayField: 'ten_trinh_do'
+  displayField: 'ten_trinh_do',
 };
 
 // Config cho Languages
@@ -134,10 +131,15 @@ const languageConfig = {
   title: 'Ngôn ngữ',
   service: adminConfigService.language,
   fields: [
-    { key: 'ten_ngon_ngu', label: 'Tên ngôn ngữ', type: 'text', required: true },
-    { key: 'ma_ngon_ngu', label: 'Mã ngôn ngữ (ISO)', type: 'text', maxlength: 3 }
+    {key: 'ten_ngon_ngu', label: 'Tên ngôn ngữ', type: 'text', required: true},
+    {
+      key: 'ma_ngon_ngu',
+      label: 'Mã ngôn ngữ (ISO)',
+      type: 'text',
+      maxlength: 3,
+    },
   ],
-  displayField: 'ten_ngon_ngu'
+  displayField: 'ten_ngon_ngu',
 };
 
 const loadData = () => {
@@ -146,7 +148,7 @@ const loadData = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .admin-configurations {
   padding: $spacing-lg;

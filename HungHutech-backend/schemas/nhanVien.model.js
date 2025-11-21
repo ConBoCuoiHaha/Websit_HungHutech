@@ -48,6 +48,19 @@ const NgoaiNguSchema = new Schema({
   ghi_chu: String,
 }, { _id: false });
 
+const BaoHiemSchema = new Schema({
+  so_bhxh: String,
+  so_bhyt: String,
+  muc_luong_bhxh: Schema.Types.Decimal128,
+  muc_luong_bhyt: Schema.Types.Decimal128,
+  ti_le_bhxh_nv: Number,
+  ti_le_bhxh_dn: Number,
+  ti_le_bhyt_nv: Number,
+  ti_le_bhyt_dn: Number,
+  ti_le_bhtn_nv: Number,
+  ti_le_bhtn_dn: Number,
+}, { _id: false });
+
 const GiayPhepSchema = new Schema({
   loai_giay_phep: String, // 'Bằng lái xe', 'Chứng chỉ hành nghề', 'Giấy phép kinh doanh'
   so_giay_phep: String,
@@ -95,6 +108,9 @@ const TaiLieuDinhKemSchema = new Schema({
   mo_ta: String,
 }, { _id: false });
 
+
+
+
 // Schema chính cho Nhân Viên
 const NhanVienSchema = new Schema({
   ma_nhan_vien: { type: String, required: true, unique: true },
@@ -133,6 +149,8 @@ const NhanVienSchema = new Schema({
     email_cong_viec: { type: String, unique: true, sparse: true },
     email_khac: { type: String, unique: true, sparse: true },
   },
+
+  bao_hiem: BaoHiemSchema,
 
   thong_tin_cong_viec: {
     ngay_vao_lam: Date,

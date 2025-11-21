@@ -1,10 +1,17 @@
-<template>
+﻿<template>
   <div class="orangehrm-myinfo">
     <!-- Page Header với Avatar và Tên -->
     <el-card class="orangehrm-myinfo-header" shadow="never">
       <div class="orangehrm-myinfo-header-content">
         <div class="orangehrm-myinfo-avatar-section">
-          <el-avatar :size="120" :src="employee?.avatar_url ? uploadService.getFileUrl(employee.avatar_url) : undefined">
+          <el-avatar
+            :size="120"
+            :src="
+              employee?.avatar_url
+                ? uploadService.getFileUrl(employee.avatar_url)
+                : undefined
+            "
+          >
             <el-icon :size="60"><User /></el-icon>
           </el-avatar>
           <el-upload
@@ -23,15 +30,25 @@
           </h1>
           <p class="orangehrm-myinfo-id">Mã NV: {{ employee?.ma_nhan_vien }}</p>
           <div class="orangehrm-myinfo-tags">
-            <el-tag v-if="employee?.thong_tin_cong_viec?.chuc_danh_id" type="primary">
+            <el-tag
+              v-if="employee?.thong_tin_cong_viec?.chuc_danh_id"
+              type="primary"
+            >
               {{ employee.thong_tin_cong_viec.chuc_danh_id.ten_chuc_danh }}
             </el-tag>
-            <el-tag v-if="employee?.thong_tin_cong_viec?.phong_ban_id" type="success">
+            <el-tag
+              v-if="employee?.thong_tin_cong_viec?.phong_ban_id"
+              type="success"
+            >
               {{ employee.thong_tin_cong_viec.phong_ban_id.ten }}
             </el-tag>
             <el-tag
               v-if="employee?.thong_tin_cong_viec?.trang_thai_lao_dong_id"
-              :type="getEmploymentStatusType(employee.thong_tin_cong_viec.trang_thai_lao_dong_id.ten)"
+              :type="
+                getEmploymentStatusType(
+                  employee.thong_tin_cong_viec.trang_thai_lao_dong_id.ten,
+                )
+              "
             >
               {{ employee.thong_tin_cong_viec.trang_thai_lao_dong_id.ten }}
             </el-tag>
@@ -49,6 +66,7 @@
             :employee="employee"
             :loading="loading"
             @reload="loadEmployeeInfo"
+            @request-submitted="handleProfileRequestSubmitted"
           />
         </el-tab-pane>
 
@@ -58,7 +76,41 @@
             :employee="employee"
             :loading="loading"
             @reload="loadEmployeeInfo"
+            @request-submitted="handleProfileRequestSubmitted"
           />
+        </el-tab-pane>
+
+        <!-- Tab Thong tin BHXH -->
+        <el-tab-pane label="Th�ng tin BHXH" name="insurance">
+          <EmployeeInsuranceInfo
+            :employee="employee"
+            :loading="loading"
+            readonly
+          />
+        </el-tab-pane>
+
+        <!-- Tab Tai lieu -->
+        <el-tab-pane label="Tai lieu cua toi" name="documents">
+          <EmployeeMyDocuments />
+        </el-tab-pane>
+
+        <!-- Tab Nghi phep -->
+        <el-tab-pane label="Nghi phep cua toi" name="myLeaves">
+          <EmployeeMyLeaveRequests />
+        </el-tab-pane>
+
+        <el-tab-pane label="Cham cong cua toi" name="myTime">
+          <EmployeeDailySummary />
+        </el-tab-pane>
+
+        <!-- Tab Tang ca -->
+        <el-tab-pane label="Tang ca cua toi" name="myOt">
+          <EmployeeMyOvertime />
+        </el-tab-pane>
+
+        <!-- Tab Danh gia hieu suat -->
+        <el-tab-pane label="Danh gia hieu suat" name="myPerformance">
+          <EmployeeMyPerformance />
         </el-tab-pane>
 
         <!-- Tab Trình độ -->
@@ -76,6 +128,7 @@
             :employee="employee"
             :loading="loading"
             @reload="loadEmployeeInfo"
+            @request-submitted="handleProfileRequestSubmitted"
           />
         </el-tab-pane>
 
@@ -114,6 +167,128 @@
             @reload="loadEmployeeInfo"
           />
         </el-tab-pane>
+
+        <!-- Tab Phiếu lương -->
+        <el-tab-pane label="Phiếu lương" name="payslips">
+          <div class="payslip-section">
+            <el-skeleton v-if="payslipLoading" :rows="4" animated />
+            <template v-else>
+              <el-empty
+                v-if="payslips.length === 0"
+                description="Chưa có phiếu lương khả dụng"
+              />
+              <el-table v-else :data="payslips" border style="width: 100%">
+                <el-table-column label="Kỳ lương" min-width="180">
+                  <template #default="{row}">
+                    <div class="payslip-title">
+                      <strong>{{ row.ky_luong }}</strong>
+                      <span>{{
+                        formatDateRange(row.ngay_bat_dau, row.ngay_ket_thuc)
+                      }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Thu nhập" width="140">
+                  <template #default="{row}">
+                    {{ formatCurrency(row.entry.tong_thu_nhap, row.currency) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="Khấu trừ" width="140">
+                  <template #default="{row}">
+                    {{ formatCurrency(row.entry.tong_khau_tru, row.currency) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="Thực nhận" width="150">
+                  <template #default="{row}">
+                    <strong>{{
+                      formatCurrency(row.entry.luong_thuc_nhan, row.currency)
+                    }}</strong>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Trạng thái" width="160">
+                  <template #default="{row}">
+                    <div class="payslip-status">
+                      <el-tag
+                        :type="runStatusTag(row.trang_thai_run)"
+                        size="small"
+                      >
+                        {{ runStatusLabel(row.trang_thai_run) }}
+                      </el-tag>
+                      <el-tag type="info" size="small">
+                        {{ entryStatusLabel(row.entry.trang_thai) }}
+                      </el-tag>
+                    </div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Yeu cau cap nhat" name="profileRequests">
+          <div class="profile-requests-tab">
+            <div class="profile-requests-header">
+              <div class="profile-requests-header-text">
+                <h3>Yêu cầu cập nhật hồ sơ</h3>
+                <p>Thông tin các yêu cầu thay đổi đang chờ HR xử lý</p>
+              </div>
+              <el-button
+                type="primary"
+                size="small"
+                :icon="Refresh"
+                plain
+                :loading="requestLoading"
+                @click="loadProfileRequests(true)"
+              >
+                Làm mới
+              </el-button>
+            </div>
+            <el-skeleton
+              v-if="requestLoading && profileRequests.length === 0"
+              :rows="4"
+              animated
+            />
+            <template v-else>
+              <el-empty
+                v-if="profileRequests.length === 0"
+                description="Chưa có yêu cầu nào"
+              />
+              <el-table v-else :data="profileRequests" border stripe>
+                <el-table-column label="Loại" min-width="150">
+                  <template #default="{row}">
+                    {{ requestTypeLabel(row.type) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="Ngày gửi" min-width="180">
+                  <template #default="{row}">
+                    {{ formatRequestDate(row.ngay_tao) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="Trạng thái" width="140">
+                  <template #default="{row}">
+                    <el-tag :type="requestStatusTag(row.status)" size="small">
+                      {{ requestStatusLabel(row.status) }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="note"
+                  label="Ghi chu"
+                  min-width="200"
+                  show-overflow-tooltip
+                />
+                <el-table-column
+                  prop="approver_note"
+                  label="Phan hoi tu HR"
+                  min-width="200"
+                  show-overflow-tooltip
+                />
+              </el-table>
+            </template>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Quyen du lieu" name="consent">
+          <ConsentCenter />
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -121,12 +296,19 @@
 
 <script setup lang="ts">
 import {ref, onMounted} from 'vue';
-import {User, Camera} from '@element-plus/icons-vue';
+import {User, Camera, Refresh} from '@element-plus/icons-vue';
 import {ElMessage} from 'element-plus';
 import authService from '@/services/authService';
 import nhanVienService from '@/services/nhanVienService';
 import uploadService from '@/services/uploadService';
-import {NhanVien} from '@/types';
+import payrollService from '@/services/payrollService';
+import profileRequestService from '@/services/profileRequestService';
+import {
+  NhanVien,
+  PayrollPayslip,
+  PayrollRunStatus,
+  ProfileRequest,
+} from '@/types';
 
 // Import child components
 import EmployeePersonalInfo from '@/components/employee/EmployeePersonalInfo.vue';
@@ -137,10 +319,23 @@ import EmployeeExperience from '@/components/employee/EmployeeExperience.vue';
 import EmployeeEmergencyContacts from '@/components/employee/EmployeeEmergencyContacts.vue';
 import EmployeeImmigration from '@/components/employee/EmployeeImmigration.vue';
 import EmployeeMemberships from '@/components/employee/EmployeeMemberships.vue';
+import EmployeeInsuranceInfo from '@/components/employee/EmployeeInsuranceInfo.vue';
+import EmployeeMyDocuments from '@/components/employee/EmployeeMyDocuments.vue';
+import EmployeeMyLeaveRequests from '@/components/employee/EmployeeMyLeaveRequests.vue';
+import EmployeeMyOvertime from '@/components/employee/EmployeeMyOvertime.vue';
+import EmployeeDailySummary from '@/components/employee/EmployeeDailySummary.vue';
+import EmployeeMyPerformance from '@/components/employee/EmployeeMyPerformance.vue';
+import ConsentCenter from '@/components/privacy/ConsentCenter.vue';
 
 const employee = ref<NhanVien | null>(null);
 const loading = ref(false);
 const activeTab = ref('personal');
+const payslipLoading = ref(false);
+const payslips = ref<PayrollPayslip[]>([]);
+const hasLoadedPayslips = ref(false);
+const profileRequests = ref<ProfileRequest[]>([]);
+const requestLoading = ref(false);
+const hasLoadedRequests = ref(false);
 
 const loadEmployeeInfo = async () => {
   loading.value = true;
@@ -166,7 +361,78 @@ const loadEmployeeInfo = async () => {
 };
 
 const handleTabClick = (tab: any) => {
-  console.log('Tab clicked:', tab.paneName);
+  if (tab.paneName === 'payslips' && !hasLoadedPayslips.value) {
+    loadPayslips();
+  }
+  if (tab.paneName === 'profileRequests' && !hasLoadedRequests.value) {
+    loadProfileRequests();
+  }
+};
+
+const loadPayslips = async () => {
+  payslipLoading.value = true;
+  try {
+    const data = await payrollService.getMyPayslips();
+    payslips.value = data;
+    hasLoadedPayslips.value = true;
+  } catch (err: any) {
+    console.error('Error loading payslips:', err);
+    ElMessage.error(err.response?.data?.msg || 'Không thể tải phiếu lương');
+  } finally {
+    payslipLoading.value = false;
+  }
+};
+
+const loadProfileRequests = async (force = false) => {
+  if (requestLoading.value) return;
+  if (!force && hasLoadedRequests.value) return;
+  requestLoading.value = true;
+  try {
+    profileRequests.value = await profileRequestService.getMy();
+    hasLoadedRequests.value = true;
+  } catch (err: any) {
+    console.error('Error loading profile requests:', err);
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải danh sách yêu cầu',
+    );
+  } finally {
+    requestLoading.value = false;
+  }
+};
+
+const requestTypeLabel = (type: ProfileRequest['type']) => {
+  switch (type) {
+    case 'personal':
+      return 'Thông tin cá nhân';
+    case 'contact':
+      return 'Liên hệ & địa chỉ';
+    case 'dependents':
+      return 'Người phụ thuộc';
+    default:
+      return type;
+  }
+};
+
+const requestStatusLabel = (status: ProfileRequest['status']) => {
+  if (status === 'Pending') return 'Chờ duyệt';
+  if (status === 'Approved') return 'Đã duyệt';
+  if (status === 'Rejected') return 'Từ chối';
+  return status;
+};
+
+const requestStatusTag = (status: ProfileRequest['status']) => {
+  if (status === 'Approved') return 'success';
+  if (status === 'Rejected') return 'danger';
+  return 'warning';
+};
+
+const formatRequestDate = (value?: string) => {
+  if (!value) return '---';
+  return new Date(value).toLocaleString('vi-VN');
+};
+
+const handleProfileRequestSubmitted = () => {
+  loadProfileRequests(true);
 };
 
 const handleAvatarUpload = async (file: File) => {
@@ -213,6 +479,57 @@ const getEmploymentStatusType = (status: string): string => {
     'Thực tập': 'primary',
   };
   return statusMap[status] || 'info';
+};
+
+const formatCurrency = (value?: number, currency = 'VND') => {
+  try {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: currency || 'VND',
+      maximumFractionDigits: 0,
+    }).format(value || 0);
+  } catch {
+    return `${(value || 0).toLocaleString('vi-VN')} ${currency}`;
+  }
+};
+
+const formatDateRange = (start?: string, end?: string) => {
+  if (!start || !end) return '---';
+  return `${new Date(start).toLocaleDateString('vi-VN')} - ${new Date(
+    end,
+  ).toLocaleDateString('vi-VN')}`;
+};
+
+const runStatusLabel = (status: PayrollRunStatus) => {
+  switch (status) {
+    case 'Draft':
+      return 'Nháp';
+    case 'Cho_duyet':
+      return 'Chờ duyệt';
+    case 'Da_duyet':
+      return 'Đã duyệt';
+    case 'Da_chi':
+      return 'Đã chi';
+    default:
+      return status;
+  }
+};
+
+const runStatusTag = (status: PayrollRunStatus) => {
+  if (status === 'Da_duyet' || status === 'Da_chi') return 'success';
+  if (status === 'Cho_duyet') return 'warning';
+  return 'info';
+};
+
+const entryStatusLabel = (status: 'Cho_duyet' | 'Da_duyet' | 'Da_chi') => {
+  switch (status) {
+    case 'Da_duyet':
+      return 'Phiếu duyệt';
+    case 'Da_chi':
+      return 'Đã chi trả';
+    default:
+      return 'Chờ duyệt';
+  }
 };
 
 onMounted(() => {
@@ -309,6 +626,57 @@ onMounted(() => {
 
   :deep(.el-tabs__active-bar) {
     background-color: $primary-color;
+  }
+}
+
+.payslip-section {
+  min-height: 200px;
+}
+
+.payslip-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  span {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+  }
+}
+
+.payslip-status {
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.profile-requests-tab {
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.profile-requests-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.profile-requests-header-text {
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  p {
+    margin: $spacing-xxs 0 0 0;
+    color: $text-secondary;
+    font-size: $font-size-sm;
   }
 }
 

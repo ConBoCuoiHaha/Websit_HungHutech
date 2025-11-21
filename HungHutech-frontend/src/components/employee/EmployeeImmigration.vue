@@ -2,7 +2,7 @@
   <div v-loading="loading" class="orangehrm-immigration">
     <div class="section-header">
       <h3 class="orangehrm-section-title">Thông tin xuất nhập cảnh</h3>
-      <el-button type="primary" @click="handleAdd" :icon="Plus" size="small">
+      <el-button type="primary" :icon="Plus" size="small" @click="handleAdd">
         Thêm giấy tờ
       </el-button>
     </div>
@@ -13,7 +13,11 @@
       border
       class="orangehrm-table"
     >
-      <el-table-column prop="loai_giay_to" label="Loại giấy tờ" min-width="150" />
+      <el-table-column
+        prop="loai_giay_to"
+        label="Loại giấy tờ"
+        min-width="150"
+      />
       <el-table-column prop="so_giay_to" label="Số giấy tờ" min-width="150" />
       <el-table-column label="Ngày cấp" width="120">
         <template #default="scope">
@@ -28,22 +32,37 @@
       <el-table-column prop="quoc_gia_cap" label="Quốc gia cấp" width="130" />
       <el-table-column label="Trạng thái" width="130">
         <template #default="scope">
-          <el-tag :type="getStatusType(scope.row.trang_thai)">{{ scope.row.trang_thai }}</el-tag>
+          <el-tag :type="getStatusType(scope.row.trang_thai)">{{
+            scope.row.trang_thai
+          }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Thao tác" width="150" align="center">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index)" :icon="Edit">
+          <el-button
+            size="small"
+            :icon="Edit"
+            @click="handleEdit(scope.$index)"
+          >
             Sửa
           </el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index)" :icon="Delete">
+          <el-button
+            size="small"
+            type="danger"
+            :icon="Delete"
+            @click="handleDelete(scope.$index)"
+          >
             Xóa
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-empty v-else description="Chưa có thông tin xuất nhập cảnh" :image-size="100" />
+    <el-empty
+      v-else
+      description="Chưa có thông tin xuất nhập cảnh"
+      :image-size="100"
+    />
 
     <!-- Dialog -->
     <el-dialog
@@ -58,7 +77,11 @@
         label-width="150px"
       >
         <el-form-item label="Loại giấy tờ" prop="loai_giay_to" required>
-          <el-select v-model="form.loai_giay_to" placeholder="Chọn loại giấy tờ" style="width: 100%">
+          <el-select
+            v-model="form.loai_giay_to"
+            placeholder="Chọn loại giấy tờ"
+            style="width: 100%"
+          >
             <el-option label="Hộ chiếu" value="Hộ chiếu" />
             <el-option label="Visa" value="Visa" />
             <el-option label="Thẻ xanh (Green Card)" value="Thẻ xanh" />
@@ -69,7 +92,10 @@
         </el-form-item>
 
         <el-form-item label="Số giấy tờ" prop="so_giay_to" required>
-          <el-input v-model="form.so_giay_to" placeholder="Số hộ chiếu/visa/giấy phép" />
+          <el-input
+            v-model="form.so_giay_to"
+            placeholder="Số hộ chiếu/visa/giấy phép"
+          />
         </el-form-item>
 
         <el-row :gutter="20">
@@ -100,11 +126,18 @@
         </el-row>
 
         <el-form-item label="Quốc gia cấp" prop="quoc_gia_cap">
-          <el-input v-model="form.quoc_gia_cap" placeholder="Ví dụ: Việt Nam, USA, Singapore" />
+          <el-input
+            v-model="form.quoc_gia_cap"
+            placeholder="Ví dụ: Việt Nam, USA, Singapore"
+          />
         </el-form-item>
 
         <el-form-item label="Trạng thái" prop="trang_thai" required>
-          <el-select v-model="form.trang_thai" placeholder="Chọn trạng thái" style="width: 100%">
+          <el-select
+            v-model="form.trang_thai"
+            placeholder="Chọn trạng thái"
+            style="width: 100%"
+          >
             <el-option label="Còn hiệu lực" value="Còn hiệu lực" />
             <el-option label="Hết hạn" value="Hết hạn" />
             <el-option label="Đang xử lý" value="Đang xử lý" />
@@ -123,7 +156,7 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -165,9 +198,15 @@ const form = reactive({
 });
 
 const formRules: FormRules = {
-  loai_giay_to: [{required: true, message: 'Vui lòng chọn loại giấy tờ', trigger: 'change'}],
-  so_giay_to: [{required: true, message: 'Vui lòng nhập số giấy tờ', trigger: 'blur'}],
-  trang_thai: [{required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'}],
+  loai_giay_to: [
+    {required: true, message: 'Vui lòng chọn loại giấy tờ', trigger: 'change'},
+  ],
+  so_giay_to: [
+    {required: true, message: 'Vui lòng nhập số giấy tờ', trigger: 'blur'},
+  ],
+  trang_thai: [
+    {required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'},
+  ],
 };
 
 watch(
@@ -216,7 +255,7 @@ const handleDelete = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedDocs = [...documents.value];
@@ -260,7 +299,9 @@ const handleSave = async () => {
     });
 
     ElMessage.success(
-      editIndex.value === -1 ? 'Thêm giấy tờ thành công' : 'Cập nhật giấy tờ thành công'
+      editIndex.value === -1
+        ? 'Thêm giấy tờ thành công'
+        : 'Cập nhật giấy tờ thành công',
     );
     dialogVisible.value = false;
     emit('reload');

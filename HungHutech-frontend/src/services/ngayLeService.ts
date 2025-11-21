@@ -5,7 +5,9 @@ class NgayLeService {
   private readonly BASE_URL = '/ngay-le';
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<NgayLe>> {
-    const response = await api.get<PaginatedResponse<NgayLe>>(this.BASE_URL, {params});
+    const response = await api.get<PaginatedResponse<NgayLe>>(this.BASE_URL, {
+      params,
+    });
     return response.data;
   }
 

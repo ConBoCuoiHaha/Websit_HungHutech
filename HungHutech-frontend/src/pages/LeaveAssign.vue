@@ -4,7 +4,9 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Gán Quyền Nghỉ Phép</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadRecentAssignments" :icon="Refresh">Tải lại</el-button>
+        <el-button :icon="Refresh" @click="loadRecentAssignments"
+          >Tải lại</el-button
+        >
       </div>
     </div>
 
@@ -47,8 +49,12 @@
                   :value="emp._id"
                 >
                   <div class="orangehrm-employee-option">
-                    <span class="orangehrm-employee-name">{{ emp.ho_dem }} {{ emp.ten }}</span>
-                    <span class="orangehrm-employee-code">{{ emp.ma_nhan_vien }}</span>
+                    <span class="orangehrm-employee-name"
+                      >{{ emp.ho_dem }} {{ emp.ten }}</span
+                    >
+                    <span class="orangehrm-employee-code">{{
+                      emp.ma_nhan_vien
+                    }}</span>
                   </div>
                 </el-option>
               </el-select>
@@ -56,7 +62,11 @@
           </el-col>
 
           <el-col :xs="24" :md="12">
-            <el-form-item label="Loại nghỉ phép" prop="loai_ngay_nghi_id" required>
+            <el-form-item
+              label="Loại nghỉ phép"
+              prop="loai_ngay_nghi_id"
+              required
+            >
               <el-select
                 v-model="form.loai_ngay_nghi_id"
                 placeholder="Chọn loại nghỉ phép"
@@ -71,7 +81,9 @@
                 >
                   <div class="orangehrm-leave-type-option">
                     <span>{{ type.ten }}</span>
-                    <span v-if="type.mo_ta" class="orangehrm-leave-type-desc">{{ type.mo_ta }}</span>
+                    <span v-if="type.mo_ta" class="orangehrm-leave-type-desc">{{
+                      type.mo_ta
+                    }}</span>
                   </div>
                 </el-option>
               </el-select>
@@ -98,7 +110,11 @@
           </el-col>
 
           <el-col :xs="24" :md="12">
-            <el-form-item label="Số ngày được gán" prop="so_ngay_duoc_huong" required>
+            <el-form-item
+              label="Số ngày được gán"
+              prop="so_ngay_duoc_huong"
+              required
+            >
               <el-input-number
                 v-model="form.so_ngay_duoc_huong"
                 :min="0"
@@ -110,7 +126,8 @@
                 controls-position="right"
               />
               <div class="orangehrm-field-hint">
-                Nhập số ngày nghỉ phép được hưởng (có thể nhập số lẻ: 0.5, 1.5,...)
+                Nhập số ngày nghỉ phép được hưởng (có thể nhập số lẻ: 0.5,
+                1.5,...)
               </div>
             </el-form-item>
           </el-col>
@@ -142,19 +159,20 @@
             <div class="orangehrm-balance-info">
               <el-icon><InfoFilled /></el-icon>
               <span>
-                Nhân viên này hiện có <strong>{{ currentBalance }}</strong> ngày nghỉ phép cho năm {{ form.nam }}
+                Nhân viên này hiện có <strong>{{ currentBalance }}</strong> ngày
+                nghỉ phép cho năm {{ form.nam }}
               </span>
             </div>
           </template>
         </el-alert>
 
         <el-form-item class="orangehrm-form-actions">
-          <el-button @click="handleReset" :disabled="saving">Đặt lại</el-button>
+          <el-button :disabled="saving" @click="handleReset">Đặt lại</el-button>
           <el-button
             type="primary"
-            @click="handleSubmit"
             :loading="saving"
             :icon="Check"
+            @click="handleSubmit"
           >
             {{ saving ? 'Đang gán...' : 'Gán quyền nghỉ phép' }}
           </el-button>
@@ -181,7 +199,7 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column label="Nhân viên" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-employee-info">
               <strong>{{ getEmployeeName(row.nhan_vien_id) }}</strong>
               <span class="orangehrm-employee-code">
@@ -192,7 +210,7 @@
         </el-table-column>
 
         <el-table-column label="Loại nghỉ phép" width="160">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="info" size="small">
               {{ getLeaveTypeName(row.loai_ngay_nghi_id) }}
             </el-tag>
@@ -200,33 +218,34 @@
         </el-table-column>
 
         <el-table-column label="Năm" width="100" align="center">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong>{{ row.nam }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Số ngày gán" width="130" align="center">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="primary">{{ row.so_ngay_duoc_huong }} ngày</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Đã sử dụng" width="130" align="center">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="warning">{{ row.so_ngay_da_su_dung }} ngày</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Còn lại" width="130" align="center">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="success">
-              {{ (row.so_ngay_duoc_huong - row.so_ngay_da_su_dung).toFixed(1) }} ngày
+              {{ (row.so_ngay_duoc_huong - row.so_ngay_da_su_dung).toFixed(1) }}
+              ngày
             </el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Ghi chú" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tooltip
               v-if="row.ghi_chu && row.ghi_chu.length > 50"
               :content="row.ghi_chu"
@@ -243,19 +262,15 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="140">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDateTime(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="160" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -352,11 +367,13 @@ const formRules: FormRules = {
     {required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'},
   ],
   loai_ngay_nghi_id: [
-    {required: true, message: 'Vui lòng chọn loại nghỉ phép', trigger: 'change'},
+    {
+      required: true,
+      message: 'Vui lòng chọn loại nghỉ phép',
+      trigger: 'change',
+    },
   ],
-  nam: [
-    {required: true, message: 'Vui lòng chọn năm', trigger: 'change'},
-  ],
+  nam: [{required: true, message: 'Vui lòng chọn năm', trigger: 'change'}],
   so_ngay_duoc_huong: [
     {required: true, message: 'Vui lòng nhập số ngày', trigger: 'blur'},
     {
@@ -451,7 +468,7 @@ watch(
   () => [form.nhan_vien_id, form.loai_ngay_nghi_id, form.nam],
   () => {
     loadCurrentBalance();
-  }
+  },
 );
 
 // Handle employee selection change
@@ -479,7 +496,8 @@ const loadRecentAssignments = async () => {
     pagination.total = response.pagination?.total || 0;
   } catch (err: any) {
     console.error('Error loading recent assignments:', err);
-    assignmentsError.value = err.response?.data?.msg || 'Không thể tải danh sách gán gần đây';
+    assignmentsError.value =
+      err.response?.data?.msg || 'Không thể tải danh sách gán gần đây';
     ElMessage.error(assignmentsError.value);
   } finally {
     loadingAssignments.value = false;
@@ -520,7 +538,8 @@ const handleSubmit = async () => {
       await loadRecentAssignments();
     } catch (err: any) {
       console.error('Error saving entitlement:', err);
-      const errorMsg = err.response?.data?.msg || 'Không thể gán quyền nghỉ phép';
+      const errorMsg =
+        err.response?.data?.msg || 'Không thể gán quyền nghỉ phép';
       ElMessage.error(errorMsg);
     } finally {
       saving.value = false;
@@ -546,7 +565,9 @@ const handleReset = () => {
 const handleEdit = (item: QuyenNghiPhep) => {
   editingId.value = item._id;
   form.nhan_vien_id =
-    typeof item.nhan_vien_id === 'string' ? item.nhan_vien_id : item.nhan_vien_id._id;
+    typeof item.nhan_vien_id === 'string'
+      ? item.nhan_vien_id
+      : item.nhan_vien_id._id;
   form.loai_ngay_nghi_id =
     typeof item.loai_ngay_nghi_id === 'string'
       ? item.loai_ngay_nghi_id
@@ -558,7 +579,9 @@ const handleEdit = (item: QuyenNghiPhep) => {
   // Scroll to form
   window.scrollTo({top: 0, behavior: 'smooth'});
 
-  ElMessage.info('Đang chỉnh sửa quyền nghỉ phép. Vui lòng cập nhật và lưu lại.');
+  ElMessage.info(
+    'Đang chỉnh sửa quyền nghỉ phép. Vui lòng cập nhật và lưu lại.',
+  );
 };
 
 // Handle delete
@@ -571,7 +594,7 @@ const handleDelete = async (id: string) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     await quyenNghiPhepService.delete(id);
@@ -581,7 +604,7 @@ const handleDelete = async (id: string) => {
     if (err !== 'cancel') {
       console.error('Error deleting entitlement:', err);
       ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa quyền nghỉ phép'
+        err.response?.data?.msg || 'Không thể xóa quyền nghỉ phép',
       );
     }
   }

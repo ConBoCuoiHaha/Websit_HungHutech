@@ -1,17 +1,5 @@
 import api from './api';
-import { PaginatedResponse, PaginationParams } from '@/types';
-
-export interface CaLamViec {
-  _id: string;
-  ten_ca: string;
-  gio_bat_dau: string;
-  gio_ket_thuc: string;
-  thoi_gian_nghi: number;
-  mo_ta?: string;
-  trang_thai: 'Kích hoạt' | 'Không kích hoạt';
-  ngay_tao?: string;
-  ngay_cap_nhat?: string;
-}
+import {PaginatedResponse, PaginationParams, CaLamViec} from '@/types';
 
 class CaLamViecService {
   private readonly BASE_URL = '/calamviec';
@@ -19,9 +7,12 @@ class CaLamViecService {
   async getAll(
     params?: PaginationParams,
   ): Promise<PaginatedResponse<CaLamViec>> {
-    const response = await api.get<PaginatedResponse<CaLamViec>>(this.BASE_URL, {
-      params,
-    });
+    const response = await api.get<PaginatedResponse<CaLamViec>>(
+      this.BASE_URL,
+      {
+        params,
+      },
+    );
     return response.data;
   }
 

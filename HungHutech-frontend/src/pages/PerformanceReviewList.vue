@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Đánh giá hiệu suất</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Tạo đánh giá mới
         </el-button>
       </div>
@@ -47,7 +47,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleFilterChange" :icon="Search">
+          <el-button type="primary" :icon="Search" @click="handleFilterChange">
             Tìm kiếm
           </el-button>
         </el-form-item>
@@ -66,8 +66,10 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column prop="nhan_vien_id" label="Nhân viên" min-width="200">
-          <template #default="{ row }">
-            <div v-if="typeof row.nhan_vien_id === 'object' && row.nhan_vien_id">
+          <template #default="{row}">
+            <div
+              v-if="typeof row.nhan_vien_id === 'object' && row.nhan_vien_id"
+            >
               <strong>{{ row.nhan_vien_id.ma_nhan_vien }}</strong>
               <div class="orangehrm-text-muted">
                 {{ row.nhan_vien_id.ho_dem }} {{ row.nhan_vien_id.ten }}
@@ -76,22 +78,36 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="nguoi_danh_gia_id" label="Người đánh giá" min-width="180">
-          <template #default="{ row }">
-            <div v-if="typeof row.nguoi_danh_gia_id === 'object' && row.nguoi_danh_gia_id">
+        <el-table-column
+          prop="nguoi_danh_gia_id"
+          label="Người đánh giá"
+          min-width="180"
+        >
+          <template #default="{row}">
+            <div
+              v-if="
+                typeof row.nguoi_danh_gia_id === 'object' &&
+                row.nguoi_danh_gia_id
+              "
+            >
               {{ row.nguoi_danh_gia_id.ho_dem }} {{ row.nguoi_danh_gia_id.ten }}
             </div>
           </template>
         </el-table-column>
 
         <el-table-column label="Thời gian đánh giá" width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.tu_ngay) }} - {{ formatDate(row.den_ngay) }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="diem_tong" label="Điểm" width="100" align="center">
-          <template #default="{ row }">
+        <el-table-column
+          prop="diem_tong"
+          label="Điểm"
+          width="100"
+          align="center"
+        >
+          <template #default="{row}">
             <el-tag :type="getScoreType(row.diem_tong)" size="large">
               {{ row.diem_tong.toFixed(1) }}/5
             </el-tag>
@@ -99,7 +115,7 @@
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="140">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row.trang_thai)" size="small">
               {{ getStatusText(row.trang_thai) }}
             </el-tag>
@@ -107,15 +123,17 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="260" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button size="small" :icon="View" @click="handleView(row)">Xem</el-button>
+              <el-button size="small" :icon="View" @click="handleView(row)"
+                >Xem</el-button
+              >
               <el-button
                 v-if="row.trang_thai !== 'Completed'"
                 size="small"
@@ -186,7 +204,11 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="Người đánh giá" prop="nguoi_danh_gia_id" required>
+            <el-form-item
+              label="Người đánh giá"
+              prop="nguoi_danh_gia_id"
+              required
+            >
               <el-select
                 v-model="form.nguoi_danh_gia_id"
                 placeholder="Chọn người đánh giá..."
@@ -242,7 +264,11 @@
 
         <el-divider>Đánh giá KPI</el-divider>
 
-        <div v-for="(rating, index) in form.ratings" :key="index" class="orangehrm-rating-item">
+        <div
+          v-for="(rating, index) in form.ratings"
+          :key="index"
+          class="orangehrm-rating-item"
+        >
           <el-row :gutter="20">
             <el-col :span="10">
               <el-form-item
@@ -300,14 +326,19 @@
                 type="danger"
                 :icon="Delete"
                 circle
-                @click="removeRating(index)"
                 :disabled="form.ratings.length <= 1"
+                @click="removeRating(index)"
               />
             </el-col>
           </el-row>
         </div>
 
-        <el-button type="primary" :icon="Plus" @click="addRating" style="width: 100%">
+        <el-button
+          type="primary"
+          :icon="Plus"
+          style="width: 100%"
+          @click="addRating"
+        >
           Thêm KPI đánh giá
         </el-button>
 
@@ -325,26 +356,44 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingId ? 'Cập nhật' : 'Tạo mới' }}
         </el-button>
       </template>
     </el-dialog>
 
     <!-- View Dialog -->
-    <el-dialog v-model="showViewDialog" title="Chi tiết đánh giá hiệu suất" width="800px">
+    <el-dialog
+      v-model="showViewDialog"
+      title="Chi tiết đánh giá hiệu suất"
+      width="800px"
+    >
       <div v-if="selectedReview" class="orangehrm-review-details">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="Nhân viên">
-            <div v-if="typeof selectedReview.nhan_vien_id === 'object' && selectedReview.nhan_vien_id">
+            <div
+              v-if="
+                typeof selectedReview.nhan_vien_id === 'object' &&
+                selectedReview.nhan_vien_id
+              "
+            >
               <strong>{{ selectedReview.nhan_vien_id.ma_nhan_vien }}</strong>
-              <div>{{ selectedReview.nhan_vien_id.ho_dem }} {{ selectedReview.nhan_vien_id.ten }}</div>
+              <div>
+                {{ selectedReview.nhan_vien_id.ho_dem }}
+                {{ selectedReview.nhan_vien_id.ten }}
+              </div>
             </div>
           </el-descriptions-item>
 
           <el-descriptions-item label="Người đánh giá">
-            <div v-if="typeof selectedReview.nguoi_danh_gia_id === 'object' && selectedReview.nguoi_danh_gia_id">
-              {{ selectedReview.nguoi_danh_gia_id.ho_dem }} {{ selectedReview.nguoi_danh_gia_id.ten }}
+            <div
+              v-if="
+                typeof selectedReview.nguoi_danh_gia_id === 'object' &&
+                selectedReview.nguoi_danh_gia_id
+              "
+            >
+              {{ selectedReview.nguoi_danh_gia_id.ho_dem }}
+              {{ selectedReview.nguoi_danh_gia_id.ten }}
             </div>
           </el-descriptions-item>
 
@@ -383,22 +432,29 @@
           <el-table-column type="index" label="STT" width="60" />
 
           <el-table-column prop="kpi_id" label="KPI" min-width="200">
-            <template #default="{ row }">
+            <template #default="{row}">
               <div v-if="typeof row.kpi_id === 'object' && row.kpi_id">
                 <strong>{{ row.kpi_id.ten }}</strong>
-                <div class="orangehrm-text-muted">Trọng số: {{ row.kpi_id.trong_so }}%</div>
+                <div class="orangehrm-text-muted">
+                  Trọng số: {{ row.kpi_id.trong_so }}%
+                </div>
               </div>
             </template>
           </el-table-column>
 
           <el-table-column prop="diem" label="Điểm" width="180" align="center">
-            <template #default="{ row }">
-              <el-rate :model-value="row.diem" disabled show-score score-template="{value}" />
+            <template #default="{row}">
+              <el-rate
+                :model-value="row.diem"
+                disabled
+                show-score
+                score-template="{value}"
+              />
             </template>
           </el-table-column>
 
           <el-table-column prop="ghi_chu" label="Ghi chú" min-width="200">
-            <template #default="{ row }">
+            <template #default="{row}">
               {{ row.ghi_chu || '-' }}
             </template>
           </el-table-column>
@@ -410,7 +466,14 @@
 
 <script setup lang="ts">
 import {ref, reactive, onMounted} from 'vue';
-import {Search, Refresh, Plus, Edit, Delete, View} from '@element-plus/icons-vue';
+import {
+  Search,
+  Refresh,
+  Plus,
+  Edit,
+  Delete,
+  View,
+} from '@element-plus/icons-vue';
 import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
 import performanceReviewService from '@/services/performanceReviewService';
 import kpiService from '@/services/kpiService';
@@ -463,11 +526,25 @@ const form = reactive<{
 });
 
 const formRules: FormRules = {
-  nhan_vien_id: [{required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'}],
-  nguoi_danh_gia_id: [{required: true, message: 'Vui lòng chọn người đánh giá', trigger: 'change'}],
-  tu_ngay: [{required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'}],
-  den_ngay: [{required: true, message: 'Vui lòng chọn ngày kết thúc', trigger: 'change'}],
-  trang_thai: [{required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'}],
+  nhan_vien_id: [
+    {required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'},
+  ],
+  nguoi_danh_gia_id: [
+    {
+      required: true,
+      message: 'Vui lòng chọn người đánh giá',
+      trigger: 'change',
+    },
+  ],
+  tu_ngay: [
+    {required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'},
+  ],
+  den_ngay: [
+    {required: true, message: 'Vui lòng chọn ngày kết thúc', trigger: 'change'},
+  ],
+  trang_thai: [
+    {required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'},
+  ],
 };
 
 const loadData = async () => {
@@ -567,7 +644,9 @@ const handleView = (item: PerformanceReview) => {
 const handleEdit = (item: PerformanceReview) => {
   editingId.value = item._id;
   form.nhan_vien_id =
-    typeof item.nhan_vien_id === 'object' ? item.nhan_vien_id._id : item.nhan_vien_id;
+    typeof item.nhan_vien_id === 'object'
+      ? item.nhan_vien_id._id
+      : item.nhan_vien_id;
   form.nguoi_danh_gia_id =
     typeof item.nguoi_danh_gia_id === 'object'
       ? item.nguoi_danh_gia_id._id
@@ -621,11 +700,15 @@ const handleSave = async () => {
 
 const handleDelete = async (id: string) => {
   try {
-    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa đánh giá này?', 'Xác nhận xóa', {
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-      type: 'warning',
-    });
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn xóa đánh giá này?',
+      'Xác nhận xóa',
+      {
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      },
+    );
 
     await performanceReviewService.delete(id);
     ElMessage.success('Xóa đánh giá thành công');

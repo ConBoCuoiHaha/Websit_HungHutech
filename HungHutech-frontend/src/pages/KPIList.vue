@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Quản lý KPI</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm KPI
         </el-button>
       </div>
@@ -23,25 +23,30 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column prop="ten" label="Tên KPI" min-width="250">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong>{{ row.ten }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column prop="mo_ta" label="Mô tả" min-width="300">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-text-truncate">{{ row.mo_ta || '-' }}</div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="trong_so" label="Trọng số (%)" width="130" align="center">
-          <template #default="{ row }">
+        <el-table-column
+          prop="trong_so"
+          label="Trọng số (%)"
+          width="130"
+          align="center"
+        >
+          <template #default="{row}">
             <el-tag>{{ row.trong_so }}%</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="row.kich_hoat ? 'success' : 'info'" size="small">
               {{ row.kich_hoat ? 'Kích hoạt' : 'Tạm dừng' }}
             </el-tag>
@@ -49,16 +54,23 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button size="small" :icon="Edit" @click="handleEdit(row)">Sửa</el-button>
-              <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(row._id)">
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)"
+                >Sửa</el-button
+              >
+              <el-button
+                size="small"
+                type="danger"
+                :icon="Delete"
+                @click="handleDelete(row._id)"
+              >
                 Xóa
               </el-button>
             </el-space>
@@ -95,7 +107,11 @@
         label-position="left"
       >
         <el-form-item label="Tên KPI" prop="ten" required>
-          <el-input v-model="form.ten" placeholder="Nhập tên KPI..." maxlength="200" />
+          <el-input
+            v-model="form.ten"
+            placeholder="Nhập tên KPI..."
+            maxlength="200"
+          />
         </el-form-item>
 
         <el-form-item label="Mô tả" prop="mo_ta">
@@ -133,7 +149,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingId ? 'Cập nhật' : 'Tạo mới' }}
         </el-button>
       </template>
@@ -173,7 +189,13 @@ const formRules: FormRules = {
   ten: [{required: true, message: 'Vui lòng nhập tên KPI', trigger: 'blur'}],
   trong_so: [
     {required: true, message: 'Vui lòng nhập trọng số', trigger: 'blur'},
-    {type: 'number', min: 0, max: 100, message: 'Trọng số phải từ 0 đến 100', trigger: 'blur'},
+    {
+      type: 'number',
+      min: 0,
+      max: 100,
+      message: 'Trọng số phải từ 0 đến 100',
+      trigger: 'blur',
+    },
   ],
 };
 
@@ -254,11 +276,15 @@ const handleSave = async () => {
 
 const handleDelete = async (id: string) => {
   try {
-    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa KPI này?', 'Xác nhận xóa', {
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-      type: 'warning',
-    });
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn xóa KPI này?',
+      'Xác nhận xóa',
+      {
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      },
+    );
 
     await kpiService.delete(id);
     ElMessage.success('Xóa KPI thành công');

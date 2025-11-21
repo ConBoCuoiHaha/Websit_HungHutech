@@ -5,7 +5,9 @@ class DiaDiemService {
   private readonly BASE_URL = '/diadiem';
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<DiaDiem>> {
-    const response = await api.get<PaginatedResponse<DiaDiem>>(this.BASE_URL, {params});
+    const response = await api.get<PaginatedResponse<DiaDiem>>(this.BASE_URL, {
+      params,
+    });
     return response.data;
   }
 

@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Bậc lương</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm bậc lương
         </el-button>
       </div>
@@ -20,14 +20,20 @@
         stripe
         :empty-text="error || 'Không có dữ liệu'"
       >
-        <el-table-column prop="ten_bac_luong" label="Tên bậc lương" min-width="200">
-          <template #default="{ row }">
-            <strong class="orangehrm-paygrade-name">{{ row.ten_bac_luong }}</strong>
+        <el-table-column
+          prop="ten_bac_luong"
+          label="Tên bậc lương"
+          min-width="200"
+        >
+          <template #default="{row}">
+            <strong class="orangehrm-paygrade-name">{{
+              row.ten_bac_luong
+            }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Mức lương tối thiểu" width="180" align="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <span class="orangehrm-salary-amount">
               {{ formatCurrency(row.muc_luong_toi_thieu, row.don_vi_tien_te) }}
             </span>
@@ -35,7 +41,7 @@
         </el-table-column>
 
         <el-table-column label="Mức lương tối đa" width="180" align="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <span class="orangehrm-salary-amount">
               {{ formatCurrency(row.muc_luong_toi_da, row.don_vi_tien_te) }}
             </span>
@@ -43,33 +49,32 @@
         </el-table-column>
 
         <el-table-column label="Đơn vị tiền tệ" width="130" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.don_vi_tien_te === 'VND' ? 'success' : 'primary'" size="small">
+          <template #default="{row}">
+            <el-tag
+              :type="row.don_vi_tien_te === 'VND' ? 'success' : 'primary'"
+              size="small"
+            >
               {{ row.don_vi_tien_te }}
             </el-tag>
           </template>
         </el-table-column>
 
         <el-table-column prop="ghi_chu" label="Ghi chú" min-width="250">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.ghi_chu || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="150" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -118,12 +123,17 @@
           <el-input
             v-model.number="form.muc_luong_toi_thieu"
             type="number"
-            :placeholder="form.don_vi_tien_te === 'VND' ? 'Ví dụ: 10000000' : 'Ví dụ: 1000'"
+            :placeholder="
+              form.don_vi_tien_te === 'VND' ? 'Ví dụ: 10000000' : 'Ví dụ: 1000'
+            "
             :min="0"
           >
             <template #append>{{ form.don_vi_tien_te }}</template>
           </el-input>
-          <div v-if="form.muc_luong_toi_thieu" class="orangehrm-formatted-amount">
+          <div
+            v-if="form.muc_luong_toi_thieu"
+            class="orangehrm-formatted-amount"
+          >
             {{ formatCurrency(form.muc_luong_toi_thieu, form.don_vi_tien_te) }}
           </div>
         </el-form-item>
@@ -132,7 +142,9 @@
           <el-input
             v-model.number="form.muc_luong_toi_da"
             type="number"
-            :placeholder="form.don_vi_tien_te === 'VND' ? 'Ví dụ: 20000000' : 'Ví dụ: 2000'"
+            :placeholder="
+              form.don_vi_tien_te === 'VND' ? 'Ví dụ: 20000000' : 'Ví dụ: 2000'
+            "
             :min="0"
           >
             <template #append>{{ form.don_vi_tien_te }}</template>
@@ -154,7 +166,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           Lưu
         </el-button>
       </template>
@@ -190,7 +202,11 @@ const formRules: FormRules = {
     {required: true, message: 'Vui lòng nhập tên bậc lương', trigger: 'blur'},
   ],
   don_vi_tien_te: [
-    {required: true, message: 'Vui lòng chọn đơn vị tiền tệ', trigger: 'change'},
+    {
+      required: true,
+      message: 'Vui lòng chọn đơn vị tiền tệ',
+      trigger: 'change',
+    },
   ],
   muc_luong_toi_thieu: [
     {
@@ -204,7 +220,11 @@ const formRules: FormRules = {
           form.muc_luong_toi_da !== undefined &&
           value > form.muc_luong_toi_da
         ) {
-          callback(new Error('Mức lương tối thiểu không được lớn hơn mức lương tối đa'));
+          callback(
+            new Error(
+              'Mức lương tối thiểu không được lớn hơn mức lương tối đa',
+            ),
+          );
         } else {
           callback();
         }
@@ -224,7 +244,11 @@ const formRules: FormRules = {
           form.muc_luong_toi_thieu !== undefined &&
           value < form.muc_luong_toi_thieu
         ) {
-          callback(new Error('Mức lương tối đa không được nhỏ hơn mức lương tối thiểu'));
+          callback(
+            new Error(
+              'Mức lương tối đa không được nhỏ hơn mức lương tối thiểu',
+            ),
+          );
         } else {
           callback();
         }
@@ -284,9 +308,7 @@ const handleSave = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error saving pay grade:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể lưu bậc lương',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể lưu bậc lương');
     } finally {
       saving.value = false;
     }
@@ -311,9 +333,7 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting pay grade:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa bậc lương',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể xóa bậc lương');
     }
   }
 };
@@ -335,7 +355,7 @@ const resetForm = () => {
   form.ghi_chu = '';
 };
 
-const formatCurrency = (amount: any, currency: string = 'VND') => {
+const formatCurrency = (amount: any, currency = 'VND') => {
   if (amount === null || amount === undefined) return '-';
 
   // Convert Decimal128 to number if needed

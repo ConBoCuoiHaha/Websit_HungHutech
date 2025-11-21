@@ -31,7 +31,7 @@ class SitesService {
   private readonly BASE_URL = '/sites';
 
   async getAll(params?: any): Promise<PaginatedSites> {
-    const response = await api.get<PaginatedSites>(this.BASE_URL, { params });
+    const response = await api.get<PaginatedSites>(this.BASE_URL, {params});
     return response.data;
   }
 
@@ -54,17 +54,24 @@ class SitesService {
     await api.delete(`${this.BASE_URL}/${id}`);
   }
 
-  async toggle(id: string): Promise<{ msg: string; isActive: boolean }> {
-    const response = await api.patch<{ msg: string; isActive: boolean }>(
-      `${this.BASE_URL}/${id}/toggle`
+  async toggle(id: string): Promise<{msg: string; isActive: boolean}> {
+    const response = await api.patch<{msg: string; isActive: boolean}>(
+      `${this.BASE_URL}/${id}/toggle`,
     );
     return response.data;
   }
 
-  async getNearby(longitude: number, latitude: number, maxDistance?: number): Promise<{ data: Site[]; total: number }> {
-    const response = await api.get<{ data: Site[]; total: number }>(`${this.BASE_URL}/nearby`, {
-      params: { longitude, latitude, maxDistance }
-    });
+  async getNearby(
+    longitude: number,
+    latitude: number,
+    maxDistance?: number,
+  ): Promise<{data: Site[]; total: number}> {
+    const response = await api.get<{data: Site[]; total: number}>(
+      `${this.BASE_URL}/nearby`,
+      {
+        params: {longitude, latitude, maxDistance},
+      },
+    );
     return response.data;
   }
 }

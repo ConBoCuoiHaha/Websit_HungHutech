@@ -31,6 +31,36 @@ exports.getAllReviews = async (req, res) => {
   }
 };
 
+exports.getMyReviews = async (req, res) => {
+  const employeeId = req.user?.nhan_vien_id;
+  if (!employeeId) {
+    return res.status(400).json({ msg: 'Tai khoan khong gan voi nhan vien' });
+  }
+  try {
+    const { limit, skip, sort, page } = parseListParams(req.query);
+    const [items, total] = await Promise.all([
+      PerformanceReview.find({ nhan_vien_id: employeeId })
+        .populate('nguoi_danh_gia_id', 'ho_dem ten ma_nhan_vien')
+        .populate('ratings.kpi_id', 'ten')
+        .sort(buildSort(sort, '-den_ngay'))
+        .skip(skip)
+        .limit(limit),
+      PerformanceReview.countDocuments({ nhan_vien_id: employeeId }),
+    ]);
+    res.json({
+      data: items,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Khong the tai danh gia', error: err.message });
+  }
+};
+
 exports.getReviewById = async (req, res) => {
   try {
     const item = await PerformanceReview.findById(req.params.id)
@@ -64,4 +94,3 @@ exports.deleteReview = async (req, res) => {
     res.status(500).json({ msg: 'Lỗi máy chủ' });
   }
 };
-

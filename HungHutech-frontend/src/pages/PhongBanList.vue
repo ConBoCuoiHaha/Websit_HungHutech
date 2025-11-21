@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Phòng ban</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm phòng ban
         </el-button>
       </div>
@@ -21,19 +21,19 @@
         :empty-text="error || 'Không có dữ liệu'"
       >
         <el-table-column prop="ten" label="Tên phòng ban" min-width="250">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong class="orangehrm-department-name">{{ row.ten }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column prop="mo_ta" label="Mô tả" min-width="350">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.mo_ta || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Quản lý" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <span v-if="row.quan_ly_id">
               {{ row.quan_ly_id.ho_dem }} {{ row.quan_ly_id.ten }}
             </span>
@@ -42,19 +42,15 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="150" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -86,10 +82,7 @@
         label-position="left"
       >
         <el-form-item label="Tên phòng ban" prop="ten" required>
-          <el-input
-            v-model="form.ten"
-            placeholder="Ví dụ: Phòng Nhân sự"
-          />
+          <el-input v-model="form.ten" placeholder="Ví dụ: Phòng Nhân sự" />
         </el-form-item>
 
         <el-form-item label="Mô tả" prop="mo_ta">
@@ -121,7 +114,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           Lưu
         </el-button>
       </template>
@@ -188,7 +181,10 @@ const handleEdit = (item: PhongBan) => {
   editingId.value = item._id;
   form.ten = item.ten;
   form.mo_ta = item.mo_ta || '';
-  form.quan_ly_id = typeof item.quan_ly_id === 'string' ? item.quan_ly_id : item.quan_ly_id?._id || '';
+  form.quan_ly_id =
+    typeof item.quan_ly_id === 'string'
+      ? item.quan_ly_id
+      : item.quan_ly_id?._id || '';
   showCreateDialog.value = true;
 };
 
@@ -211,9 +207,7 @@ const handleSave = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error saving department:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể lưu phòng ban',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể lưu phòng ban');
     } finally {
       saving.value = false;
     }
@@ -238,9 +232,7 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting department:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa phòng ban',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể xóa phòng ban');
     }
   }
 };

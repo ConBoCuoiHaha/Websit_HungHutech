@@ -49,6 +49,16 @@ const userRoutes = require('./routes/user.routes.js');
 const siteRoutes = require('./routes/site.routes.js');
 const mobileSiteRoutes = require('./routes/mobile/site.routes.js');
 const auditLogRoutes = require('./routes/auditLog.routes.js');
+const payrollRoutes = require('./routes/payroll.routes.js');
+const employeeDocumentRoutes = require('./routes/employeeDocument.routes.js');
+const contractRoutes = require('./routes/contract.routes.js');
+const profileRequestRoutes = require('./routes/profileRequest.routes.js');
+const consentRoutes = require('./routes/consent.routes.js');
+const complianceReportRoutes = require('./routes/complianceReport.routes.js');
+const offboardingRoutes = require('./routes/offboarding.routes.js');
+const overtimeRoutes = require('./routes/overtimeRequest.routes.js');
+const shiftAssignmentRoutes = require('./routes/shiftAssignment.routes.js');
+const timeRuleEngineRoutes = require('./routes/timeRuleEngine.routes.js');
 
 // CORS must be configured BEFORE helmet
 app.use(cors({
@@ -126,6 +136,16 @@ app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/sites', siteRoutes);
 app.use('/api/mobile/sites', mobileSiteRoutes);
+app.use('/api/payroll', payrollRoutes);
+app.use('/api/employee-documents', employeeDocumentRoutes);
+app.use('/api/contracts', contractRoutes);
+app.use('/api/profile-requests', profileRequestRoutes);
+app.use('/api/consents', consentRoutes);
+app.use('/api/compliance-reports', complianceReportRoutes);
+app.use('/api/offboarding', offboardingRoutes);
+app.use('/api/overtime-requests', overtimeRoutes);
+app.use('/api/shift-assignments', shiftAssignmentRoutes);
+app.use('/api/time-rules', timeRuleEngineRoutes);
 const mobileDeviceRoutes = require('./routes/mobile/device.routes.js');
 const mobileAttendanceRoutes = require('./routes/mobile/attendance.routes.js');
 app.use('/api/mobile/devices', mobileDeviceRoutes);
@@ -175,6 +195,13 @@ const { autoCheckoutOverdueRecords } = require('./utils/autoCheckout');
 setInterval(() => { autoCheckoutOverdueRecords().catch(err => console.error('autoCheckout error', err)); }, 15 * 60 * 1000);
 // Initial run at startup
 autoCheckoutOverdueRecords().catch(()=>{});
+
+const { startContractReminderJob } = require('./services/contractReminderService');
+const { startComplianceReminderJob } = require('./services/complianceReminderService');
+const { startOffboardingReminderJob } = require('./services/offboardingReminderService');
+startContractReminderJob();
+startComplianceReminderJob();
+startOffboardingReminderJob();
 
 module.exports = app;
 

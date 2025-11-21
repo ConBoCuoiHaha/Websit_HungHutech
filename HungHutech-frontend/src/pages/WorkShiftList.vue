@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Ca làm việc</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm ca làm việc
         </el-button>
       </div>
@@ -21,37 +21,43 @@
         :empty-text="error || 'Không có dữ liệu'"
       >
         <el-table-column prop="ten_ca" label="Tên ca" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong class="orangehrm-shift-name">{{ row.ten_ca }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Thời gian" min-width="250">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="time-display">
               <el-icon><Clock /></el-icon>
               <span>{{ row.gio_bat_dau }} - {{ row.gio_ket_thuc }}</span>
               <el-tag size="small" type="info">
-                {{ calculateWorkHours(row.gio_bat_dau, row.gio_ket_thuc, row.thoi_gian_nghi) }}
+                {{
+                  calculateWorkHours(
+                    row.gio_bat_dau,
+                    row.gio_ket_thuc,
+                    row.thoi_gian_nghi,
+                  )
+                }}
               </el-tag>
             </div>
           </template>
         </el-table-column>
 
         <el-table-column label="Thời gian nghỉ" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.thoi_gian_nghi || 0 }} phút
           </template>
         </el-table-column>
 
         <el-table-column prop="mo_ta" label="Mô tả" min-width="250">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.mo_ta || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="row.trang_thai === 'Kích hoạt' ? 'success' : 'info'">
               {{ row.trang_thai }}
             </el-tag>
@@ -59,19 +65,15 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="150" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -144,7 +146,13 @@
 
         <el-form-item label="Tổng giờ làm việc">
           <el-tag type="success" size="large">
-            {{ calculateWorkHours(form.gio_bat_dau, form.gio_ket_thuc, form.thoi_gian_nghi) }}
+            {{
+              calculateWorkHours(
+                form.gio_bat_dau,
+                form.gio_ket_thuc,
+                form.thoi_gian_nghi,
+              )
+            }}
           </el-tag>
         </el-form-item>
 
@@ -167,7 +175,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           Lưu
         </el-button>
       </template>
@@ -176,10 +184,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { Refresh, Plus, Edit, Delete, Clock } from '@element-plus/icons-vue';
-import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus';
-import caLamViecService, { CaLamViec } from '@/services/caLamViecService';
+import {ref, reactive, onMounted} from 'vue';
+import {Refresh, Plus, Edit, Delete, Clock} from '@element-plus/icons-vue';
+import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
+import caLamViecService, {CaLamViec} from '@/services/caLamViecService';
 
 const caLamViecList = ref<CaLamViec[]>([]);
 const loading = ref(false);
@@ -220,21 +228,30 @@ const validateEndTime = (rule: any, value: any, callback: any) => {
 
 const formRules: FormRules = {
   ten_ca: [
-    { required: true, message: 'Vui lòng nhập tên ca làm việc', trigger: 'blur' },
+    {required: true, message: 'Vui lòng nhập tên ca làm việc', trigger: 'blur'},
   ],
   gio_bat_dau: [
-    { required: true, message: 'Vui lòng chọn giờ bắt đầu', trigger: 'change' },
+    {required: true, message: 'Vui lòng chọn giờ bắt đầu', trigger: 'change'},
   ],
   gio_ket_thuc: [
-    { required: true, message: 'Vui lòng chọn giờ kết thúc', trigger: 'change' },
-    { validator: validateEndTime, trigger: 'change' },
+    {required: true, message: 'Vui lòng chọn giờ kết thúc', trigger: 'change'},
+    {validator: validateEndTime, trigger: 'change'},
   ],
   thoi_gian_nghi: [
-    { type: 'number', min: 0, message: 'Thời gian nghỉ phải lớn hơn hoặc bằng 0', trigger: 'blur' },
+    {
+      type: 'number',
+      min: 0,
+      message: 'Thời gian nghỉ phải lớn hơn hoặc bằng 0',
+      trigger: 'blur',
+    },
   ],
 };
 
-const calculateWorkHours = (startTime: string, endTime: string, breakTime: number = 0): string => {
+const calculateWorkHours = (
+  startTime: string,
+  endTime: string,
+  breakTime = 0,
+): string => {
   if (!startTime || !endTime) return '-';
 
   const [startHour, startMin] = startTime.split(':').map(Number);
@@ -308,9 +325,7 @@ const handleSave = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error saving work shift:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể lưu ca làm việc',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể lưu ca làm việc');
     } finally {
       saving.value = false;
     }
@@ -335,9 +350,7 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting work shift:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa ca làm việc',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể xóa ca làm việc');
     }
   }
 };

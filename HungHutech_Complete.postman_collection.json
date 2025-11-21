@@ -66,9 +66,1597 @@
     {
       "key": "auditLogId",
       "value": ""
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@company.vn"
+    },
+    {
+      "key": "adminPassword",
+      "value": "123456"
     }
   ],
   "item": [
+    {
+      "name": "Auth - Login (set {{token}})",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"{{adminEmail}}\",\"password\":\"{{adminPassword}}\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.within(200,299); });",
+              "const json=pm.response.json();",
+              "if(json.token){ pm.environment.set('token', json.token); pm.collectionVariables.set('token', json.token); pm.variables.set('token', json.token); }",
+              "if(json.user && json.user.id){ pm.environment.set('currentUserId', json.user.id); pm.collectionVariables.set('currentUserId', json.user.id);}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke - Full API GET",
+      "description": "Smoke GET check for all API modules (requires {{token}}).",
+      "item": [
+        {
+          "name": "Auth - Login (for smoke)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"{{adminEmail}}\",\"password\":\"{{adminPassword}}\"}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.within(200,299); });",
+                  "const json=pm.response.json();",
+                  "if(json.token){ pm.environment.set('token', json.token); pm.collectionVariables.set('token', json.token); pm.variables.set('token', json.token); }",
+                  "if(json.user && json.user.id){ pm.environment.set('currentUserId', json.user.id); pm.collectionVariables.set('currentUserId', json.user.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maintenance purgeable employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance/employees/purgeable"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dashboard summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/dashboard/summary"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nhân viên",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/nhanvien"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chức danh",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/chucdanh"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Trạng thái lao động",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/trangthailaodong"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Phòng ban",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/phongban"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Địa điểm",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/diadiem"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Loại ngày nghỉ",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/loaingaynghi"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quyền nghỉ phép",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/quyennghiphep"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Yêu cầu nghỉ phép",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/yeucaunghiphep"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chấm công",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/chamcong"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Timesheets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/timesheets"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ca làm việc",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/calamviec"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bậc lương",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/bacluong"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ngày lễ",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/ngay-le"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Projects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/projects"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/activities"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recruitment - Vacancies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/recruitment/vacancies"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recruitment - Candidates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/recruitment/candidates"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recruitment - Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/recruitment/applications"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recruitment - Interviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/recruitment/interviews"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Performance - KPIs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/performance/kpis"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Performance - Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/performance/reviews"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Performance - Trackers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/performance/trackers"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Claims",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/claims"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buzz",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/buzz"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Directory",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/directory/employees"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/reports"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin employment statuses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/admin/employment-statuses"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Maintenance purge logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/maintenance/logs"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/sites"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payroll runs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/payroll/runs"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Employee documents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/employee-documents"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contracts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/contracts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profile requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/profile-requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consent purposes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/consents/purposes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Compliance definitions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/compliance-reports/definitions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Offboarding",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/offboarding"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Overtime requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/overtime-requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Shift assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/shift-assignments"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Audit logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": "{{baseUrl}}/audit-logs"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 2xx', function () {",
+                  "  pm.expect(pm.response.code).to.be.within(200,299);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(!pm.variables.get('baseUrl')) { throw new Error('Missing baseUrl variable'); }"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "01. ✅ Authentication",
       "item": [

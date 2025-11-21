@@ -10,10 +10,15 @@
               type="week"
               format="[Tuần] ww - YYYY"
               placeholder="Chọn tuần"
-              @change="handleWeekChange"
               style="margin-right: 12px"
+              @change="handleWeekChange"
             />
-            <el-button type="primary" @click="handleSave" :loading="saving" :icon="Check">
+            <el-button
+              type="primary"
+              :loading="saving"
+              :icon="Check"
+              @click="handleSave"
+            >
               Lưu Timesheet
             </el-button>
           </div>
@@ -32,7 +37,11 @@
           <el-col :span="8">
             <div class="info-item">
               <span class="label">Dự án:</span>
-              <el-select v-model="selectedProject" placeholder="Chọn dự án" style="width: 100%">
+              <el-select
+                v-model="selectedProject"
+                placeholder="Chọn dự án"
+                style="width: 100%"
+              >
                 <el-option
                   v-for="project in projects"
                   :key="project._id"
@@ -106,7 +115,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Thao tác" width="80" align="center" fixed="right">
+        <el-table-column
+          label="Thao tác"
+          width="80"
+          align="center"
+          fixed="right"
+        >
           <template #default="scope">
             <el-button
               size="small"
@@ -119,11 +133,11 @@
       </el-table>
 
       <div class="table-actions">
-        <el-button @click="handleAddRow" :icon="Plus">Thêm hoạt động</el-button>
+        <el-button :icon="Plus" @click="handleAddRow">Thêm hoạt động</el-button>
       </div>
 
       <!-- Status -->
-      <div class="timesheet-status" v-if="currentTimesheet">
+      <div v-if="currentTimesheet" class="timesheet-status">
         <el-alert
           :title="`Trạng thái: ${getStatusText(currentTimesheet.trang_thai)}`"
           :type="getStatusType(currentTimesheet.trang_thai)"
@@ -176,7 +190,9 @@ const weekInfo = computed(() => {
 });
 
 const totalHours = computed(() => {
-  return timesheetData.value.reduce((sum, row) => sum + getRowTotal(row), 0).toFixed(1);
+  return timesheetData.value
+    .reduce((sum, row) => sum + getRowTotal(row), 0)
+    .toFixed(1);
 });
 
 const getRowTotal = (row: any) => {
@@ -340,7 +356,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-timesheet-employee {
   padding: $spacing-xl;

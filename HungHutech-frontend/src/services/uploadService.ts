@@ -5,11 +5,15 @@ class UploadService {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post(`/upload/nhanvien/${employeeId}/photo`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await api.post(
+      `/upload/nhanvien/${employeeId}/photo`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    });
+    );
 
     return response.data;
   }
@@ -30,7 +34,9 @@ class UploadService {
 
   getFileUrl(filePath: string): string {
     // Remove '/uploads/' prefix if present to avoid duplication
-    const cleanPath = filePath.replace(/^\/uploads\//, '').replace(/^uploads[\/\\]/, '');
+    const cleanPath = filePath
+      .replace(/^\/uploads\//, '')
+      .replace(/^uploads[\/\\]/, '');
     const baseUrl = 'http://localhost:5000';
     return `${baseUrl}/uploads/${cleanPath}`;
   }

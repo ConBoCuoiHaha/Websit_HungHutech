@@ -4,7 +4,7 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Danh bạ công ty</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
       </div>
     </div>
 
@@ -82,7 +82,11 @@
     </el-card>
 
     <!-- Employee Cards Grid -->
-    <el-card class="orangehrm-cards-container" shadow="never" v-loading="loading">
+    <el-card
+      v-loading="loading"
+      class="orangehrm-cards-container"
+      shadow="never"
+    >
       <div v-if="filteredEmployees.length === 0" class="orangehrm-empty-state">
         <el-empty
           :description="error || 'Không tìm thấy nhân viên nào'"
@@ -101,7 +105,14 @@
           <div class="orangehrm-card-content">
             <!-- Avatar -->
             <div class="orangehrm-card-avatar">
-              <el-avatar :size="80" :src="employee.avatar_url ? uploadService.getFileUrl(employee.avatar_url) : undefined">
+              <el-avatar
+                :size="80"
+                :src="
+                  employee.avatar_url
+                    ? uploadService.getFileUrl(employee.avatar_url)
+                    : undefined
+                "
+              >
                 <el-icon :size="40"><User /></el-icon>
               </el-avatar>
             </div>
@@ -114,16 +125,26 @@
 
               <div class="orangehrm-card-details">
                 <!-- Job Title -->
-                <div v-if="employee.thong_tin_cong_viec?.chuc_danh_id" class="orangehrm-card-item">
+                <div
+                  v-if="employee.thong_tin_cong_viec?.chuc_danh_id"
+                  class="orangehrm-card-item"
+                >
                   <el-icon class="orangehrm-card-icon"><Briefcase /></el-icon>
                   <span class="orangehrm-card-text">
-                    {{ employee.thong_tin_cong_viec.chuc_danh_id.ten_chuc_danh }}
+                    {{
+                      employee.thong_tin_cong_viec.chuc_danh_id.ten_chuc_danh
+                    }}
                   </span>
                 </div>
 
                 <!-- Department -->
-                <div v-if="employee.thong_tin_cong_viec?.phong_ban_id" class="orangehrm-card-item">
-                  <el-icon class="orangehrm-card-icon"><OfficeBuilding /></el-icon>
+                <div
+                  v-if="employee.thong_tin_cong_viec?.phong_ban_id"
+                  class="orangehrm-card-item"
+                >
+                  <el-icon class="orangehrm-card-icon"
+                    ><OfficeBuilding
+                  /></el-icon>
                   <span class="orangehrm-card-text">
                     {{ employee.thong_tin_cong_viec.phong_ban_id.ten }}
                   </span>
@@ -138,7 +159,10 @@
                 </div>
 
                 <!-- Phone -->
-                <div v-if="employee.lien_he?.di_dong" class="orangehrm-card-item">
+                <div
+                  v-if="employee.lien_he?.di_dong"
+                  class="orangehrm-card-item"
+                >
                   <el-icon class="orangehrm-card-icon"><Phone /></el-icon>
                   <span class="orangehrm-card-text">
                     {{ employee.lien_he.di_dong }}
@@ -146,7 +170,10 @@
                 </div>
 
                 <!-- Email -->
-                <div v-if="employee.lien_he?.email_cong_viec" class="orangehrm-card-item">
+                <div
+                  v-if="employee.lien_he?.email_cong_viec"
+                  class="orangehrm-card-item"
+                >
                   <el-icon class="orangehrm-card-icon"><Message /></el-icon>
                   <span class="orangehrm-card-text orangehrm-card-email">
                     {{ employee.lien_he.email_cong_viec }}
@@ -234,7 +261,9 @@ const filteredEmployees = computed(() => {
     const query = searchQuery.value.toLowerCase().trim();
     result = result.filter((emp) => {
       const fullName = `${emp.ho_dem} ${emp.ten}`.toLowerCase();
-      const jobTitle = emp.thong_tin_cong_viec?.chuc_danh_id?.ten_chuc_danh?.toLowerCase() || '';
+      const jobTitle =
+        emp.thong_tin_cong_viec?.chuc_danh_id?.ten_chuc_danh?.toLowerCase() ||
+        '';
       return fullName.includes(query) || jobTitle.includes(query);
     });
   }
@@ -242,7 +271,8 @@ const filteredEmployees = computed(() => {
   // Filter by department
   if (filterPhongBan.value) {
     result = result.filter(
-      (emp) => emp.thong_tin_cong_viec?.phong_ban_id?._id === filterPhongBan.value
+      (emp) =>
+        emp.thong_tin_cong_viec?.phong_ban_id?._id === filterPhongBan.value,
     );
   }
 
@@ -254,7 +284,8 @@ const filteredEmployees = computed(() => {
   // Filter by job title
   if (filterChucDanh.value) {
     result = result.filter(
-      (emp) => emp.thong_tin_cong_viec?.chuc_danh_id?._id === filterChucDanh.value
+      (emp) =>
+        emp.thong_tin_cong_viec?.chuc_danh_id?._id === filterChucDanh.value,
     );
   }
 
@@ -275,12 +306,13 @@ const loadData = async () => {
 
   try {
     // Load employees with large limit to get all
-    const [employeesRes, departmentsRes, titlesRes, locationsRes] = await Promise.all([
-      nhanVienService.getAll({limit: 1000}),
-      phongBanService.getAll({limit: 1000}),
-      chucDanhService.getAll({limit: 1000}),
-      diaDiemService.getAll({limit: 1000}),
-    ]);
+    const [employeesRes, departmentsRes, titlesRes, locationsRes] =
+      await Promise.all([
+        nhanVienService.getAll({limit: 1000}),
+        phongBanService.getAll({limit: 1000}),
+        chucDanhService.getAll({limit: 1000}),
+        diaDiemService.getAll({limit: 1000}),
+      ]);
 
     nhanVienList.value = employeesRes.data || [];
     phongBanList.value = departmentsRes.data || [];
@@ -324,7 +356,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-directory-page {
   width: 100%;

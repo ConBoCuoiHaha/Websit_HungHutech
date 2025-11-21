@@ -4,7 +4,7 @@
       <template #header>
         <div class="orangehrm-card-header">
           <h2 class="orangehrm-card-title">Quản lý Hoạt động</h2>
-          <el-button type="primary" @click="handleAdd" :icon="Plus">
+          <el-button type="primary" :icon="Plus" @click="handleAdd">
             Thêm Hoạt động
           </el-button>
         </div>
@@ -19,8 +19,8 @@
               placeholder="Lọc theo dự án"
               clearable
               filterable
-              @change="handleFilter"
               style="width: 100%"
+              @change="handleFilter"
             >
               <el-option
                 v-for="project in projects"
@@ -57,7 +57,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="ten" label="Tên hoạt động" min-width="200" />
-        <el-table-column prop="mo_ta" label="Mô tả" min-width="250" show-overflow-tooltip />
+        <el-table-column
+          prop="mo_ta"
+          label="Mô tả"
+          min-width="250"
+          show-overflow-tooltip
+        />
         <el-table-column label="Trạng thái" width="120">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.trang_thai)">
@@ -67,10 +72,15 @@
         </el-table-column>
         <el-table-column label="Thao tác" width="180" align="center">
           <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.row)" :icon="Edit">
+            <el-button size="small" :icon="Edit" @click="handleEdit(scope.row)">
               Sửa
             </el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.row)" :icon="Delete">
+            <el-button
+              size="small"
+              type="danger"
+              :icon="Delete"
+              @click="handleDelete(scope.row)"
+            >
               Xóa
             </el-button>
           </template>
@@ -133,7 +143,11 @@
         </el-form-item>
 
         <el-form-item label="Trạng thái" prop="trang_thai" required>
-          <el-select v-model="form.trang_thai" placeholder="Chọn trạng thái" style="width: 100%">
+          <el-select
+            v-model="form.trang_thai"
+            placeholder="Chọn trạng thái"
+            style="width: 100%"
+          >
             <el-option label="Đang hoạt động" value="Đang hoạt động" />
             <el-option label="Hoàn thành" value="Hoàn thành" />
             <el-option label="Tạm dừng" value="Tạm dừng" />
@@ -143,7 +157,7 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editMode ? 'Cập nhật' : 'Thêm mới' }}
         </el-button>
       </template>
@@ -182,9 +196,15 @@ const form = reactive({
 });
 
 const formRules: FormRules = {
-  project_id: [{required: true, message: 'Vui lòng chọn dự án', trigger: 'change'}],
-  ten: [{required: true, message: 'Vui lòng nhập tên hoạt động', trigger: 'blur'}],
-  trang_thai: [{required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'}],
+  project_id: [
+    {required: true, message: 'Vui lòng chọn dự án', trigger: 'change'},
+  ],
+  ten: [
+    {required: true, message: 'Vui lòng nhập tên hoạt động', trigger: 'blur'},
+  ],
+  trang_thai: [
+    {required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'},
+  ],
 };
 
 const loadActivities = async () => {
@@ -205,7 +225,9 @@ const loadActivities = async () => {
     total.value = response.pagination?.total || 0;
   } catch (err: any) {
     console.error('Error loading activities:', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải danh sách hoạt động');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải danh sách hoạt động',
+    );
   } finally {
     loading.value = false;
   }
@@ -258,7 +280,7 @@ const handleDelete = async (row: any) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     await activityService.delete(row._id);
@@ -325,7 +347,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-activity-list {
   padding: $spacing-xl;

@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Chức danh công việc</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm chức danh
         </el-button>
       </div>
@@ -20,32 +20,34 @@
         stripe
         :empty-text="error || 'Không có dữ liệu'"
       >
-        <el-table-column prop="ten_chuc_danh" label="Tên chức danh" min-width="250">
-          <template #default="{ row }">
-            <strong class="orangehrm-jobtitle-name">{{ row.ten_chuc_danh }}</strong>
+        <el-table-column
+          prop="ten_chuc_danh"
+          label="Tên chức danh"
+          min-width="250"
+        >
+          <template #default="{row}">
+            <strong class="orangehrm-jobtitle-name">{{
+              row.ten_chuc_danh
+            }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column prop="mo_ta" label="Mô tả" min-width="350">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.mo_ta || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="150" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -95,7 +97,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           Lưu
         </el-button>
       </template>
@@ -172,9 +174,7 @@ const handleSave = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error saving job title:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể lưu chức danh',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể lưu chức danh');
     } finally {
       saving.value = false;
     }
@@ -199,9 +199,7 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting job title:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa chức danh',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể xóa chức danh');
     }
   }
 };

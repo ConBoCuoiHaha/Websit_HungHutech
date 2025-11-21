@@ -4,7 +4,7 @@ import {
   PurgeableCandidate,
   PurgeableResponse,
   PurgeLog,
-  PurgeLogsResponse
+  PurgeLogsResponse,
 } from '@/types';
 
 interface PurgeRequest {
@@ -26,31 +26,39 @@ class MaintenanceService {
   // Employee Purge Methods
   async getEmployeesForPurge(): Promise<PurgeableResponse<PurgeableEmployee>> {
     const response = await api.get<PurgeableResponse<PurgeableEmployee>>(
-      `${this.BASE_URL}/employees/purgeable`
+      `${this.BASE_URL}/employees/purgeable`,
     );
     return response.data;
   }
 
-  async purgeEmployee(id: string, ly_do: string): Promise<{ msg: string; summary: any }> {
-    const response = await api.post<{ msg: string; summary: any }>(
+  async purgeEmployee(
+    id: string,
+    ly_do: string,
+  ): Promise<{msg: string; summary: any}> {
+    const response = await api.post<{msg: string; summary: any}>(
       `${this.BASE_URL}/employees/${id}/purge`,
-      { ly_do } as PurgeRequest
+      {ly_do} as PurgeRequest,
     );
     return response.data;
   }
 
   // Candidate Purge Methods
-  async getCandidatesForPurge(): Promise<PurgeableResponse<PurgeableCandidate>> {
+  async getCandidatesForPurge(): Promise<
+    PurgeableResponse<PurgeableCandidate>
+  > {
     const response = await api.get<PurgeableResponse<PurgeableCandidate>>(
-      `${this.BASE_URL}/candidates/purgeable`
+      `${this.BASE_URL}/candidates/purgeable`,
     );
     return response.data;
   }
 
-  async purgeCandidate(id: string, ly_do: string): Promise<{ msg: string; summary: any }> {
-    const response = await api.post<{ msg: string; summary: any }>(
+  async purgeCandidate(
+    id: string,
+    ly_do: string,
+  ): Promise<{msg: string; summary: any}> {
+    const response = await api.post<{msg: string; summary: any}>(
       `${this.BASE_URL}/candidates/${id}/purge`,
-      { ly_do } as PurgeRequest
+      {ly_do} as PurgeRequest,
     );
     return response.data;
   }
@@ -58,7 +66,7 @@ class MaintenanceService {
   // Audit Logs Methods
   async getPurgeLogs(params?: PurgeLogsParams): Promise<PurgeLogsResponse> {
     const response = await api.get<PurgeLogsResponse>(`${this.BASE_URL}/logs`, {
-      params
+      params,
     });
     return response.data;
   }

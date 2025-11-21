@@ -5,19 +5,25 @@
       <div class="header-left">
         <el-button :icon="ArrowLeft" @click="handleBack">Quay lại</el-button>
         <h1 class="orangehrm-page-title">
-          {{ isViewMode ? 'Chi tiết' : trackerId ? 'Chỉnh sửa' : 'Tạo mới' }} Tracker
+          {{ isViewMode ? 'Chi tiết' : trackerId ? 'Chỉnh sửa' : 'Tạo mới' }}
+          Tracker
         </h1>
       </div>
-      <div class="orangehrm-page-actions" v-if="!isViewMode">
+      <div v-if="!isViewMode" class="orangehrm-page-actions">
         <el-button @click="handleBack">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving" :icon="Check">
+        <el-button
+          type="primary"
+          :loading="saving"
+          :icon="Check"
+          @click="handleSave"
+        >
           {{ trackerId ? 'Cập nhật' : 'Tạo mới' }}
         </el-button>
       </div>
     </div>
 
     <!-- Main Content -->
-    <el-card class="orangehrm-form-card" shadow="never" v-loading="loading">
+    <el-card v-loading="loading" class="orangehrm-form-card" shadow="never">
       <el-tabs v-model="activeTab" type="border-card">
         <!-- Tab Thông tin chung -->
         <el-tab-pane label="Thông tin chung" name="info">
@@ -61,7 +67,11 @@
               </el-col>
 
               <el-col :span="12">
-                <el-form-item label="Người đánh giá" prop="nguoi_danh_gia_id" required>
+                <el-form-item
+                  label="Người đánh giá"
+                  prop="nguoi_danh_gia_id"
+                  required
+                >
                   <el-select
                     v-model="form.nguoi_danh_gia_id"
                     placeholder="Chọn người đánh giá..."
@@ -81,7 +91,11 @@
 
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="Từ ngày" prop="ky_danh_gia.tu_ngay" required>
+                <el-form-item
+                  label="Từ ngày"
+                  prop="ky_danh_gia.tu_ngay"
+                  required
+                >
                   <el-date-picker
                     v-model="form.ky_danh_gia.tu_ngay"
                     type="date"
@@ -94,7 +108,11 @@
               </el-col>
 
               <el-col :span="12">
-                <el-form-item label="Đến ngày" prop="ky_danh_gia.den_ngay" required>
+                <el-form-item
+                  label="Đến ngày"
+                  prop="ky_danh_gia.den_ngay"
+                  required
+                >
                   <el-date-picker
                     v-model="form.ky_danh_gia.den_ngay"
                     type="date"
@@ -110,7 +128,11 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="Trạng thái" prop="trang_thai" required>
-                  <el-select v-model="form.trang_thai" placeholder="Chọn trạng thái..." style="width: 100%">
+                  <el-select
+                    v-model="form.trang_thai"
+                    placeholder="Chọn trạng thái..."
+                    style="width: 100%"
+                  >
                     <el-option label="Nháp" value="Nháp" />
                     <el-option label="Đang theo dõi" value="Đang theo dõi" />
                     <el-option label="Đã hoàn thành" value="Đã hoàn thành" />
@@ -139,16 +161,25 @@
                     :percentage="calculateOverallProgress()"
                     :color="getProgressColor(calculateOverallProgress())"
                   />
-                  <span class="progress-label">{{ calculateOverallProgress() }}%</span>
+                  <span class="progress-label"
+                    >{{ calculateOverallProgress() }}%</span
+                  >
                 </el-form-item>
               </el-col>
 
               <el-col :span="12">
                 <el-form-item label="Điểm trung bình">
-                  <el-tag :type="getScoreType(calculateAverageScore())" size="large">
-                    <strong>{{ calculateAverageScore().toFixed(1) }}/5.0</strong>
+                  <el-tag
+                    :type="getScoreType(calculateAverageScore())"
+                    size="large"
+                  >
+                    <strong
+                      >{{ calculateAverageScore().toFixed(1) }}/5.0</strong
+                    >
                   </el-tag>
-                  <span class="score-label">({{ form.muc_tieu.length }} mục tiêu)</span>
+                  <span class="score-label"
+                    >({{ form.muc_tieu.length }} mục tiêu)</span
+                  >
                 </el-form-item>
               </el-col>
             </el-row>
@@ -171,8 +202,8 @@
                 v-if="!isViewMode"
                 type="primary"
                 :icon="Plus"
-                @click="handleAddGoal"
                 size="small"
+                @click="handleAddGoal"
               >
                 Thêm mục tiêu
               </el-button>
@@ -180,7 +211,11 @@
 
             <div v-if="form.muc_tieu.length === 0" class="empty-state">
               <el-empty description="Chưa có mục tiêu nào">
-                <el-button v-if="!isViewMode" type="primary" @click="handleAddGoal">
+                <el-button
+                  v-if="!isViewMode"
+                  type="primary"
+                  @click="handleAddGoal"
+                >
                   Thêm mục tiêu đầu tiên
                 </el-button>
               </el-empty>
@@ -196,21 +231,23 @@
                 <div class="goal-header">
                   <div class="goal-title">
                     <span class="goal-number">#{{ index + 1 }}</span>
-                    <strong>{{ goal.ten_muc_tieu || 'Mục tiêu chưa có tên' }}</strong>
+                    <strong>{{
+                      goal.ten_muc_tieu || 'Mục tiêu chưa có tên'
+                    }}</strong>
                   </div>
-                  <div class="goal-actions" v-if="!isViewMode">
+                  <div v-if="!isViewMode" class="goal-actions">
                     <el-button
                       size="small"
                       :icon="Edit"
-                      @click="handleEditGoal(index)"
                       circle
+                      @click="handleEditGoal(index)"
                     />
                     <el-button
                       size="small"
                       type="danger"
                       :icon="Delete"
-                      @click="handleDeleteGoal(index)"
                       circle
+                      @click="handleDeleteGoal(index)"
                     />
                   </div>
                 </div>
@@ -220,7 +257,10 @@
                     <el-col :span="12">
                       <div class="goal-info-item">
                         <label>Trạng thái:</label>
-                        <el-tag :type="getGoalStatusType(goal.trang_thai)" size="small">
+                        <el-tag
+                          :type="getGoalStatusType(goal.trang_thai)"
+                          size="small"
+                        >
                           {{ goal.trang_thai }}
                         </el-tag>
                       </div>
@@ -343,12 +383,30 @@
                 placeholder="Nhập các điểm mạnh..."
                 style="width: 100%"
               >
-                <el-option label="Chủ động trong công việc" value="Chủ động trong công việc" />
-                <el-option label="Kỹ năng giao tiếp tốt" value="Kỹ năng giao tiếp tốt" />
-                <el-option label="Làm việc nhóm hiệu quả" value="Làm việc nhóm hiệu quả" />
-                <el-option label="Giải quyết vấn đề tốt" value="Giải quyết vấn đề tốt" />
-                <el-option label="Quản lý thời gian tốt" value="Quản lý thời gian tốt" />
-                <el-option label="Sáng tạo và đổi mới" value="Sáng tạo và đổi mới" />
+                <el-option
+                  label="Chủ động trong công việc"
+                  value="Chủ động trong công việc"
+                />
+                <el-option
+                  label="Kỹ năng giao tiếp tốt"
+                  value="Kỹ năng giao tiếp tốt"
+                />
+                <el-option
+                  label="Làm việc nhóm hiệu quả"
+                  value="Làm việc nhóm hiệu quả"
+                />
+                <el-option
+                  label="Giải quyết vấn đề tốt"
+                  value="Giải quyết vấn đề tốt"
+                />
+                <el-option
+                  label="Quản lý thời gian tốt"
+                  value="Quản lý thời gian tốt"
+                />
+                <el-option
+                  label="Sáng tạo và đổi mới"
+                  value="Sáng tạo và đổi mới"
+                />
               </el-select>
               <div class="form-hint">Có thể chọn nhiều hoặc nhập tự do</div>
             </el-form-item>
@@ -363,11 +421,23 @@
                 placeholder="Nhập các điểm yếu cần cải thiện..."
                 style="width: 100%"
               >
-                <el-option label="Cần cải thiện kỹ năng giao tiếp" value="Cần cải thiện kỹ năng giao tiếp" />
-                <el-option label="Quản lý thời gian chưa tốt" value="Quản lý thời gian chưa tốt" />
+                <el-option
+                  label="Cần cải thiện kỹ năng giao tiếp"
+                  value="Cần cải thiện kỹ năng giao tiếp"
+                />
+                <el-option
+                  label="Quản lý thời gian chưa tốt"
+                  value="Quản lý thời gian chưa tốt"
+                />
                 <el-option label="Thiếu chủ động" value="Thiếu chủ động" />
-                <el-option label="Cần nâng cao kỹ năng chuyên môn" value="Cần nâng cao kỹ năng chuyên môn" />
-                <el-option label="Chưa tự tin khi làm việc nhóm" value="Chưa tự tin khi làm việc nhóm" />
+                <el-option
+                  label="Cần nâng cao kỹ năng chuyên môn"
+                  value="Cần nâng cao kỹ năng chuyên môn"
+                />
+                <el-option
+                  label="Chưa tự tin khi làm việc nhóm"
+                  value="Chưa tự tin khi làm việc nhóm"
+                />
               </el-select>
               <div class="form-hint">Có thể chọn nhiều hoặc nhập tự do</div>
             </el-form-item>
@@ -390,7 +460,9 @@
     <!-- Goal Dialog -->
     <el-dialog
       v-model="showGoalDialog"
-      :title="editingGoalIndex !== null ? 'Chỉnh sửa mục tiêu' : 'Thêm mục tiêu mới'"
+      :title="
+        editingGoalIndex !== null ? 'Chỉnh sửa mục tiêu' : 'Thêm mục tiêu mới'
+      "
       width="700px"
       :close-on-click-modal="false"
     >
@@ -449,7 +521,12 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Tiến độ (%)">
-              <el-slider v-model="goalForm.tien_do" :min="0" :max="100" show-input />
+              <el-slider
+                v-model="goalForm.tien_do"
+                :min="0"
+                :max="100"
+                show-input
+              />
             </el-form-item>
           </el-col>
 
@@ -530,13 +607,7 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted, computed} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
-import {
-  ArrowLeft,
-  Check,
-  Plus,
-  Edit,
-  Delete,
-} from '@element-plus/icons-vue';
+import {ArrowLeft, Check, Plus, Edit, Delete} from '@element-plus/icons-vue';
 import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
 import performanceTrackerService from '@/services/performanceTrackerService';
 import nhanVienService from '@/services/nhanVienService';
@@ -609,17 +680,37 @@ const goalForm = reactive<PerformanceGoal>({
 });
 
 const formRules: FormRules = {
-  ten_tracker: [{required: true, message: 'Vui lòng nhập tên tracker', trigger: 'blur'}],
-  nhan_vien_id: [{required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'}],
-  nguoi_danh_gia_id: [{required: true, message: 'Vui lòng chọn người đánh giá', trigger: 'change'}],
-  'ky_danh_gia.tu_ngay': [{required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'}],
-  'ky_danh_gia.den_ngay': [{required: true, message: 'Vui lòng chọn ngày kết thúc', trigger: 'change'}],
-  trang_thai: [{required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'}],
+  ten_tracker: [
+    {required: true, message: 'Vui lòng nhập tên tracker', trigger: 'blur'},
+  ],
+  nhan_vien_id: [
+    {required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'},
+  ],
+  nguoi_danh_gia_id: [
+    {
+      required: true,
+      message: 'Vui lòng chọn người đánh giá',
+      trigger: 'change',
+    },
+  ],
+  'ky_danh_gia.tu_ngay': [
+    {required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'},
+  ],
+  'ky_danh_gia.den_ngay': [
+    {required: true, message: 'Vui lòng chọn ngày kết thúc', trigger: 'change'},
+  ],
+  trang_thai: [
+    {required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'},
+  ],
 };
 
 const goalFormRules: FormRules = {
-  ten_muc_tieu: [{required: true, message: 'Vui lòng nhập tên mục tiêu', trigger: 'blur'}],
-  trang_thai: [{required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'}],
+  ten_muc_tieu: [
+    {required: true, message: 'Vui lòng nhập tên mục tiêu', trigger: 'blur'},
+  ],
+  trang_thai: [
+    {required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change'},
+  ],
 };
 
 const loadData = async () => {
@@ -629,8 +720,14 @@ const loadData = async () => {
   try {
     const data = await performanceTrackerService.getById(trackerId.value);
     form.ten_tracker = data.ten_tracker;
-    form.nhan_vien_id = typeof data.nhan_vien_id === 'object' ? data.nhan_vien_id._id : data.nhan_vien_id;
-    form.nguoi_danh_gia_id = typeof data.nguoi_danh_gia_id === 'object' ? data.nguoi_danh_gia_id._id : data.nguoi_danh_gia_id;
+    form.nhan_vien_id =
+      typeof data.nhan_vien_id === 'object'
+        ? data.nhan_vien_id._id
+        : data.nhan_vien_id;
+    form.nguoi_danh_gia_id =
+      typeof data.nguoi_danh_gia_id === 'object'
+        ? data.nguoi_danh_gia_id._id
+        : data.nguoi_danh_gia_id;
     form.ky_danh_gia = data.ky_danh_gia;
     form.muc_tieu = data.muc_tieu || [];
     form.danh_gia_chung = data.danh_gia_chung || {diem_manh: [], diem_yeu: []};
@@ -638,7 +735,9 @@ const loadData = async () => {
     form.ghi_chu = data.ghi_chu || '';
   } catch (err: any) {
     console.error('Error loading tracker:', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải thông tin tracker');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải thông tin tracker',
+    );
     handleBack();
   } finally {
     loading.value = false;
@@ -668,7 +767,10 @@ const calculateOverallProgress = (): number => {
   });
 
   if (totalWeight === 0) {
-    return form.muc_tieu.reduce((sum, goal) => sum + (goal.tien_do || 0), 0) / form.muc_tieu.length;
+    return (
+      form.muc_tieu.reduce((sum, goal) => sum + (goal.tien_do || 0), 0) /
+      form.muc_tieu.length
+    );
   }
 
   return Math.round(totalProgress / totalWeight);
@@ -688,7 +790,10 @@ const calculateAverageScore = (): number => {
   });
 
   if (totalWeight === 0) {
-    return form.muc_tieu.reduce((sum, goal) => sum + (goal.diem_danh_gia || 0), 0) / form.muc_tieu.length;
+    return (
+      form.muc_tieu.reduce((sum, goal) => sum + (goal.diem_danh_gia || 0), 0) /
+      form.muc_tieu.length
+    );
   }
 
   return totalScore / totalWeight;
@@ -729,11 +834,15 @@ const handleSaveGoal = async () => {
 
 const handleDeleteGoal = async (index: number) => {
   try {
-    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa mục tiêu này?', 'Xác nhận xóa', {
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-      type: 'warning',
-    });
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn xóa mục tiêu này?',
+      'Xác nhận xóa',
+      {
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      },
+    );
 
     form.muc_tieu.splice(index, 1);
     ElMessage.success('Xóa mục tiêu thành công');
@@ -815,7 +924,7 @@ const formatDate = (dateString?: string): string => {
 
 const getStatusType = (status: string): string => {
   const types: Record<string, string> = {
-    'Nháp': 'info',
+    Nháp: 'info',
     'Đang theo dõi': 'warning',
     'Đã hoàn thành': 'success',
     'Đã hủy': 'danger',

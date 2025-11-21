@@ -7,10 +7,11 @@ import type {
   EducationLevel,
   Language,
   PaginatedResponse,
-  PaginationParams
+  PaginationParams,
 } from '@/types';
 
-const API_BASE = process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE =
+  process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000/api';
 
 // Generic service class cho tất cả admin config entities
 class AdminConfigService<T> {
@@ -20,8 +21,10 @@ class AdminConfigService<T> {
     this.endpoint = `${API_BASE}/admin/${endpoint}`;
   }
 
-  async getAll(params?: PaginationParams & { search?: string; kich_hoat?: boolean }): Promise<PaginatedResponse<T>> {
-    const response = await axios.get(this.endpoint, { params });
+  async getAll(
+    params?: PaginationParams & {search?: string; kich_hoat?: boolean},
+  ): Promise<PaginatedResponse<T>> {
+    const response = await axios.get(this.endpoint, {params});
     return response.data;
   }
 
@@ -51,11 +54,19 @@ class AdminConfigService<T> {
 }
 
 // Export service instances cho từng entity
-export const employmentStatusService = new AdminConfigService<EmploymentStatus>('employment-statuses');
-export const jobCategoryService = new AdminConfigService<JobCategory>('job-categories');
-export const nationalityService = new AdminConfigService<Nationality>('nationalities');
+export const employmentStatusService = new AdminConfigService<EmploymentStatus>(
+  'employment-statuses',
+);
+export const jobCategoryService = new AdminConfigService<JobCategory>(
+  'job-categories',
+);
+export const nationalityService = new AdminConfigService<Nationality>(
+  'nationalities',
+);
 export const skillService = new AdminConfigService<Skill>('skills');
-export const educationLevelService = new AdminConfigService<EducationLevel>('education-levels');
+export const educationLevelService = new AdminConfigService<EducationLevel>(
+  'education-levels',
+);
 export const languageService = new AdminConfigService<Language>('languages');
 
 export default {
@@ -64,5 +75,5 @@ export default {
   nationality: nationalityService,
   skill: skillService,
   educationLevel: educationLevelService,
-  language: languageService
+  language: languageService,
 };

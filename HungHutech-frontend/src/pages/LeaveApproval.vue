@@ -4,7 +4,7 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Phê duyệt đơn nghỉ phép</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
       </div>
     </div>
 
@@ -53,7 +53,10 @@
     <!-- Pending Approval Summary -->
     <el-row :gutter="16" class="orangehrm-summary-row">
       <el-col :xs="24" :sm="8">
-        <el-card class="orangehrm-summary-card orangehrm-pending" shadow="hover">
+        <el-card
+          class="orangehrm-summary-card orangehrm-pending"
+          shadow="hover"
+        >
           <el-statistic title="Chờ duyệt" :value="pendingCount">
             <template #prefix>
               <el-icon color="#E6A23C"><Clock /></el-icon>
@@ -62,7 +65,10 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
-        <el-card class="orangehrm-summary-card orangehrm-approved" shadow="hover">
+        <el-card
+          class="orangehrm-summary-card orangehrm-approved"
+          shadow="hover"
+        >
           <el-statistic title="Đã duyệt" :value="approvedCount">
             <template #prefix>
               <el-icon color="#67C23A"><Check /></el-icon>
@@ -71,7 +77,10 @@
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
-        <el-card class="orangehrm-summary-card orangehrm-rejected" shadow="hover">
+        <el-card
+          class="orangehrm-summary-card orangehrm-rejected"
+          shadow="hover"
+        >
           <el-statistic title="Bị từ chối" :value="rejectedCount">
             <template #prefix>
               <el-icon color="#F56C6C"><Close /></el-icon>
@@ -91,7 +100,7 @@
         :empty-text="error || 'Không có dữ liệu'"
       >
         <el-table-column prop="nhan_vien_id" label="Nhân viên" min-width="180">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-employee-info">
               <strong>{{ getEmployeeName(row.nhan_vien_id) }}</strong>
               <span class="orangehrm-employee-code">
@@ -102,7 +111,7 @@
         </el-table-column>
 
         <el-table-column label="Loại nghỉ phép" min-width="140">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="info" size="small">
               {{ getLeaveTypeName(row.loai_ngay_nghi_id) }}
             </el-tag>
@@ -110,11 +119,12 @@
         </el-table-column>
 
         <el-table-column label="Thời gian nghỉ" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-leave-period">
               <div>
                 <el-icon><Calendar /></el-icon>
-                {{ formatDate(row.ngay_bat_dau) }} - {{ formatDate(row.ngay_ket_thuc) }}
+                {{ formatDate(row.ngay_bat_dau) }} -
+                {{ formatDate(row.ngay_ket_thuc) }}
               </div>
               <span class="orangehrm-leave-days">
                 ({{ row.so_ngay }} ngày)
@@ -124,7 +134,7 @@
         </el-table-column>
 
         <el-table-column label="Lý do" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tooltip
               v-if="row.ly_do && row.ly_do.length > 50"
               :content="row.ly_do"
@@ -141,7 +151,7 @@
         </el-table-column>
 
         <el-table-column label="Trạng thái" min-width="130">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row.trang_thai)" size="small">
               {{ getStatusText(row.trang_thai) }}
             </el-tag>
@@ -149,13 +159,13 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" min-width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space v-if="row.trang_thai === 'Cho duyet'">
               <el-button
                 size="small"
@@ -175,11 +185,7 @@
               </el-button>
             </el-space>
             <el-space v-else>
-              <el-button
-                size="small"
-                :icon="View"
-                @click="handleView(row)"
-              >
+              <el-button size="small" :icon="View" @click="handleView(row)">
                 Xem
               </el-button>
             </el-space>
@@ -204,7 +210,11 @@
     <!-- Approve/Reject Dialog -->
     <el-dialog
       v-model="showActionDialog"
-      :title="actionType === 'approve' ? 'Phê duyệt đơn nghỉ phép' : 'Từ chối đơn nghỉ phép'"
+      :title="
+        actionType === 'approve'
+          ? 'Phê duyệt đơn nghỉ phép'
+          : 'Từ chối đơn nghỉ phép'
+      "
       width="600px"
       :close-on-click-modal="false"
     >
@@ -253,8 +263,8 @@
         <el-button @click="closeActionDialog">Hủy</el-button>
         <el-button
           :type="actionType === 'approve' ? 'success' : 'danger'"
-          @click="handleSubmitAction"
           :loading="saving"
+          @click="handleSubmitAction"
         >
           {{ actionType === 'approve' ? 'Phê duyệt' : 'Từ chối' }}
         </el-button>
@@ -390,9 +400,9 @@ const loadStatistics = async () => {
   try {
     // Load count for each status
     const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
-      yeuCauNghiPhepService.getAll({ trang_thai: 'Cho duyet', limit: 1 }),
-      yeuCauNghiPhepService.getAll({ trang_thai: 'Da duyet', limit: 1 }),
-      yeuCauNghiPhepService.getAll({ trang_thai: 'Bi tu choi', limit: 1 }),
+      yeuCauNghiPhepService.getAll({trang_thai: 'Cho duyet', limit: 1}),
+      yeuCauNghiPhepService.getAll({trang_thai: 'Da duyet', limit: 1}),
+      yeuCauNghiPhepService.getAll({trang_thai: 'Bi tu choi', limit: 1}),
     ]);
 
     statistics.pending = pendingRes.pagination?.total || 0;
@@ -423,7 +433,8 @@ const loadData = async () => {
     await loadStatistics();
   } catch (err: any) {
     console.error('Error loading leave requests:', err);
-    error.value = err.response?.data?.msg || 'Không thể tải danh sách đơn nghỉ phép';
+    error.value =
+      err.response?.data?.msg || 'Không thể tải danh sách đơn nghỉ phép';
     ElMessage.error(error.value);
   } finally {
     loading.value = false;
@@ -560,7 +571,9 @@ const getStatusText = (status: string): string => {
   return statusMap[status] || status;
 };
 
-const getStatusType = (status: string): 'warning' | 'success' | 'danger' | 'info' => {
+const getStatusType = (
+  status: string,
+): 'warning' | 'success' | 'danger' | 'info' => {
   const typeMap: Record<string, 'warning' | 'success' | 'danger' | 'info'> = {
     'Cho duyet': 'warning',
     'Da duyet': 'success',
@@ -649,15 +662,15 @@ onMounted(() => {
   }
 
   &.orangehrm-pending {
-    border-left: 4px solid #E6A23C;
+    border-left: 4px solid #e6a23c;
   }
 
   &.orangehrm-approved {
-    border-left: 4px solid #67C23A;
+    border-left: 4px solid #67c23a;
   }
 
   &.orangehrm-rejected {
-    border-left: 4px solid #F56C6C;
+    border-left: 4px solid #f56c6c;
   }
 }
 

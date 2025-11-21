@@ -56,6 +56,24 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/pages/EmployeeDetail.vue'),
       },
       {
+        path: 'ho-so-nhan-su',
+        name: 'EmployeeDocuments',
+        component: () => import('@/pages/EmployeeDocuments.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
+        path: 'hop-dong',
+        name: 'ContractList',
+        component: () => import('@/pages/ContractList.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
+        path: 'pim/yeu-cau-cap-nhat',
+        name: 'ProfileRequestApproval',
+        component: () => import('@/pages/ProfileRequestApproval.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
         path: 'chuc-danh',
         name: 'ChucDanh',
         component: () => import('@/pages/ChucDanhList.vue'),
@@ -95,6 +113,24 @@ const routes: Array<RouteRecordRaw> = [
         meta: {requiresAuth: true, requiresRole: ['admin', 'manager']},
       },
       {
+        path: 'tang-ca/duyet',
+        name: 'OvertimeApproval',
+        component: () => import('@/pages/OvertimeApproval.vue'),
+        meta: {requiresAuth: true, requiresRole: ['admin', 'manager']},
+      },
+      {
+        path: 'thoi-gian/rule-engine',
+        name: 'TimeRuleEngine',
+        component: () => import('@/pages/TimeRuleEngine.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
+        path: 'thoi-gian/phan-ca',
+        name: 'ShiftAssignment',
+        component: () => import('@/pages/ShiftAssignmentPage.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
         path: 'nghi-phep/loai',
         name: 'LeaveTypeList',
         component: () => import('@/pages/LeaveTypeList.vue'),
@@ -127,6 +163,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/pages/AttendanceSheet.vue'),
       },
       {
+        path: 'luong/bang-luong',
+        name: 'PayrollRuns',
+        component: () => import('@/pages/PayrollRunList.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
         path: 'ca-lam-viec',
         name: 'WorkShiftList',
         component: () => import('@/pages/WorkShiftList.vue'),
@@ -153,6 +195,18 @@ const routes: Array<RouteRecordRaw> = [
         path: 'tuyen-dung/ung-vien',
         name: 'CandidateList',
         component: () => import('@/pages/CandidateList.vue'),
+      },
+      {
+        path: 'tuyen-dung/pipeline',
+        name: 'ApplicationPipeline',
+        component: () => import('@/pages/ApplicationPipeline.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
+        path: 'tuyen-dung/candidate-pool',
+        name: 'CandidatePool',
+        component: () => import('@/pages/CandidatePool.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
       },
       // Performance Routes
       {
@@ -216,6 +270,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/pages/AuditLogs.vue'),
         meta: {requiresRole: ['admin']},
       },
+      {
+        path: 'offboarding',
+        name: 'OffboardingList',
+        component: () => import('@/pages/OffboardingList.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
       // Reports Routes
       {
         path: 'bao-cao',
@@ -236,6 +296,18 @@ const routes: Array<RouteRecordRaw> = [
         path: 'bao-cao/:id/xem',
         name: 'ReportView',
         component: () => import('@/pages/ReportView.vue'),
+      },
+      {
+        path: 'bao-cao/phap-ly',
+        name: 'ComplianceReport',
+        component: () => import('@/pages/ComplianceReport.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
+        path: 'consent-hub',
+        name: 'ConsentHub',
+        component: () => import('@/pages/ConsentHub.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
       },
       // Admin Configurations Routes
       {

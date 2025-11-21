@@ -4,7 +4,9 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Bảo trì dữ liệu & GDPR Compliance</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadActiveTabData" :icon="Refresh">Tải lại</el-button>
+        <el-button :icon="Refresh" @click="loadActiveTabData"
+          >Tải lại</el-button
+        >
       </div>
     </div>
 
@@ -24,8 +26,9 @@
               <strong>Cảnh báo: Hành động không thể hoàn tác</strong>
             </template>
             <div>
-              Xóa vĩnh viễn nhân viên sẽ xóa TOÀN BỘ dữ liệu liên quan bao gồm: yêu cầu nghỉ phép, chấm công,
-              timesheet, đánh giá hiệu suất, bồi hoàn và bài viết. Hành động này không thể khôi phục.
+              Xóa vĩnh viễn nhân viên sẽ xóa TOÀN BỘ dữ liệu liên quan bao gồm:
+              yêu cầu nghỉ phép, chấm công, timesheet, đánh giá hiệu suất, bồi
+              hoàn và bài viết. Hành động này không thể khôi phục.
             </div>
           </el-alert>
 
@@ -47,7 +50,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="loadEmployees" :icon="Search">
+              <el-button type="primary" :icon="Search" @click="loadEmployees">
                 Tìm kiếm
               </el-button>
             </el-form-item>
@@ -66,10 +69,13 @@
             <el-table-column prop="ma_nhan_vien" label="Mã NV" width="120" />
 
             <el-table-column label="Họ tên" min-width="200">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <div>
                   <strong>{{ row.ho_dem }} {{ row.ten }}</strong>
-                  <div class="orangehrm-text-muted" v-if="row.lien_he?.email_cong_viec">
+                  <div
+                    v-if="row.lien_he?.email_cong_viec"
+                    class="orangehrm-text-muted"
+                  >
                     {{ row.lien_he.email_cong_viec }}
                   </div>
                 </div>
@@ -77,45 +83,54 @@
             </el-table-column>
 
             <el-table-column label="Thời gian lưu trữ" width="150">
-              <template #default="{ row }">
+              <template #default="{row}">
                 {{ row.retention_period }}
               </template>
             </el-table-column>
 
             <el-table-column label="Dữ liệu liên quan" width="180">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-tag type="info" size="small">
                   {{ row.related_data_count.total }} bản ghi
                 </el-tag>
-                <el-popover
-                  placement="top"
-                  :width="300"
-                  trigger="hover"
-                >
+                <el-popover placement="top" :width="300" trigger="hover">
                   <template #reference>
                     <el-icon class="info-icon"><InfoFilled /></el-icon>
                   </template>
                   <div class="data-breakdown">
                     <div v-if="row.related_data_count.leave_requests">
-                      Yêu cầu nghỉ phép: <strong>{{ row.related_data_count.leave_requests }}</strong>
+                      Yêu cầu nghỉ phép:
+                      <strong>{{
+                        row.related_data_count.leave_requests
+                      }}</strong>
                     </div>
                     <div v-if="row.related_data_count.attendance">
-                      Chấm công: <strong>{{ row.related_data_count.attendance }}</strong>
+                      Chấm công:
+                      <strong>{{ row.related_data_count.attendance }}</strong>
                     </div>
                     <div v-if="row.related_data_count.timesheets">
-                      Timesheets: <strong>{{ row.related_data_count.timesheets }}</strong>
+                      Timesheets:
+                      <strong>{{ row.related_data_count.timesheets }}</strong>
                     </div>
                     <div v-if="row.related_data_count.performance_trackers">
-                      Performance Trackers: <strong>{{ row.related_data_count.performance_trackers }}</strong>
+                      Performance Trackers:
+                      <strong>{{
+                        row.related_data_count.performance_trackers
+                      }}</strong>
                     </div>
                     <div v-if="row.related_data_count.performance_reviews">
-                      Đánh giá hiệu suất: <strong>{{ row.related_data_count.performance_reviews }}</strong>
+                      Đánh giá hiệu suất:
+                      <strong>{{
+                        row.related_data_count.performance_reviews
+                      }}</strong>
                     </div>
                     <div v-if="row.related_data_count.claims">
-                      Bồi hoàn: <strong>{{ row.related_data_count.claims }}</strong>
+                      Bồi hoàn:
+                      <strong>{{ row.related_data_count.claims }}</strong>
                     </div>
                     <div v-if="row.related_data_count.posts">
-                      Bài viết Buzz: <strong>{{ row.related_data_count.posts }}</strong>
+                      Bài viết Buzz:
+                      <strong>{{ row.related_data_count.posts }}</strong>
                     </div>
                   </div>
                 </el-popover>
@@ -123,13 +138,13 @@
             </el-table-column>
 
             <el-table-column label="Lý do" min-width="250">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-text type="warning" size="small">{{ row.reason }}</el-text>
               </template>
             </el-table-column>
 
             <el-table-column label="Hành động" width="180" fixed="right">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-button
                   type="danger"
                   size="small"
@@ -142,10 +157,10 @@
             </el-table-column>
           </el-table>
 
-          <div class="maintenance-stats" v-if="purgeableEmployees.length > 0">
+          <div v-if="purgeableEmployees.length > 0" class="maintenance-stats">
             <el-text type="info">
-              Tìm thấy {{ purgeableEmployees.length }} nhân viên đủ điều kiện xóa
-              (Chính sách lưu trữ: {{ employeeRetentionDays }} ngày)
+              Tìm thấy {{ purgeableEmployees.length }} nhân viên đủ điều kiện
+              xóa (Chính sách lưu trữ: {{ employeeRetentionDays }} ngày)
             </el-text>
           </div>
         </el-tab-pane>
@@ -163,8 +178,9 @@
               <strong>Cảnh báo: Hành động không thể hoàn tác</strong>
             </template>
             <div>
-              Xóa vĩnh viễn ứng viên sẽ xóa TOÀN BỘ dữ liệu liên quan bao gồm: hồ sơ ứng tuyển và lịch phỏng vấn.
-              Hành động này không thể khôi phục.
+              Xóa vĩnh viễn ứng viên sẽ xóa TOÀN BỘ dữ liệu liên quan bao gồm:
+              hồ sơ ứng tuyển và lịch phỏng vấn. Hành động này không thể khôi
+              phục.
             </div>
           </el-alert>
 
@@ -186,7 +202,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="loadCandidates" :icon="Search">
+              <el-button type="primary" :icon="Search" @click="loadCandidates">
                 Tìm kiếm
               </el-button>
             </el-form-item>
@@ -203,7 +219,7 @@
             <el-table-column type="index" label="STT" width="60" />
 
             <el-table-column label="Họ tên" min-width="200">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <div>
                   <strong>{{ row.ho_ten }}</strong>
                   <div class="orangehrm-text-muted">{{ row.email }}</div>
@@ -212,13 +228,13 @@
             </el-table-column>
 
             <el-table-column prop="dien_thoai" label="Điện thoại" width="130">
-              <template #default="{ row }">
+              <template #default="{row}">
                 {{ row.dien_thoai || '-' }}
               </template>
             </el-table-column>
 
             <el-table-column label="Trạng thái cuối" width="140">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-tag type="info" size="small">
                   {{ getCandidateStatusText(row.last_status) }}
                 </el-tag>
@@ -226,30 +242,28 @@
             </el-table-column>
 
             <el-table-column label="Thời gian lưu trữ" width="150">
-              <template #default="{ row }">
+              <template #default="{row}">
                 {{ row.retention_period }}
               </template>
             </el-table-column>
 
             <el-table-column label="Dữ liệu liên quan" width="180">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-tag type="info" size="small">
                   {{ row.related_data_count.total }} bản ghi
                 </el-tag>
-                <el-popover
-                  placement="top"
-                  :width="250"
-                  trigger="hover"
-                >
+                <el-popover placement="top" :width="250" trigger="hover">
                   <template #reference>
                     <el-icon class="info-icon"><InfoFilled /></el-icon>
                   </template>
                   <div class="data-breakdown">
                     <div v-if="row.related_data_count.applications">
-                      Hồ sơ ứng tuyển: <strong>{{ row.related_data_count.applications }}</strong>
+                      Hồ sơ ứng tuyển:
+                      <strong>{{ row.related_data_count.applications }}</strong>
                     </div>
                     <div v-if="row.related_data_count.interviews">
-                      Lịch phỏng vấn: <strong>{{ row.related_data_count.interviews }}</strong>
+                      Lịch phỏng vấn:
+                      <strong>{{ row.related_data_count.interviews }}</strong>
                     </div>
                   </div>
                 </el-popover>
@@ -257,13 +271,13 @@
             </el-table-column>
 
             <el-table-column label="Lý do" min-width="250">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-text type="warning" size="small">{{ row.reason }}</el-text>
               </template>
             </el-table-column>
 
             <el-table-column label="Hành động" width="180" fixed="right">
-              <template #default="{ row }">
+              <template #default="{row}">
                 <el-button
                   type="danger"
                   size="small"
@@ -276,10 +290,10 @@
             </el-table-column>
           </el-table>
 
-          <div class="maintenance-stats" v-if="purgeableCandidates.length > 0">
+          <div v-if="purgeableCandidates.length > 0" class="maintenance-stats">
             <el-text type="info">
-              Tìm thấy {{ purgeableCandidates.length }} ứng viên đủ điều kiện xóa
-              (Chính sách lưu trữ: {{ candidateRetentionDays }} ngày)
+              Tìm thấy {{ purgeableCandidates.length }} ứng viên đủ điều kiện
+              xóa (Chính sách lưu trữ: {{ candidateRetentionDays }} ngày)
             </el-text>
           </div>
         </el-tab-pane>
@@ -326,7 +340,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="loadLogs" :icon="Search">
+              <el-button type="primary" :icon="Search" @click="loadLogs">
                 Tìm kiếm
               </el-button>
             </el-form-item>
@@ -343,7 +357,10 @@
               >
                 <el-card shadow="hover" class="log-card">
                   <div class="log-header">
-                    <el-tag :type="log.loai === 'NhanVien' ? 'danger' : 'warning'" size="small">
+                    <el-tag
+                      :type="log.loai === 'NhanVien' ? 'danger' : 'warning'"
+                      size="small"
+                    >
                       {{ log.loai === 'NhanVien' ? 'Nhân viên' : 'Ứng viên' }}
                     </el-tag>
                     <strong class="log-name">{{ log.ten_doi_tuong }}</strong>
@@ -355,24 +372,32 @@
                       <span>
                         Người thực hiện:
                         <strong>
-                          {{ typeof log.nguoi_thuc_hien_id === 'object'
-                            ? log.nguoi_thuc_hien_id.email
-                            : 'N/A' }}
+                          {{
+                            typeof log.nguoi_thuc_hien_id === 'object'
+                              ? log.nguoi_thuc_hien_id.email
+                              : 'N/A'
+                          }}
                         </strong>
                       </span>
                     </div>
 
                     <div class="log-item">
                       <el-icon><DocumentCopy /></el-icon>
-                      <span>Lý do: <em>{{ log.ly_do }}</em></span>
+                      <span
+                        >Lý do: <em>{{ log.ly_do }}</em></span
+                      >
                     </div>
 
-                    <div class="log-item" v-if="log.du_lieu_lien_quan?.deleted_records">
+                    <div
+                      v-if="log.du_lieu_lien_quan?.deleted_records"
+                      class="log-item"
+                    >
                       <el-icon><Delete /></el-icon>
                       <span>
                         Dữ liệu đã xóa:
                         <el-tag
-                          v-for="(count, key) in log.du_lieu_lien_quan.deleted_records"
+                          v-for="(count, key) in log.du_lieu_lien_quan
+                            .deleted_records"
                           :key="key"
                           size="small"
                           type="info"
@@ -383,12 +408,20 @@
                       </span>
                     </div>
 
-                    <div class="log-item" v-if="log.du_lieu_lien_quan?.ma_nhan_vien">
+                    <div
+                      v-if="log.du_lieu_lien_quan?.ma_nhan_vien"
+                      class="log-item"
+                    >
                       <el-icon><Tickets /></el-icon>
-                      <span>Mã NV: <strong>{{ log.du_lieu_lien_quan.ma_nhan_vien }}</strong></span>
+                      <span
+                        >Mã NV:
+                        <strong>{{
+                          log.du_lieu_lien_quan.ma_nhan_vien
+                        }}</strong></span
+                      >
                     </div>
 
-                    <div class="log-item" v-if="log.du_lieu_lien_quan?.email">
+                    <div v-if="log.du_lieu_lien_quan?.email" class="log-item">
                       <el-icon><Message /></el-icon>
                       <span>Email: {{ log.du_lieu_lien_quan.email }}</span>
                     </div>
@@ -401,7 +434,7 @@
           </div>
 
           <!-- Pagination -->
-          <div class="orangehrm-pagination" v-if="logPagination.total > 0">
+          <div v-if="logPagination.total > 0" class="orangehrm-pagination">
             <el-pagination
               v-model:current-page="logPagination.currentPage"
               v-model:page-size="logPagination.limit"
@@ -423,12 +456,7 @@
       width="600px"
       :close-on-click-modal="false"
     >
-      <el-alert
-        type="error"
-        :closable="false"
-        show-icon
-        class="dialog-warning"
-      >
+      <el-alert type="error" :closable="false" show-icon class="dialog-warning">
         <template #title>
           <strong>CẢNH BÁO NGHIÊM TRỌNG</strong>
         </template>
@@ -442,10 +470,10 @@
         <div class="info-row">
           <strong>Tên:</strong> {{ purgeDialog.objectName }}
         </div>
-        <div class="info-row" v-if="purgeDialog.objectCode">
+        <div v-if="purgeDialog.objectCode" class="info-row">
           <strong>Mã NV:</strong> {{ purgeDialog.objectCode }}
         </div>
-        <div class="info-row" v-if="purgeDialog.objectEmail">
+        <div v-if="purgeDialog.objectEmail" class="info-row">
           <strong>Email:</strong> {{ purgeDialog.objectEmail }}
         </div>
         <div class="info-row">
@@ -492,7 +520,11 @@
         <el-button @click="purgeDialog.visible = false">Hủy</el-button>
         <el-button
           type="danger"
-          :disabled="!purgeDialog.confirmed || !purgeDialog.reason || purgeDialog.reason.trim() === ''"
+          :disabled="
+            !purgeDialog.confirmed ||
+            !purgeDialog.reason ||
+            purgeDialog.reason.trim() === ''
+          "
           :loading="purgeDialog.loading"
           @click="confirmPurge"
         >
@@ -504,8 +536,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import {ref, onMounted, computed} from 'vue';
+import {ElMessage, ElMessageBox} from 'element-plus';
 import {
   Refresh,
   Search,
@@ -514,14 +546,10 @@ import {
   User,
   DocumentCopy,
   Tickets,
-  Message
+  Message,
 } from '@element-plus/icons-vue';
 import maintenanceService from '@/services/maintenanceService';
-import type {
-  PurgeableEmployee,
-  PurgeableCandidate,
-  PurgeLog
-} from '@/types';
+import type {PurgeableEmployee, PurgeableCandidate, PurgeLog} from '@/types';
 
 // Active Tab
 const activeTab = ref('employees');
@@ -531,7 +559,7 @@ const loadingEmployees = ref(false);
 const purgeableEmployees = ref<PurgeableEmployee[]>([]);
 const employeeRetentionDays = ref(730);
 const employeeFilters = ref({
-  q: ''
+  q: '',
 });
 
 // Candidate State
@@ -539,7 +567,7 @@ const loadingCandidates = ref(false);
 const purgeableCandidates = ref<PurgeableCandidate[]>([]);
 const candidateRetentionDays = ref(365);
 const candidateFilters = ref({
-  q: ''
+  q: '',
 });
 
 // Logs State
@@ -548,7 +576,7 @@ const purgeLogs = ref<PurgeLog[]>([]);
 const logPagination = ref({
   currentPage: 1,
   limit: 20,
-  total: 0
+  total: 0,
 });
 const logFilters = ref<{
   loai?: 'NhanVien' | 'UngVien';
@@ -569,7 +597,7 @@ const purgeDialog = ref({
   dataBreakdown: {} as Record<string, number>,
   confirmed: false,
   reason: '',
-  loading: false
+  loading: false,
 });
 
 // Methods
@@ -582,17 +610,20 @@ const loadEmployees = async () => {
     let items = response.data;
     if (employeeFilters.value.q && employeeFilters.value.q.trim() !== '') {
       const query = employeeFilters.value.q.toLowerCase();
-      items = items.filter(emp =>
-        emp.ma_nhan_vien.toLowerCase().includes(query) ||
-        `${emp.ho_dem} ${emp.ten}`.toLowerCase().includes(query) ||
-        emp.lien_he?.email_cong_viec?.toLowerCase().includes(query)
+      items = items.filter(
+        (emp) =>
+          emp.ma_nhan_vien.toLowerCase().includes(query) ||
+          `${emp.ho_dem} ${emp.ten}`.toLowerCase().includes(query) ||
+          emp.lien_he?.email_cong_viec?.toLowerCase().includes(query),
       );
     }
 
     purgeableEmployees.value = items;
     employeeRetentionDays.value = response.retention_policy_days;
   } catch (error: any) {
-    ElMessage.error(error.response?.data?.msg || 'Lỗi khi tải danh sách nhân viên');
+    ElMessage.error(
+      error.response?.data?.msg || 'Lỗi khi tải danh sách nhân viên',
+    );
   } finally {
     loadingEmployees.value = false;
   }
@@ -607,16 +638,19 @@ const loadCandidates = async () => {
     let items = response.data;
     if (candidateFilters.value.q && candidateFilters.value.q.trim() !== '') {
       const query = candidateFilters.value.q.toLowerCase();
-      items = items.filter(cand =>
-        cand.ho_ten.toLowerCase().includes(query) ||
-        cand.email.toLowerCase().includes(query)
+      items = items.filter(
+        (cand) =>
+          cand.ho_ten.toLowerCase().includes(query) ||
+          cand.email.toLowerCase().includes(query),
       );
     }
 
     purgeableCandidates.value = items;
     candidateRetentionDays.value = response.retention_policy_days;
   } catch (error: any) {
-    ElMessage.error(error.response?.data?.msg || 'Lỗi khi tải danh sách ứng viên');
+    ElMessage.error(
+      error.response?.data?.msg || 'Lỗi khi tải danh sách ứng viên',
+    );
   } finally {
     loadingCandidates.value = false;
   }
@@ -628,7 +662,7 @@ const loadLogs = async () => {
     const response = await maintenanceService.getPurgeLogs({
       page: logPagination.value.currentPage,
       limit: logPagination.value.limit,
-      ...logFilters.value
+      ...logFilters.value,
     });
 
     purgeLogs.value = response.data;
@@ -663,7 +697,7 @@ const showPurgeEmployeeDialog = (employee: PurgeableEmployee) => {
     performance_trackers: 'performance_trackers',
     performance_reviews: 'performance_reviews',
     claims: 'claims',
-    posts: 'buzz_posts'
+    posts: 'buzz_posts',
   };
 
   const dataBreakdown: Record<string, number> = {};
@@ -686,7 +720,7 @@ const showPurgeEmployeeDialog = (employee: PurgeableEmployee) => {
     dataBreakdown,
     confirmed: false,
     reason: '',
-    loading: false
+    loading: false,
   };
 };
 
@@ -711,7 +745,7 @@ const showPurgeCandidateDialog = (candidate: PurgeableCandidate) => {
     dataBreakdown,
     confirmed: false,
     reason: '',
-    loading: false
+    loading: false,
   };
 };
 
@@ -722,14 +756,14 @@ const confirmPurge = async () => {
     if (purgeDialog.value.type === 'employee') {
       await maintenanceService.purgeEmployee(
         purgeDialog.value.objectId,
-        purgeDialog.value.reason
+        purgeDialog.value.reason,
       );
       ElMessage.success('Đã xóa vĩnh viễn nhân viên thành công');
       await loadEmployees();
     } else {
       await maintenanceService.purgeCandidate(
         purgeDialog.value.objectId,
-        purgeDialog.value.reason
+        purgeDialog.value.reason,
       );
       ElMessage.success('Đã xóa vĩnh viễn ứng viên thành công');
       await loadCandidates();
@@ -761,7 +795,7 @@ const getCandidateStatusText = (status: string): string => {
     'So tuyen': 'Sơ tuyển',
     'Phong van': 'Phỏng vấn',
     'Tuyen dung': 'Tuyển dụng',
-    'Tu choi': 'Từ chối'
+    'Tu choi': 'Từ chối',
   };
   return statusMap[status] || status;
 };
@@ -776,7 +810,7 @@ const formatRecordType = (type: string): string => {
     claims: 'Bồi hoàn',
     buzz_posts: 'Bài viết Buzz',
     applications: 'Hồ sơ ứng tuyển',
-    interviews: 'Lịch phỏng vấn'
+    interviews: 'Lịch phỏng vấn',
   };
   return typeMap[type] || type;
 };
@@ -789,7 +823,7 @@ const formatDateTime = (dateString: string): string => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 };
 
