@@ -1,10 +1,10 @@
 <template>
   <el-dialog
     :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
     :title="isEdit ? 'Cập nhật lịch phỏng vấn' : 'Tạo lịch phỏng vấn'"
     width="800px"
     :close-on-click-modal="false"
+    @update:model-value="$emit('update:modelValue', $event)"
     @close="handleClose"
   >
     <el-form
@@ -61,18 +61,32 @@
 
         <el-col :span="12">
           <el-form-item label="Loại phỏng vấn" prop="loai_phong_van">
-            <el-select v-model="formData.loai_phong_van" placeholder="Chọn loại" style="width: 100%">
+            <el-select
+              v-model="formData.loai_phong_van"
+              placeholder="Chọn loại"
+              style="width: 100%"
+            >
               <el-option label="Sơ tuyển" value="Sơ tuyển" />
-              <el-option label="Phỏng vấn chuyên môn" value="Phỏng vấn chuyên môn" />
+              <el-option
+                label="Phỏng vấn chuyên môn"
+                value="Phỏng vấn chuyên môn"
+              />
               <el-option label="Phỏng vấn quản lý" value="Phỏng vấn quản lý" />
-              <el-option label="Phỏng vấn cuối cùng" value="Phỏng vấn cuối cùng" />
+              <el-option
+                label="Phỏng vấn cuối cùng"
+                value="Phỏng vấn cuối cùng"
+              />
             </el-select>
           </el-form-item>
         </el-col>
 
         <el-col :span="12">
           <el-form-item label="Hình thức" prop="hinh_thuc">
-            <el-select v-model="formData.hinh_thuc" placeholder="Chọn hình thức" style="width: 100%">
+            <el-select
+              v-model="formData.hinh_thuc"
+              placeholder="Chọn hình thức"
+              style="width: 100%"
+            >
               <el-option label="Trực tiếp" value="Trực tiếp" />
               <el-option label="Trực tuyến" value="Trực tuyến" />
               <el-option label="Điện thoại" value="Điện thoại" />
@@ -116,7 +130,7 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="24" v-if="formData.hinh_thuc === 'Trực tuyến'">
+        <el-col v-if="formData.hinh_thuc === 'Trực tuyến'" :span="24">
           <el-form-item label="Link phỏng vấn" prop="link_phong_van">
             <el-input
               v-model="formData.link_phong_van"
@@ -167,8 +181,8 @@
                 type="primary"
                 :icon="Plus"
                 plain
-                @click="addInterviewer"
                 style="width: 100%"
+                @click="addInterviewer"
               >
                 Thêm người phỏng vấn
               </el-button>
@@ -191,7 +205,7 @@
 
     <template #footer>
       <el-button @click="handleClose">Hủy</el-button>
-      <el-button type="primary" @click="handleSubmit" :loading="submitting">
+      <el-button type="primary" :loading="submitting" @click="handleSubmit">
         {{ isEdit ? 'Cập nhật' : 'Tạo mới' }}
       </el-button>
     </template>
@@ -199,11 +213,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from 'vue';
-import { ElMessage } from 'element-plus';
-import { Plus, Delete } from '@element-plus/icons-vue';
-import type { FormInstance, FormRules } from 'element-plus';
-import type { Interview, Candidate, Vacancy, NhanVien } from '@/types';
+import {ref, reactive, watch, computed} from 'vue';
+import {ElMessage} from 'element-plus';
+import {Plus, Delete} from '@element-plus/icons-vue';
+import type {FormInstance, FormRules} from 'element-plus';
+import type {Interview, Candidate, Vacancy, NhanVien} from '@/types';
 import interviewService from '@/services/interviewService';
 import candidateService from '@/services/candidateService';
 import vacancyService from '@/services/vacancyService';
@@ -241,22 +255,42 @@ const formData = reactive({
   ngay_gio_time: '',
   dia_diem: '',
   link_phong_van: '',
-  nguoi_phong_van: [] as Array<{ nhan_vien_id: string; vai_tro?: string }>,
+  nguoi_phong_van: [] as Array<{nhan_vien_id: string; vai_tro?: string}>,
   ghi_chu: '',
 });
 
 // Validation rules
 const rules = reactive<FormRules>({
-  ung_vien_id: [{ required: true, message: 'Vui lòng chọn ứng viên', trigger: 'change' }],
+  ung_vien_id: [
+    {required: true, message: 'Vui lòng chọn ứng viên', trigger: 'change'},
+  ],
   vi_tri_tuyen_dung_id: [
-    { required: true, message: 'Vui lòng chọn vị trí tuyển dụng', trigger: 'change' },
+    {
+      required: true,
+      message: 'Vui lòng chọn vị trí tuyển dụng',
+      trigger: 'change',
+    },
   ],
   loai_phong_van: [
-    { required: true, message: 'Vui lòng chọn loại phỏng vấn', trigger: 'change' },
+    {
+      required: true,
+      message: 'Vui lòng chọn loại phỏng vấn',
+      trigger: 'change',
+    },
   ],
-  hinh_thuc: [{ required: true, message: 'Vui lòng chọn hình thức', trigger: 'change' }],
-  ngay_gio_date: [{ required: true, message: 'Vui lòng chọn ngày phỏng vấn', trigger: 'change' }],
-  ngay_gio_time: [{ required: true, message: 'Vui lòng chọn giờ phỏng vấn', trigger: 'change' }],
+  hinh_thuc: [
+    {required: true, message: 'Vui lòng chọn hình thức', trigger: 'change'},
+  ],
+  ngay_gio_date: [
+    {
+      required: true,
+      message: 'Vui lòng chọn ngày phỏng vấn',
+      trigger: 'change',
+    },
+  ],
+  ngay_gio_time: [
+    {required: true, message: 'Vui lòng chọn giờ phỏng vấn', trigger: 'change'},
+  ],
 });
 
 // Computed
@@ -267,7 +301,7 @@ const searchCandidates = async (query: string) => {
   if (query) {
     loadingCandidates.value = true;
     try {
-      const response = await candidateService.getAll({ q: query, limit: 50 });
+      const response = await candidateService.getAll({q: query, limit: 50});
       candidateOptions.value = response.items;
     } catch (err) {
       console.error('Error searching candidates:', err);
@@ -281,7 +315,7 @@ const searchVacancies = async (query: string) => {
   if (query) {
     loadingVacancies.value = true;
     try {
-      const response = await vacancyService.getAll({ q: query, limit: 50 });
+      const response = await vacancyService.getAll({q: query, limit: 50});
       vacancyOptions.value = response.items;
     } catch (err) {
       console.error('Error searching vacancies:', err);
@@ -295,7 +329,7 @@ const searchEmployees = async (query: string) => {
   if (query) {
     loadingEmployees.value = true;
     try {
-      const response = await nhanVienService.getAll({ q: query, limit: 50 });
+      const response = await nhanVienService.getAll({q: query, limit: 50});
       employeeOptions.value = response.items;
     } catch (err) {
       console.error('Error searching employees:', err);
@@ -307,7 +341,7 @@ const searchEmployees = async (query: string) => {
 
 // Interviewer management
 const addInterviewer = () => {
-  formData.nguoi_phong_van.push({ nhan_vien_id: '', vai_tro: '' });
+  formData.nguoi_phong_van.push({nhan_vien_id: '', vai_tro: ''});
 };
 
 const removeInterviewer = (index: number) => {
@@ -385,7 +419,9 @@ watch(
 
       Object.assign(formData, {
         ung_vien_id:
-          typeof newVal.ung_vien_id === 'object' ? newVal.ung_vien_id._id : newVal.ung_vien_id,
+          typeof newVal.ung_vien_id === 'object'
+            ? newVal.ung_vien_id._id
+            : newVal.ung_vien_id,
         vi_tri_tuyen_dung_id:
           typeof newVal.vi_tri_tuyen_dung_id === 'object'
             ? newVal.vi_tri_tuyen_dung_id._id
@@ -399,7 +435,9 @@ watch(
         nguoi_phong_van: newVal.nguoi_phong_van
           ? newVal.nguoi_phong_van.map((i) => ({
               nhan_vien_id:
-                typeof i.nhan_vien_id === 'object' ? i.nhan_vien_id._id : i.nhan_vien_id,
+                typeof i.nhan_vien_id === 'object'
+                  ? i.nhan_vien_id._id
+                  : i.nhan_vien_id,
               vai_tro: i.vai_tro || '',
             }))
           : [],
@@ -415,7 +453,7 @@ watch(
       }
     }
   },
-  { immediate: true }
+  {immediate: true},
 );
 </script>
 

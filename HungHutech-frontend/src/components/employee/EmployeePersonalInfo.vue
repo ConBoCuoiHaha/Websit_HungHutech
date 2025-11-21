@@ -68,7 +68,10 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="Tình trạng hôn nhân" prop="tinh_trang_hon_nhan">
+            <el-form-item
+              label="Tình trạng hôn nhân"
+              prop="tinh_trang_hon_nhan"
+            >
               <el-select
                 v-model="form.tinh_trang_hon_nhan"
                 placeholder="Chọn tình trạng"
@@ -129,12 +132,17 @@
       </div>
 
       <div class="orangehrm-form-actions">
-        <el-button v-if="!isEditing" type="primary" @click="isEditing = true" :icon="Edit">
+        <el-button
+          v-if="!isEditing"
+          type="primary"
+          :icon="Edit"
+          @click="isEditing = true"
+        >
           Chỉnh sửa
         </el-button>
         <template v-else>
           <el-button @click="handleCancel">Hủy</el-button>
-          <el-button type="primary" @click="handleSave" :loading="saving">
+          <el-button type="primary" :loading="saving" @click="handleSave">
             Lưu thay đổi
           </el-button>
         </template>
@@ -147,7 +155,7 @@
 import {ref, reactive, watch} from 'vue';
 import {Edit} from '@element-plus/icons-vue';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
-import nhanVienService from '@/services/nhanVienService';
+import profileRequestService from '@/services/profileRequestService';
 import {NhanVien} from '@/types';
 
 const props = defineProps<{
@@ -157,6 +165,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'reload'): void;
+  (e: 'request-submitted', payload?: {type: string; requestId?: string}): void;
 }>();
 
 const formRef = ref<FormInstance>();
@@ -198,11 +207,14 @@ watch(
       // Map nested thong_tin_ca_nhan fields
       form.so_cmnd = newEmployee.thong_tin_ca_nhan?.cmnd_cccd || '';
       // @ts-ignore
-      form.ngay_cap_cmnd = (newEmployee.thong_tin_ca_nhan as any)?.ngay_cap_cmnd || '';
+      form.ngay_cap_cmnd =
+        (newEmployee.thong_tin_ca_nhan as any)?.ngay_cap_cmnd || '';
       // @ts-ignore
-      form.noi_cap_cmnd = (newEmployee.thong_tin_ca_nhan as any)?.noi_cap_cmnd || '';
+      form.noi_cap_cmnd =
+        (newEmployee.thong_tin_ca_nhan as any)?.noi_cap_cmnd || '';
       // @ts-ignore
-      form.so_ho_chieu = (newEmployee.thong_tin_ca_nhan as any)?.so_ho_chieu || '';
+      form.so_ho_chieu =
+        (newEmployee.thong_tin_ca_nhan as any)?.so_ho_chieu || '';
     }
   },
   {immediate: true},
@@ -211,12 +223,17 @@ watch(
 const handleSave = async () => {
   if (!formRef.value || !props.employee) return;
 
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return;
+  try {
+    await formRef.value.validate();
+  } catch {
+    return;
+  }
 
-    saving.value = true;
-    try {
-      await nhanVienService.update(props.employee._id, {
+  saving.value = true;
+  try {
+    const request = await profileRequestService.create({
+      type: 'personal',
+      payload: {
         ho_dem: form.ho_dem,
         ten: form.ten,
         biet_danh: form.biet_danh,
@@ -224,7 +241,6 @@ const handleSave = async () => {
         gioi_tinh: form.gioi_tinh,
         tinh_trang_hon_nhan: form.tinh_trang_hon_nhan,
         quoc_tich: form.quoc_tich,
-        // Gui ca truong phang (giu tuong thich) va nested
         so_cmnd: form.so_cmnd,
         thong_tin_ca_nhan: {
           cmnd_cccd: form.so_cmnd,
@@ -235,19 +251,22 @@ const handleSave = async () => {
           // @ts-ignore
           so_ho_chieu: form.so_ho_chieu,
         },
-      });
-      ElMessage.success('Cập nhật thông tin cá nhân thành công');
-      isEditing.value = false;
-      emit('reload');
-    } catch (err: any) {
-      console.error('Error updating personal info:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể cập nhật thông tin',
-      );
-    } finally {
-      saving.value = false;
-    }
-  });
+      },
+    });
+    ElMessage.success(
+      'Da gui yeu cau cap nhat thong tin ca nhan, vui long cho HR phe duyet',
+    );
+    isEditing.value = false;
+    emit('request-submitted', {type: 'personal', requestId: request?._id});
+    emit('reload');
+  } catch (err) {
+    console.error('Error creating personal info request:', err);
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể gửi yêu cầu cập nhật',
+    );
+  } finally {
+    saving.value = false;
+  }
 };
 
 const handleCancel = () => {

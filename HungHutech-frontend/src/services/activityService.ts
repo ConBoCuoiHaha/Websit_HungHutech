@@ -8,9 +8,7 @@ interface ActivityParams extends PaginationParams {
 class ActivityService {
   private readonly BASE_URL = '/activities';
 
-  async getAll(
-    params?: ActivityParams,
-  ): Promise<PaginatedResponse<Activity>> {
+  async getAll(params?: ActivityParams): Promise<PaginatedResponse<Activity>> {
     const response = await api.get<PaginatedResponse<Activity>>(this.BASE_URL, {
       params,
     });

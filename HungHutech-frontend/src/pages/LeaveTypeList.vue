@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Loại nghỉ phép</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm loại nghỉ phép
         </el-button>
       </div>
@@ -23,19 +23,19 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column prop="ten" label="Tên loại nghỉ phép" min-width="250">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong class="orangehrm-leavetype-name">{{ row.ten }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column prop="mo_ta" label="Mô tả" min-width="300">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.mo_ta || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="row.da_xoa ? 'danger' : 'success'" size="small">
               {{ row.da_xoa ? 'Đã xóa' : 'Đang dùng' }}
             </el-tag>
@@ -43,19 +43,15 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -89,7 +85,9 @@
     <!-- Create/Edit Dialog -->
     <el-dialog
       v-model="showCreateDialog"
-      :title="editingId ? 'Chỉnh sửa loại nghỉ phép' : 'Thêm loại nghỉ phép mới'"
+      :title="
+        editingId ? 'Chỉnh sửa loại nghỉ phép' : 'Thêm loại nghỉ phép mới'
+      "
       width="600px"
       :close-on-click-modal="false"
     >
@@ -120,7 +118,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingId ? 'Cập nhật' : 'Thêm mới' }}
         </el-button>
       </template>
@@ -156,7 +154,11 @@ const form = reactive({
 
 const formRules: FormRules = {
   ten: [
-    {required: true, message: 'Vui lòng nhập tên loại nghỉ phép', trigger: 'blur'},
+    {
+      required: true,
+      message: 'Vui lòng nhập tên loại nghỉ phép',
+      trigger: 'blur',
+    },
     {min: 2, max: 100, message: 'Tên phải từ 2-100 ký tự', trigger: 'blur'},
   ],
 };
@@ -175,7 +177,8 @@ const loadData = async () => {
     pagination.total = response.pagination?.total || 0;
   } catch (err: any) {
     console.error('Error loading leave types:', err);
-    error.value = err.response?.data?.msg || 'Không thể tải danh sách loại nghỉ phép';
+    error.value =
+      err.response?.data?.msg || 'Không thể tải danh sách loại nghỉ phép';
     ElMessage.error(error.value);
   } finally {
     loading.value = false;

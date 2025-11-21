@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Quyền nghỉ phép</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm quyền nghỉ phép
         </el-button>
       </div>
@@ -62,7 +62,7 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column label="Nhân viên" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-employee-info">
               <strong>{{ getEmployeeName(row.nhan_vien_id) }}</strong>
               <span class="orangehrm-employee-code">
@@ -73,7 +73,7 @@
         </el-table-column>
 
         <el-table-column label="Loại nghỉ phép" width="180">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="info" size="small">
               {{ getLeaveTypeName(row.loai_ngay_nghi_id) }}
             </el-tag>
@@ -81,25 +81,25 @@
         </el-table-column>
 
         <el-table-column label="Năm" width="100">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong>{{ row.nam }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Được hưởng" width="130">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="primary">{{ row.so_ngay_duoc_huong }} ngày</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Đã dùng" width="130">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="warning">{{ row.so_ngay_da_su_dung }} ngày</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Còn lại" width="130">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="success">
               {{ row.so_ngay_duoc_huong - row.so_ngay_da_su_dung }} ngày
             </el-tag>
@@ -107,19 +107,15 @@
         </el-table-column>
 
         <el-table-column label="Ghi chú" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.ghi_chu || '-' }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -152,7 +148,9 @@
     <!-- Create/Edit Dialog -->
     <el-dialog
       v-model="showCreateDialog"
-      :title="editingId ? 'Chỉnh sửa quyền nghỉ phép' : 'Thêm quyền nghỉ phép mới'"
+      :title="
+        editingId ? 'Chỉnh sửa quyền nghỉ phép' : 'Thêm quyền nghỉ phép mới'
+      "
       width="600px"
       :close-on-click-modal="false"
     >
@@ -209,7 +207,11 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Số ngày được hưởng" prop="so_ngay_duoc_huong" required>
+        <el-form-item
+          label="Số ngày được hưởng"
+          prop="so_ngay_duoc_huong"
+          required
+        >
           <el-input-number
             v-model="form.so_ngay_duoc_huong"
             :min="0"
@@ -232,7 +234,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingId ? 'Cập nhật' : 'Thêm mới' }}
         </el-button>
       </template>
@@ -287,11 +289,13 @@ const formRules: FormRules = {
     {required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'},
   ],
   loai_ngay_nghi_id: [
-    {required: true, message: 'Vui lòng chọn loại nghỉ phép', trigger: 'change'},
+    {
+      required: true,
+      message: 'Vui lòng chọn loại nghỉ phép',
+      trigger: 'change',
+    },
   ],
-  nam: [
-    {required: true, message: 'Vui lòng chọn năm', trigger: 'change'},
-  ],
+  nam: [{required: true, message: 'Vui lòng chọn năm', trigger: 'change'}],
   so_ngay_duoc_huong: [
     {required: true, message: 'Vui lòng nhập số ngày', trigger: 'blur'},
   ],
@@ -313,7 +317,8 @@ const loadData = async () => {
     pagination.total = response.pagination?.total || 0;
   } catch (err: any) {
     console.error('Error loading entitlements:', err);
-    error.value = err.response?.data?.msg || 'Không thể tải danh sách quyền nghỉ phép';
+    error.value =
+      err.response?.data?.msg || 'Không thể tải danh sách quyền nghỉ phép';
     ElMessage.error(error.value);
   } finally {
     loading.value = false;
@@ -352,7 +357,9 @@ const handleSizeChange = (size: number) => {
 const handleEdit = (item: QuyenNghiPhep) => {
   editingId.value = item._id;
   form.nhan_vien_id =
-    typeof item.nhan_vien_id === 'string' ? item.nhan_vien_id : item.nhan_vien_id._id;
+    typeof item.nhan_vien_id === 'string'
+      ? item.nhan_vien_id
+      : item.nhan_vien_id._id;
   form.loai_ngay_nghi_id =
     typeof item.loai_ngay_nghi_id === 'string'
       ? item.loai_ngay_nghi_id

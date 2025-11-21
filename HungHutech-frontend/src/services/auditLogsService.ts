@@ -59,7 +59,7 @@ class AuditLogsService {
   private readonly BASE_URL = '/audit-logs';
 
   async getAll(params?: any): Promise<PaginatedAuditLogs> {
-    const response = await api.get<PaginatedAuditLogs>(this.BASE_URL, { params });
+    const response = await api.get<PaginatedAuditLogs>(this.BASE_URL, {params});
     return response.data;
   }
 
@@ -70,18 +70,24 @@ class AuditLogsService {
 
   async getStats(startDate?: string, endDate?: string): Promise<AuditStats> {
     const response = await api.get<AuditStats>(`${this.BASE_URL}/stats`, {
-      params: { startDate, endDate }
+      params: {startDate, endDate},
     });
     return response.data;
   }
 
   async getByUser(userId: string, params?: any): Promise<PaginatedAuditLogs> {
-    const response = await api.get<PaginatedAuditLogs>(`${this.BASE_URL}/user/${userId}`, { params });
+    const response = await api.get<PaginatedAuditLogs>(
+      `${this.BASE_URL}/user/${userId}`,
+      {params},
+    );
     return response.data;
   }
 
   async getByIP(ipAddress: string, params?: any): Promise<PaginatedAuditLogs> {
-    const response = await api.get<PaginatedAuditLogs>(`${this.BASE_URL}/ip/${ipAddress}`, { params });
+    const response = await api.get<PaginatedAuditLogs>(
+      `${this.BASE_URL}/ip/${ipAddress}`,
+      {params},
+    );
     return response.data;
   }
 
@@ -89,8 +95,13 @@ class AuditLogsService {
     await api.delete(`${this.BASE_URL}/${id}`);
   }
 
-  async cleanup(daysOld: number): Promise<{ message: string; deletedCount: number }> {
-    const response = await api.post<{ message: string; deletedCount: number }>(`${this.BASE_URL}/cleanup`, { daysOld });
+  async cleanup(
+    daysOld: number,
+  ): Promise<{message: string; deletedCount: number}> {
+    const response = await api.post<{message: string; deletedCount: number}>(
+      `${this.BASE_URL}/cleanup`,
+      {daysOld},
+    );
     return response.data;
   }
 }

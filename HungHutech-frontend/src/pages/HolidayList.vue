@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Quản lý Ngày lễ</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Thêm ngày lễ
         </el-button>
       </div>
@@ -60,7 +60,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button @click="resetFilters" :icon="RefreshLeft">
+          <el-button :icon="RefreshLeft" @click="resetFilters">
             Đặt lại
           </el-button>
         </el-form-item>
@@ -79,8 +79,10 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column prop="ten_ngay_le" label="Tên ngày lễ" min-width="250">
-          <template #default="{ row }">
-            <strong class="orangehrm-holiday-name">{{ row.ten_ngay_le }}</strong>
+          <template #default="{row}">
+            <strong class="orangehrm-holiday-name">{{
+              row.ten_ngay_le
+            }}</strong>
             <div v-if="row.mo_ta" class="orangehrm-holiday-desc">
               {{ row.mo_ta }}
             </div>
@@ -88,7 +90,7 @@
         </el-table-column>
 
         <el-table-column label="Ngày" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-date-cell">
               <el-icon style="margin-right: 5px"><Calendar /></el-icon>
               {{ formatDate(row.ngay) }}
@@ -97,7 +99,7 @@
         </el-table-column>
 
         <el-table-column prop="khu_vuc" label="Khu vực" width="140">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getRegionTagType(row.khu_vuc)" size="small">
               {{ row.khu_vuc }}
             </el-tag>
@@ -105,15 +107,18 @@
         </el-table-column>
 
         <el-table-column label="Lặp lại hàng năm" width="170" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.lap_lai_hang_nam ? 'success' : 'info'" size="small">
+          <template #default="{row}">
+            <el-tag
+              :type="row.lap_lai_hang_nam ? 'success' : 'info'"
+              size="small"
+            >
               {{ row.lap_lai_hang_nam ? 'Có' : 'Không' }}
             </el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag
               :type="row.trang_thai === 'Kích hoạt' ? 'success' : 'danger'"
               size="small"
@@ -124,13 +129,9 @@
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="Edit"
-                @click="handleEdit(row)"
-              >
+              <el-button size="small" :icon="Edit" @click="handleEdit(row)">
                 Sửa
               </el-button>
               <el-button
@@ -247,7 +248,7 @@
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingId ? 'Cập nhật' : 'Thêm mới' }}
         </el-button>
       </template>
@@ -303,9 +304,7 @@ const formRules: FormRules = {
     {required: true, message: 'Vui lòng nhập tên ngày lễ', trigger: 'blur'},
     {min: 2, max: 200, message: 'Tên phải từ 2-200 ký tự', trigger: 'blur'},
   ],
-  ngay: [
-    {required: true, message: 'Vui lòng chọn ngày', trigger: 'change'},
-  ],
+  ngay: [{required: true, message: 'Vui lòng chọn ngày', trigger: 'change'}],
   khu_vuc: [
     {required: true, message: 'Vui lòng chọn khu vực', trigger: 'change'},
   ],
@@ -421,9 +420,7 @@ const handleSave = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error saving holiday:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể lưu ngày lễ',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể lưu ngày lễ');
     } finally {
       saving.value = false;
     }
@@ -448,9 +445,7 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting holiday:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể xóa ngày lễ',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể xóa ngày lễ');
     }
   }
 };

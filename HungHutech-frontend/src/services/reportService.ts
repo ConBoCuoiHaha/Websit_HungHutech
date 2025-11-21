@@ -10,7 +10,9 @@ import {
 class ReportService {
   private readonly BASE_URL = '/reports';
 
-  async getAll(params?: PaginationParams & { loai_bao_cao?: string }): Promise<PaginatedResponse<Report>> {
+  async getAll(
+    params?: PaginationParams & {loai_bao_cao?: string},
+  ): Promise<PaginatedResponse<Report>> {
     const response = await api.get<PaginatedResponse<Report>>(this.BASE_URL, {
       params,
     });
@@ -37,7 +39,10 @@ class ReportService {
   }
 
   async generate(data: GenerateReportRequest): Promise<GenerateReportResponse> {
-    const response = await api.post<GenerateReportResponse>(`${this.BASE_URL}/generate`, data);
+    const response = await api.post<GenerateReportResponse>(
+      `${this.BASE_URL}/generate`,
+      data,
+    );
     return response.data;
   }
 

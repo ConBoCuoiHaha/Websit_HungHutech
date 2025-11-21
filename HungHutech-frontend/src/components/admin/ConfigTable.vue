@@ -48,28 +48,28 @@
         :label="field.label"
         :min-width="field.width || 150"
       >
-        <template #default="{ row }">
+        <template #default="{row}">
           <span v-if="field.type === 'select'">{{ row[field.key] }}</span>
           <span v-else>{{ row[field.key] || '-' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="Trạng thái" width="120" align="center">
-        <template #default="{ row }">
+        <template #default="{row}">
           <el-tag :type="row.kich_hoat ? 'success' : 'info'" size="small">
             {{ row.kich_hoat ? 'Kích hoạt' : 'Vô hiệu' }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="Thao tác" width="200" align="center" fixed="right">
-        <template #default="{ row }">
-          <el-button
-            link
-            type="primary"
-            size="small"
-            @click="handleEdit(row)"
-          >
+      <el-table-column
+        label="Thao tác"
+        width="200"
+        align="center"
+        fixed="right"
+      >
+        <template #default="{row}">
+          <el-button link type="primary" size="small" @click="handleEdit(row)">
             Sửa
           </el-button>
           <el-button
@@ -80,12 +80,7 @@
           >
             {{ row.kich_hoat ? 'Vô hiệu' : 'Kích hoạt' }}
           </el-button>
-          <el-button
-            link
-            type="danger"
-            size="small"
-            @click="handleDelete(row)"
-          >
+          <el-button link type="danger" size="small" @click="handleDelete(row)">
             Xóa
           </el-button>
         </template>
@@ -183,9 +178,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
-import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus';
-import { Search, Plus } from '@element-plus/icons-vue';
+import {ref, reactive, onMounted, computed} from 'vue';
+import {
+  ElMessage,
+  ElMessageBox,
+  type FormInstance,
+  type FormRules,
+} from 'element-plus';
+import {Search, Plus} from '@element-plus/icons-vue';
 
 interface ConfigField {
   key: string;
@@ -231,10 +231,14 @@ const formData = reactive<any>({});
 // Form rules
 const formRules = computed<FormRules>(() => {
   const rules: FormRules = {};
-  props.config.fields.forEach(field => {
+  props.config.fields.forEach((field) => {
     if (field.required) {
       rules[field.key] = [
-        { required: true, message: `Vui lòng nhập ${field.label.toLowerCase()}`, trigger: 'blur' }
+        {
+          required: true,
+          message: `Vui lòng nhập ${field.label.toLowerCase()}`,
+          trigger: 'blur',
+        },
       ];
     }
   });
@@ -249,7 +253,7 @@ const loadData = async () => {
       page: currentPage.value,
       limit: pageSize.value,
       search: searchText.value,
-      kich_hoat: filterActive.value
+      kich_hoat: filterActive.value,
     });
 
     items.value = response.items;
@@ -281,7 +285,7 @@ const handleAdd = () => {
 // Edit handler
 const handleEdit = (row: any) => {
   isEdit.value = true;
-  Object.keys(formData).forEach(key => {
+  Object.keys(formData).forEach((key) => {
     formData[key] = row[key];
   });
   formData._id = row._id;
@@ -325,8 +329,8 @@ const handleDelete = async (row: any) => {
       {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
-        type: 'warning'
-      }
+        type: 'warning',
+      },
     );
 
     await props.config.service.delete(row._id);
@@ -344,11 +348,15 @@ const handleDelete = async (row: any) => {
 const handleToggleActive = async (row: any) => {
   try {
     await props.config.service.toggleActive(row._id);
-    ElMessage.success(`Đã ${row.kich_hoat ? 'vô hiệu hóa' : 'kích hoạt'} thành công`);
+    ElMessage.success(
+      `Đã ${row.kich_hoat ? 'vô hiệu hóa' : 'kích hoạt'} thành công`,
+    );
     loadData();
     emit('refresh');
   } catch (error: any) {
-    ElMessage.error(error.response?.data?.message || 'Lỗi khi thay đổi trạng thái');
+    ElMessage.error(
+      error.response?.data?.message || 'Lỗi khi thay đổi trạng thái',
+    );
   }
 };
 
@@ -359,11 +367,15 @@ const resetForm = () => {
 };
 
 const resetFormData = () => {
-  Object.keys(formData).forEach(key => delete formData[key]);
-  props.config.fields.forEach(field => {
+  Object.keys(formData).forEach((key) => delete formData[key]);
+  props.config.fields.forEach((field) => {
     if (field.type === 'number') {
       formData[field.key] = 0;
-    } else if (field.type === 'select' && field.options && field.options.length > 0) {
+    } else if (
+      field.type === 'select' &&
+      field.options &&
+      field.options.length > 0
+    ) {
       formData[field.key] = field.options[0];
     } else {
       formData[field.key] = '';
@@ -379,7 +391,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .config-table {
   .table-toolbar {

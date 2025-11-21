@@ -3,7 +3,13 @@
     <div class="orangehrm-form-section">
       <div class="section-header">
         <h3 class="orangehrm-section-title">Người phụ thuộc</h3>
-        <el-button v-if="!isEditing" type="primary" @click="handleAdd" :icon="Plus" size="small">
+        <el-button
+          v-if="!isEditing"
+          type="primary"
+          :icon="Plus"
+          size="small"
+          @click="handleAdd"
+        >
           Thêm người phụ thuộc
         </el-button>
       </div>
@@ -17,7 +23,11 @@
         style="margin-top: 20px"
       >
         <el-table-column prop="ten" label="Họ và tên" min-width="150" />
-        <el-table-column prop="moi_quan_he" label="Mối quan hệ" min-width="120" />
+        <el-table-column
+          prop="moi_quan_he"
+          label="Mối quan hệ"
+          min-width="120"
+        />
         <el-table-column label="Ngày sinh" min-width="120">
           <template #default="scope">
             {{ formatDate(scope.row.ngay_sinh) }}
@@ -25,23 +35,38 @@
         </el-table-column>
         <el-table-column label="Thao tác" width="150" align="center">
           <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.$index)" :icon="Edit">
+            <el-button
+              size="small"
+              :icon="Edit"
+              @click="handleEdit(scope.$index)"
+            >
               Sửa
             </el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.$index)" :icon="Delete">
+            <el-button
+              size="small"
+              type="danger"
+              :icon="Delete"
+              @click="handleDelete(scope.$index)"
+            >
               Xóa
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-empty v-else description="Chưa có người phụ thuộc" :image-size="100" />
+      <el-empty
+        v-else
+        description="Chưa có người phụ thuộc"
+        :image-size="100"
+      />
     </div>
 
     <!-- Add/Edit Dialog -->
     <el-dialog
       v-model="dialogVisible"
-      :title="editIndex === -1 ? 'Thêm người phụ thuộc' : 'Chỉnh sửa người phụ thuộc'"
+      :title="
+        editIndex === -1 ? 'Thêm người phụ thuộc' : 'Chỉnh sửa người phụ thuộc'
+      "
       width="600px"
     >
       <el-form
@@ -55,7 +80,11 @@
         </el-form-item>
 
         <el-form-item label="Mối quan hệ" prop="moi_quan_he" required>
-          <el-select v-model="form.moi_quan_he" placeholder="Chọn mối quan hệ" style="width: 100%">
+          <el-select
+            v-model="form.moi_quan_he"
+            placeholder="Chọn mối quan hệ"
+            style="width: 100%"
+          >
             <el-option label="Con" value="Con" />
             <el-option label="Vợ" value="Vợ" />
             <el-option label="Chồng" value="Chồng" />
@@ -80,7 +109,7 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -92,7 +121,7 @@
 import {ref, reactive, watch} from 'vue';
 import {Plus, Edit, Delete} from '@element-plus/icons-vue';
 import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
-import nhanVienService from '@/services/nhanVienService';
+import profileRequestService from '@/services/profileRequestService';
 import {NhanVien} from '@/types';
 import dayjs from 'dayjs';
 
@@ -103,6 +132,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'reload'): void;
+  (e: 'request-submitted', payload?: {type: string; requestId?: string}): void;
 }>();
 
 const formRef = ref<FormInstance>();
@@ -121,7 +151,9 @@ const form = reactive({
 
 const formRules: FormRules = {
   ten: [{required: true, message: 'Vui lòng nhập họ tên', trigger: 'blur'}],
-  moi_quan_he: [{required: true, message: 'Vui lòng chọn mối quan hệ', trigger: 'change'}],
+  moi_quan_he: [
+    {required: true, message: 'Vui lòng chọn mối quan hệ', trigger: 'change'},
+  ],
 };
 
 watch(
@@ -154,34 +186,42 @@ const handleEdit = (index: number) => {
   const dep = dependents.value[index];
   form.ten = dep.ten || '';
   form.moi_quan_he = dep.moi_quan_he || '';
-  form.ngay_sinh = dep.ngay_sinh ? dayjs(dep.ngay_sinh).format('YYYY-MM-DD') : '';
+  form.ngay_sinh = dep.ngay_sinh
+    ? dayjs(dep.ngay_sinh).format('YYYY-MM-DD')
+    : '';
   dialogVisible.value = true;
 };
 
 const handleDelete = async (index: number) => {
   try {
     await ElMessageBox.confirm(
-      'Bạn có chắc chắn muốn xóa người phụ thuộc này?',
-      'Xác nhận xóa',
+      'Ban co chac chan muon xoa nguoi phu thuoc nay?',
+      'Xac nhan xoa',
       {
-        confirmButtonText: 'Xóa',
-        cancelButtonText: 'Hủy',
+        confirmButtonText: 'Xoa',
+        cancelButtonText: 'Huy',
         type: 'warning',
-      }
+      },
     );
 
-    const updatedDependents = [...dependents.value];
-    updatedDependents.splice(index, 1);
-
     saving.value = true;
-    await nhanVienService.update(props.employee!._id, {
-      nguoi_phu_thuoc: updatedDependents,
+    const request = await profileRequestService.create({
+      type: 'dependents',
+      payload: {
+        action: 'delete',
+        index,
+      },
     });
-    ElMessage.success('Xóa người phụ thuộc thành công');
+    ElMessage.success(
+      'Đã gửi yêu cầu xóa người phụ thuộc, vui lòng chờ HR phê duyệt',
+    );
+    emit('request-submitted', {type: 'dependents', requestId: request?._id});
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa người phụ thuộc');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể gửi yêu cầu xóa người phụ thuộc',
+      );
     }
   } finally {
     saving.value = false;
@@ -189,36 +229,38 @@ const handleDelete = async (index: number) => {
 };
 
 const handleSave = async () => {
-  if (!formRef.value) return;
-  if (!props.employee) return;
+  if (!formRef.value || !props.employee) return;
 
   try {
-    const valid = await formRef.value.validate();
-    if (!valid) return;
+    await formRef.value.validate();
+  } catch {
+    return;
+  }
 
-    saving.value = true;
-
-    const updatedDependents = [...dependents.value];
-
-    if (editIndex.value === -1) {
-      // Add new
-      updatedDependents.push({...form});
-    } else {
-      // Update existing
-      updatedDependents[editIndex.value] = {...form};
+  saving.value = true;
+  try {
+    const payload: any = {
+      action: editIndex.value === -1 ? 'add' : 'update',
+      dependent: {...form},
+    };
+    if (payload.action === 'update') {
+      payload.index = editIndex.value;
     }
 
-    await nhanVienService.update(props.employee._id, {
-      nguoi_phu_thuoc: updatedDependents,
+    const request = await profileRequestService.create({
+      type: 'dependents',
+      payload,
     });
-
     ElMessage.success(
-      editIndex.value === -1 ? 'Thêm người phụ thuộc thành công' : 'Cập nhật người phụ thuộc thành công'
+      editIndex.value === -1
+        ? 'Da gui yeu cau them nguoi phu thuoc, vui long cho HR phe duyet'
+        : 'Da gui yeu cau cap nhat nguoi phu thuoc, vui long cho HR phe duyet',
     );
     dialogVisible.value = false;
+    emit('request-submitted', {type: 'dependents', requestId: request?._id});
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lưu thông tin');
+    ElMessage.error(err.response?.data?.msg || 'Không thể gửi yêu cầu');
   } finally {
     saving.value = false;
   }

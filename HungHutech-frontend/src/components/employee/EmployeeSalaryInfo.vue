@@ -3,7 +3,13 @@
     <div class="orangehrm-form-section">
       <div class="section-header">
         <h3 class="orangehrm-section-title">Thông tin lương</h3>
-        <el-button v-if="!isEditing" type="primary" @click="handleAdd" :icon="Plus" size="small">
+        <el-button
+          v-if="!isEditing"
+          type="primary"
+          :icon="Plus"
+          size="small"
+          @click="handleAdd"
+        >
           Thêm lương
         </el-button>
       </div>
@@ -22,27 +28,51 @@
             {{ formatCurrency(scope.row.so_tien, scope.row.don_vi_tien_te) }}
           </template>
         </el-table-column>
-        <el-table-column prop="ky_tra_luong" label="Kỳ trả lương" min-width="120" />
-        <el-table-column prop="ghi_chu" label="Ghi chú" min-width="200" show-overflow-tooltip />
+        <el-table-column
+          prop="ky_tra_luong"
+          label="Kỳ trả lương"
+          min-width="120"
+        />
+        <el-table-column
+          prop="ghi_chu"
+          label="Ghi chú"
+          min-width="200"
+          show-overflow-tooltip
+        />
         <el-table-column label="Thao tác" width="150" align="center">
           <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.$index)" :icon="Edit">
+            <el-button
+              size="small"
+              :icon="Edit"
+              @click="handleEdit(scope.$index)"
+            >
               Sửa
             </el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.$index)" :icon="Delete">
+            <el-button
+              size="small"
+              type="danger"
+              :icon="Delete"
+              @click="handleDelete(scope.$index)"
+            >
               Xóa
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-empty v-else description="Chưa có thông tin lương" :image-size="100" />
+      <el-empty
+        v-else
+        description="Chưa có thông tin lương"
+        :image-size="100"
+      />
     </div>
 
     <!-- Add/Edit Dialog -->
     <el-dialog
       v-model="dialogVisible"
-      :title="editIndex === -1 ? 'Thêm thông tin lương' : 'Chỉnh sửa thông tin lương'"
+      :title="
+        editIndex === -1 ? 'Thêm thông tin lương' : 'Chỉnh sửa thông tin lương'
+      "
       width="600px"
     >
       <el-form
@@ -52,7 +82,11 @@
         label-width="140px"
       >
         <el-form-item label="Loại lương" prop="ten_luong" required>
-          <el-select v-model="form.ten_luong" placeholder="Chọn loại lương" style="width: 100%">
+          <el-select
+            v-model="form.ten_luong"
+            placeholder="Chọn loại lương"
+            style="width: 100%"
+          >
             <el-option label="Lương cơ bản" value="Lương cơ bản" />
             <el-option label="Phụ cấp ăn trưa" value="Phụ cấp ăn trưa" />
             <el-option label="Phụ cấp xăng xe" value="Phụ cấp xăng xe" />
@@ -87,7 +121,11 @@
         </el-row>
 
         <el-form-item label="Kỳ trả lương" prop="ky_tra_luong" required>
-          <el-select v-model="form.ky_tra_luong" placeholder="Chọn kỳ trả lương" style="width: 100%">
+          <el-select
+            v-model="form.ky_tra_luong"
+            placeholder="Chọn kỳ trả lương"
+            style="width: 100%"
+          >
             <el-option label="Hàng tháng" value="Hàng tháng" />
             <el-option label="Hàng quý" value="Hàng quý" />
             <el-option label="Hàng năm" value="Hàng năm" />
@@ -107,7 +145,7 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -148,10 +186,22 @@ const form = reactive({
 });
 
 const formRules: FormRules = {
-  ten_luong: [{required: true, message: 'Vui lòng chọn loại lương', trigger: 'change'}],
-  so_tien: [{required: true, message: 'Vui lòng nhập số tiền', trigger: 'blur'}],
-  don_vi_tien_te: [{required: true, message: 'Vui lòng chọn đơn vị tiền tệ', trigger: 'change'}],
-  ky_tra_luong: [{required: true, message: 'Vui lòng chọn kỳ trả lương', trigger: 'change'}],
+  ten_luong: [
+    {required: true, message: 'Vui lòng chọn loại lương', trigger: 'change'},
+  ],
+  so_tien: [
+    {required: true, message: 'Vui lòng nhập số tiền', trigger: 'blur'},
+  ],
+  don_vi_tien_te: [
+    {
+      required: true,
+      message: 'Vui lòng chọn đơn vị tiền tệ',
+      trigger: 'change',
+    },
+  ],
+  ky_tra_luong: [
+    {required: true, message: 'Vui lòng chọn kỳ trả lương', trigger: 'change'},
+  ],
 };
 
 watch(
@@ -211,7 +261,7 @@ const handleDelete = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedSalaries = [...salaries.value];
@@ -225,7 +275,9 @@ const handleDelete = async (index: number) => {
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa thông tin lương');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa thông tin lương',
+      );
     }
   } finally {
     saving.value = false;
@@ -257,7 +309,9 @@ const handleSave = async () => {
     });
 
     ElMessage.success(
-      editIndex.value === -1 ? 'Thêm thông tin lương thành công' : 'Cập nhật thông tin lương thành công'
+      editIndex.value === -1
+        ? 'Thêm thông tin lương thành công'
+        : 'Cập nhật thông tin lương thành công',
     );
     dialogVisible.value = false;
     emit('reload');

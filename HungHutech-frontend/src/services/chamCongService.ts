@@ -21,12 +21,18 @@ class ChamCongService {
   private readonly BASE_URL = '/chamcong';
 
   async clockIn(data: ClockInRequest): Promise<ChamCong> {
-    const response = await api.post<ChamCong>(`${this.BASE_URL}/clock-in`, data);
+    const response = await api.post<ChamCong>(
+      `${this.BASE_URL}/clock-in`,
+      data,
+    );
     return response.data;
   }
 
   async clockOut(data: ClockOutRequest): Promise<ChamCong> {
-    const response = await api.post<ChamCong>(`${this.BASE_URL}/clock-out`, data);
+    const response = await api.post<ChamCong>(
+      `${this.BASE_URL}/clock-out`,
+      data,
+    );
     return response.data;
   }
 
@@ -81,7 +87,8 @@ class ChamCongService {
       if (record.thoi_gian_ra) {
         const clockIn = new Date(record.thoi_gian_vao);
         const clockOut = new Date(record.thoi_gian_ra);
-        const hours = (clockOut.getTime() - clockIn.getTime()) / (1000 * 60 * 60);
+        const hours =
+          (clockOut.getTime() - clockIn.getTime()) / (1000 * 60 * 60);
         totalHours += hours;
       }
     });

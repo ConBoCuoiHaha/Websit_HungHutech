@@ -14,12 +14,20 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Đường 1" prop="dia_chi.duong_so_1">
-              <el-input v-model="form.dia_chi.duong_so_1" :disabled="!isEditing" placeholder="Số nhà, tên đường" />
+              <el-input
+                v-model="form.dia_chi.duong_so_1"
+                :disabled="!isEditing"
+                placeholder="Số nhà, tên đường"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Đường 2" prop="dia_chi.duong_so_2">
-              <el-input v-model="form.dia_chi.duong_so_2" :disabled="!isEditing" placeholder="Số nhà, tên đường (tiếp)" />
+              <el-input
+                v-model="form.dia_chi.duong_so_2"
+                :disabled="!isEditing"
+                placeholder="Số nhà, tên đường (tiếp)"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -27,12 +35,20 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Thành phố" prop="dia_chi.thanh_pho">
-              <el-input v-model="form.dia_chi.thanh_pho" :disabled="!isEditing" placeholder="TP.HCM" />
+              <el-input
+                v-model="form.dia_chi.thanh_pho"
+                :disabled="!isEditing"
+                placeholder="TP.HCM"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Tỉnh/Thành" prop="dia_chi.tinh_thanh">
-              <el-input v-model="form.dia_chi.tinh_thanh" :disabled="!isEditing" placeholder="Hồ Chí Minh" />
+              <el-input
+                v-model="form.dia_chi.tinh_thanh"
+                :disabled="!isEditing"
+                placeholder="Hồ Chí Minh"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -40,12 +56,20 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Mã bưu điện" prop="dia_chi.ma_buu_dien">
-              <el-input v-model="form.dia_chi.ma_buu_dien" :disabled="!isEditing" placeholder="700000" />
+              <el-input
+                v-model="form.dia_chi.ma_buu_dien"
+                :disabled="!isEditing"
+                placeholder="700000"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Quốc gia" prop="dia_chi.quoc_gia">
-              <el-input v-model="form.dia_chi.quoc_gia" :disabled="!isEditing" placeholder="Việt Nam" />
+              <el-input
+                v-model="form.dia_chi.quoc_gia"
+                :disabled="!isEditing"
+                placeholder="Việt Nam"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -58,17 +82,32 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="Điện thoại nhà" prop="lien_he.dien_thoai_nha">
-              <el-input v-model="form.lien_he.dien_thoai_nha" :disabled="!isEditing" placeholder="028-12345678" />
+              <el-input
+                v-model="form.lien_he.dien_thoai_nha"
+                :disabled="!isEditing"
+                placeholder="028-12345678"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="Di động" prop="lien_he.di_dong">
-              <el-input v-model="form.lien_he.di_dong" :disabled="!isEditing" placeholder="0901234567" />
+              <el-input
+                v-model="form.lien_he.di_dong"
+                :disabled="!isEditing"
+                placeholder="0901234567"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Điện thoại công việc" prop="lien_he.dien_thoai_cong_viec">
-              <el-input v-model="form.lien_he.dien_thoai_cong_viec" :disabled="!isEditing" placeholder="028-87654321" />
+            <el-form-item
+              label="Điện thoại công việc"
+              prop="lien_he.dien_thoai_cong_viec"
+            >
+              <el-input
+                v-model="form.lien_he.dien_thoai_cong_viec"
+                :disabled="!isEditing"
+                placeholder="028-87654321"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -80,25 +119,43 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="Email công việc" prop="lien_he.email_cong_viec">
-              <el-input v-model="form.lien_he.email_cong_viec" :disabled="!isEditing" type="email" placeholder="name@company.com" />
+            <el-form-item
+              label="Email công việc"
+              prop="lien_he.email_cong_viec"
+            >
+              <el-input
+                v-model="form.lien_he.email_cong_viec"
+                :disabled="!isEditing"
+                type="email"
+                placeholder="name@company.com"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Email khác" prop="lien_he.email_khac">
-              <el-input v-model="form.lien_he.email_khac" :disabled="!isEditing" type="email" placeholder="name@personal.com" />
+              <el-input
+                v-model="form.lien_he.email_khac"
+                :disabled="!isEditing"
+                type="email"
+                placeholder="name@personal.com"
+              />
             </el-form-item>
           </el-col>
         </el-row>
       </div>
 
       <div class="orangehrm-form-actions">
-        <el-button v-if="!isEditing" type="primary" @click="isEditing = true" :icon="Edit">
+        <el-button
+          v-if="!isEditing"
+          type="primary"
+          :icon="Edit"
+          @click="isEditing = true"
+        >
           Chỉnh sửa
         </el-button>
         <template v-else>
           <el-button @click="handleCancel">Hủy</el-button>
-          <el-button type="primary" @click="handleSave" :loading="saving">
+          <el-button type="primary" :loading="saving" @click="handleSave">
             Lưu thay đổi
           </el-button>
         </template>
@@ -111,7 +168,7 @@
 import {ref, reactive, watch} from 'vue';
 import {Edit} from '@element-plus/icons-vue';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
-import nhanVienService from '@/services/nhanVienService';
+import profileRequestService from '@/services/profileRequestService';
 import {NhanVien} from '@/types';
 
 const props = defineProps<{
@@ -121,6 +178,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'reload'): void;
+  (e: 'request-submitted', payload?: {type: string; requestId?: string}): void;
 }>();
 
 const formRef = ref<FormInstance>();
@@ -183,20 +241,33 @@ watch(
 );
 
 const handleSave = async () => {
-  if (!props.employee) return;
-  if (!formRef.value) return;
+  if (!props.employee || !formRef.value) return;
 
   try {
-    const valid = await formRef.value.validate();
-    if (!valid) return;
+    await formRef.value.validate();
+  } catch {
+    return;
+  }
 
-    saving.value = true;
-    await nhanVienService.update(props.employee._id, form);
-    ElMessage.success('Cập nhật thông tin liên hệ thành công');
+  saving.value = true;
+  try {
+    const request = await profileRequestService.create({
+      type: 'contact',
+      payload: {
+        dia_chi: {...form.dia_chi},
+        lien_he: {...form.lien_he},
+      },
+    });
+    ElMessage.success(
+      'Da gui yeu cau cap nhat thong tin lien he, vui long cho HR phe duyet',
+    );
     isEditing.value = false;
+    emit('request-submitted', {type: 'contact', requestId: request?._id});
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật thông tin');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể gửi yêu cầu cập nhật',
+    );
   } finally {
     saving.value = false;
   }

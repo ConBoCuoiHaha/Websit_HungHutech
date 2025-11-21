@@ -3,22 +3,25 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-left">
-        <el-button @click="handleBack" :icon="ArrowLeft">Quay lại</el-button>
+        <el-button :icon="ArrowLeft" @click="handleBack">Quay lại</el-button>
         <div class="report-info">
-          <h1 class="page-title">{{ reportConfig?.ten_bao_cao || 'Báo cáo' }}</h1>
-          <el-tag v-if="reportConfig" :type="getReportTypeTagType(reportConfig.loai_bao_cao)">
+          <h1 class="page-title">
+            {{ reportConfig?.ten_bao_cao || 'Báo cáo' }}
+          </h1>
+          <el-tag
+            v-if="reportConfig"
+            :type="getReportTypeTagType(reportConfig.loai_bao_cao)"
+          >
             {{ getReportTypeLabel(reportConfig.loai_bao_cao) }}
           </el-tag>
         </div>
       </div>
       <div class="page-actions">
-        <el-button @click="handleRefresh" :icon="Refresh" :loading="loading">
+        <el-button :icon="Refresh" :loading="loading" @click="handleRefresh">
           Tải lại
         </el-button>
-        <el-button @click="handlePrint" :icon="Printer">
-          In báo cáo
-        </el-button>
-        <el-button type="success" @click="handleExport" :icon="Download">
+        <el-button :icon="Printer" @click="handlePrint"> In báo cáo </el-button>
+        <el-button type="success" :icon="Download" @click="handleExport">
           Xuất CSV
         </el-button>
       </div>
@@ -44,7 +47,10 @@
       </el-row>
 
       <!-- Applied Criteria -->
-      <div v-if="reportConfig && reportConfig.tieu_chi.length > 0" class="applied-criteria">
+      <div
+        v-if="reportConfig && reportConfig.tieu_chi.length > 0"
+        class="applied-criteria"
+      >
         <el-divider content-position="left">Tiêu chí đã áp dụng</el-divider>
         <div class="criteria-tags">
           <el-tag
@@ -53,7 +59,8 @@
             type="info"
             size="large"
           >
-            {{ getFieldLabel(criteria.truong) }} {{ criteria.dieu_kien }} {{ criteria.gia_tri }}
+            {{ getFieldLabel(criteria.truong) }} {{ criteria.dieu_kien }}
+            {{ criteria.gia_tri }}
           </el-tag>
         </div>
       </div>
@@ -79,7 +86,7 @@
           min-width="150"
           sortable="custom"
         >
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatCellValue(getNestedValue(row, col)) }}
           </template>
         </el-table-column>
@@ -102,8 +109,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import {ref, reactive, computed, onMounted} from 'vue';
+import {useRouter, useRoute} from 'vue-router';
 import {
   ArrowLeft,
   Refresh,
@@ -111,9 +118,9 @@ import {
   Download,
   Search,
 } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import {ElMessage} from 'element-plus';
 import reportService from '@/services/reportService';
-import { Report } from '@/types';
+import {Report} from '@/types';
 
 const router = useRouter();
 const route = useRoute();
@@ -134,7 +141,10 @@ const defaultSort = computed(() => {
   if (reportConfig.value?.sap_xep?.truong) {
     return {
       prop: reportConfig.value.sap_xep.truong,
-      order: reportConfig.value.sap_xep.thu_tu === 'desc' ? 'descending' : 'ascending',
+      order:
+        reportConfig.value.sap_xep.thu_tu === 'desc'
+          ? 'descending'
+          : 'ascending',
     };
   }
   return undefined;
@@ -158,57 +168,60 @@ const filteredData = computed(() => {
 });
 
 // Field configurations for each report type (same as ReportBuilder)
-const fieldConfigs: Record<string, Array<{ label: string; value: string }>> = {
+const fieldConfigs: Record<string, Array<{label: string; value: string}>> = {
   'Nhan vien': [
-    { label: 'Mã nhân viên', value: 'ma_nhan_vien' },
-    { label: 'Họ đệm', value: 'ho_dem' },
-    { label: 'Tên', value: 'ten' },
-    { label: 'Email', value: 'lien_he.email_cong_viec' },
-    { label: 'Ngày sinh', value: 'ngay_sinh' },
-    { label: 'Giới tính', value: 'gioi_tinh' },
-    { label: 'Phòng ban', value: 'thong_tin_cong_viec.phong_ban_id' },
-    { label: 'Chức danh', value: 'thong_tin_cong_viec.chuc_danh_id' },
-    { label: 'Ngày vào làm', value: 'thong_tin_cong_viec.ngay_vao_lam' },
-    { label: 'Trạng thái lao động', value: 'thong_tin_cong_viec.trang_thai_lao_dong_id' },
+    {label: 'Mã nhân viên', value: 'ma_nhan_vien'},
+    {label: 'Họ đệm', value: 'ho_dem'},
+    {label: 'Tên', value: 'ten'},
+    {label: 'Email', value: 'lien_he.email_cong_viec'},
+    {label: 'Ngày sinh', value: 'ngay_sinh'},
+    {label: 'Giới tính', value: 'gioi_tinh'},
+    {label: 'Phòng ban', value: 'thong_tin_cong_viec.phong_ban_id'},
+    {label: 'Chức danh', value: 'thong_tin_cong_viec.chuc_danh_id'},
+    {label: 'Ngày vào làm', value: 'thong_tin_cong_viec.ngay_vao_lam'},
+    {
+      label: 'Trạng thái lao động',
+      value: 'thong_tin_cong_viec.trang_thai_lao_dong_id',
+    },
   ],
   'Cham cong': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Ngày', value: 'ngay' },
-    { label: 'Thời gian vào', value: 'thoi_gian_vao' },
-    { label: 'Thời gian ra', value: 'thoi_gian_ra' },
-    { label: 'Ghi chú', value: 'ghi_chu' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Ngày', value: 'ngay'},
+    {label: 'Thời gian vào', value: 'thoi_gian_vao'},
+    {label: 'Thời gian ra', value: 'thoi_gian_ra'},
+    {label: 'Ghi chú', value: 'ghi_chu'},
   ],
   'Nghi phep': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Loại ngày nghỉ', value: 'loai_ngay_nghi_id' },
-    { label: 'Ngày bắt đầu', value: 'ngay_bat_dau' },
-    { label: 'Ngày kết thúc', value: 'ngay_ket_thuc' },
-    { label: 'Số ngày', value: 'so_ngay' },
-    { label: 'Trạng thái', value: 'trang_thai' },
-    { label: 'Lý do', value: 'ly_do' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Loại ngày nghỉ', value: 'loai_ngay_nghi_id'},
+    {label: 'Ngày bắt đầu', value: 'ngay_bat_dau'},
+    {label: 'Ngày kết thúc', value: 'ngay_ket_thuc'},
+    {label: 'Số ngày', value: 'so_ngay'},
+    {label: 'Trạng thái', value: 'trang_thai'},
+    {label: 'Lý do', value: 'ly_do'},
   ],
   'Boi hoan': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Trạng thái', value: 'trang_thai' },
-    { label: 'Tổng tiền', value: 'tong_tien' },
-    { label: 'Ngày tạo', value: 'ngay_tao' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Trạng thái', value: 'trang_thai'},
+    {label: 'Tổng tiền', value: 'tong_tien'},
+    {label: 'Ngày tạo', value: 'ngay_tao'},
   ],
-  'Luong': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Tháng', value: 'thang' },
-    { label: 'Lương cơ bản', value: 'luong_co_ban' },
-    { label: 'Phụ cấp', value: 'phu_cap' },
-    { label: 'Thưởng', value: 'thuong' },
-    { label: 'Khấu trừ', value: 'khau_tru' },
-    { label: 'Thực lãnh', value: 'thuc_lanh' },
+  Luong: [
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Tháng', value: 'thang'},
+    {label: 'Lương cơ bản', value: 'luong_co_ban'},
+    {label: 'Phụ cấp', value: 'phu_cap'},
+    {label: 'Thưởng', value: 'thuong'},
+    {label: 'Khấu trừ', value: 'khau_tru'},
+    {label: 'Thực lãnh', value: 'thuc_lanh'},
   ],
   'Hieu suat': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Người đánh giá', value: 'nguoi_danh_gia_id' },
-    { label: 'Từ ngày', value: 'tu_ngay' },
-    { label: 'Đến ngày', value: 'den_ngay' },
-    { label: 'Điểm tổng', value: 'diem_tong' },
-    { label: 'Trạng thái', value: 'trang_thai' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Người đánh giá', value: 'nguoi_danh_gia_id'},
+    {label: 'Từ ngày', value: 'tu_ngay'},
+    {label: 'Đến ngày', value: 'den_ngay'},
+    {label: 'Điểm tổng', value: 'diem_tong'},
+    {label: 'Trạng thái', value: 'trang_thai'},
   ],
 };
 
@@ -283,7 +296,7 @@ const handleSizeChange = (size: number) => {
   loadReportData();
 };
 
-const handleSortChange = ({ prop, order }: any) => {
+const handleSortChange = ({prop, order}: any) => {
   if (!reportConfig.value) return;
 
   // Update sort config
@@ -293,7 +306,7 @@ const handleSortChange = ({ prop, order }: any) => {
       thu_tu: order === 'descending' ? 'desc' : 'asc',
     };
   } else {
-    reportConfig.value.sap_xep = { truong: '', thu_tu: 'asc' };
+    reportConfig.value.sap_xep = {truong: '', thu_tu: 'asc'};
   }
 
   // Reload data with new sort
@@ -338,7 +351,7 @@ const getReportTypeLabel = (type: string): string => {
     'Cham cong': 'Chấm công',
     'Nghi phep': 'Nghỉ phép',
     'Boi hoan': 'Bồi hoàn',
-    'Luong': 'Lương',
+    Luong: 'Lương',
     'Hieu suat': 'Hiệu suất',
   };
   return labels[type] || type;
@@ -350,7 +363,7 @@ const getReportTypeTagType = (type: string): string => {
     'Cham cong': 'success',
     'Nghi phep': 'warning',
     'Boi hoan': 'danger',
-    'Luong': 'info',
+    Luong: 'info',
     'Hieu suat': '',
   };
   return types[type] || '';

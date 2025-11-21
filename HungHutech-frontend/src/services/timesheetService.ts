@@ -20,9 +20,12 @@ class TimesheetService {
   async getAll(
     params?: TimesheetParams,
   ): Promise<PaginatedResponse<Timesheet>> {
-    const response = await api.get<PaginatedResponse<Timesheet>>(this.BASE_URL, {
-      params,
-    });
+    const response = await api.get<PaginatedResponse<Timesheet>>(
+      this.BASE_URL,
+      {
+        params,
+      },
+    );
     return response.data;
   }
 
@@ -41,13 +44,22 @@ class TimesheetService {
     return response.data;
   }
 
-  async updateStatus(id: string, data: {trang_thai: string}): Promise<Timesheet> {
-    const response = await api.put<Timesheet>(`${this.BASE_URL}/${id}/status`, data);
+  async updateStatus(
+    id: string,
+    data: {trang_thai: string},
+  ): Promise<Timesheet> {
+    const response = await api.put<Timesheet>(
+      `${this.BASE_URL}/${id}/status`,
+      data,
+    );
     return response.data;
   }
 
   async approve(id: string, data: ApproveTimesheetRequest): Promise<Timesheet> {
-    const response = await api.put<Timesheet>(`${this.BASE_URL}/${id}/approve`, data);
+    const response = await api.put<Timesheet>(
+      `${this.BASE_URL}/${id}/approve`,
+      data,
+    );
     return response.data;
   }
 

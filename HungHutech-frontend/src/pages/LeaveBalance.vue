@@ -4,7 +4,7 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Số dư phép</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
       </div>
     </div>
 
@@ -47,7 +47,7 @@
 
     <!-- Leave Balance Cards -->
     <div v-if="selectedEmployeeId" class="orangehrm-balance-container">
-      <el-row :gutter="16" v-loading="loading">
+      <el-row v-loading="loading" :gutter="16">
         <el-col
           v-for="balance in balanceList"
           :key="balance.loai_ngay_nghi._id"
@@ -100,7 +100,10 @@
               </div>
             </div>
 
-            <div v-if="balance.loai_ngay_nghi.mo_ta" class="orangehrm-balance-footer">
+            <div
+              v-if="balance.loai_ngay_nghi.mo_ta"
+              class="orangehrm-balance-footer"
+            >
               <el-text size="small" type="info">
                 {{ balance.loai_ngay_nghi.mo_ta }}
               </el-text>
@@ -306,11 +309,11 @@ onMounted(() => {
   }
 
   &.orangehrm-used {
-    color: #E6A23C;
+    color: #e6a23c;
   }
 
   &.orangehrm-available {
-    color: #67C23A;
+    color: #67c23a;
     font-size: $font-size-lg;
   }
 }

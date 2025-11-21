@@ -6,6 +6,7 @@ const { allowRoles } = require('../utils/authHandler');
 const {
   createReview,
   getAllReviews,
+  getMyReviews,
   getReviewById,
   updateReview,
   deleteReview,
@@ -23,10 +24,13 @@ router
   .get([query('nhan_vien_id').optional().isMongoId()], handleValidation, getAllReviews);
 
 router
+  .route('/my')
+  .get(allowRoles('admin', 'manager', 'employee'), getMyReviews);
+
+router
   .route('/:id')
   .get([param('id').isMongoId()], handleValidation, getReviewById)
   .put([allowRoles('admin','manager'), param('id').isMongoId()], handleValidation, updateReview)
   .delete([allowRoles('admin','manager'), param('id').isMongoId()], handleValidation, deleteReview);
 
 module.exports = router;
-

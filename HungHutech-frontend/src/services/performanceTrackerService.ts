@@ -20,12 +20,17 @@ class PerformanceTrackerService {
       den_ngay?: string;
     },
   ): Promise<PaginatedResponse<PerformanceTracker>> {
-    const response = await api.get<PaginatedResponse<PerformanceTracker>>(this.BASE_URL, {params});
+    const response = await api.get<PaginatedResponse<PerformanceTracker>>(
+      this.BASE_URL,
+      {params},
+    );
     return response.data;
   }
 
   async getById(id: string): Promise<PerformanceTracker> {
-    const response = await api.get<PerformanceTracker>(`${this.BASE_URL}/${id}`);
+    const response = await api.get<PerformanceTracker>(
+      `${this.BASE_URL}/${id}`,
+    );
     return response.data;
   }
 
@@ -34,8 +39,14 @@ class PerformanceTrackerService {
     return response.data;
   }
 
-  async update(id: string, data: Partial<PerformanceTracker>): Promise<PerformanceTracker> {
-    const response = await api.put<PerformanceTracker>(`${this.BASE_URL}/${id}`, data);
+  async update(
+    id: string,
+    data: Partial<PerformanceTracker>,
+  ): Promise<PerformanceTracker> {
+    const response = await api.put<PerformanceTracker>(
+      `${this.BASE_URL}/${id}`,
+      data,
+    );
     return response.data;
   }
 
@@ -43,7 +54,10 @@ class PerformanceTrackerService {
     await api.delete(`${this.BASE_URL}/${id}`);
   }
 
-  async addGoal(trackerId: string, goalData: Partial<PerformanceGoal>): Promise<PerformanceTracker> {
+  async addGoal(
+    trackerId: string,
+    goalData: Partial<PerformanceGoal>,
+  ): Promise<PerformanceTracker> {
     const response = await api.post<PerformanceTracker>(
       `${this.BASE_URL}/${trackerId}/goals`,
       goalData,
@@ -55,12 +69,17 @@ class PerformanceTrackerService {
     goalId: string,
     goalData: Partial<PerformanceGoal>,
   ): Promise<PerformanceTracker> {
-    const response = await api.put<PerformanceTracker>(`${this.BASE_URL}/goals/${goalId}`, goalData);
+    const response = await api.put<PerformanceTracker>(
+      `${this.BASE_URL}/goals/${goalId}`,
+      goalData,
+    );
     return response.data;
   }
 
   async deleteGoal(goalId: string): Promise<PerformanceTracker> {
-    const response = await api.delete<PerformanceTracker>(`${this.BASE_URL}/goals/${goalId}`);
+    const response = await api.delete<PerformanceTracker>(
+      `${this.BASE_URL}/goals/${goalId}`,
+    );
     return response.data;
   }
 
@@ -81,9 +100,12 @@ class PerformanceTrackerService {
     tu_ngay?: string;
     den_ngay?: string;
   }): Promise<PerformanceTrackerStatistics> {
-    const response = await api.get<PerformanceTrackerStatistics>(`${this.BASE_URL}/statistics`, {
-      params,
-    });
+    const response = await api.get<PerformanceTrackerStatistics>(
+      `${this.BASE_URL}/statistics`,
+      {
+        params,
+      },
+    );
     return response.data;
   }
 }

@@ -1,6 +1,11 @@
 <template>
   <div v-loading="loading" class="orangehrm-job-info">
-    <el-form ref="formRef" :model="form" label-width="180px" label-position="left">
+    <el-form
+      ref="formRef"
+      :model="form"
+      label-width="180px"
+      label-position="left"
+    >
       <div class="orangehrm-form-section">
         <h3 class="orangehrm-section-title">Thông tin công việc</h3>
 
@@ -56,7 +61,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Trạng thái lao động" prop="trang_thai_lao_dong_id">
+            <el-form-item
+              label="Trạng thái lao động"
+              prop="trang_thai_lao_dong_id"
+            >
               <el-select
                 v-model="form.thong_tin_cong_viec.trang_thai_lao_dong_id"
                 placeholder="Chọn trạng thái"
@@ -76,12 +84,17 @@
       </div>
 
       <div class="orangehrm-form-actions">
-        <el-button v-if="!isEditing" type="primary" @click="isEditing = true" :icon="Edit">
+        <el-button
+          v-if="!isEditing"
+          type="primary"
+          :icon="Edit"
+          @click="isEditing = true"
+        >
           Chỉnh sửa
         </el-button>
         <template v-else>
           <el-button @click="handleCancel">Hủy</el-button>
-          <el-button type="primary" @click="handleSave" :loading="saving">
+          <el-button type="primary" :loading="saving" @click="handleSave">
             Lưu thay đổi
           </el-button>
         </template>
@@ -130,9 +143,13 @@ watch(
     if (newEmployee?.thong_tin_cong_viec) {
       form.thong_tin_cong_viec = {
         ngay_vao_lam: newEmployee.thong_tin_cong_viec.ngay_vao_lam || '',
-        chuc_danh_id: (newEmployee.thong_tin_cong_viec.chuc_danh_id as any)?._id || '',
-        phong_ban_id: (newEmployee.thong_tin_cong_viec.phong_ban_id as any)?._id || '',
-        trang_thai_lao_dong_id: (newEmployee.thong_tin_cong_viec.trang_thai_lao_dong_id as any)?._id || '',
+        chuc_danh_id:
+          (newEmployee.thong_tin_cong_viec.chuc_danh_id as any)?._id || '',
+        phong_ban_id:
+          (newEmployee.thong_tin_cong_viec.phong_ban_id as any)?._id || '',
+        trang_thai_lao_dong_id:
+          (newEmployee.thong_tin_cong_viec.trang_thai_lao_dong_id as any)
+            ?._id || '',
       };
     }
   },

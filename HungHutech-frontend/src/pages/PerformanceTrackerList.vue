@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Theo dõi hiệu suất</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="handleCreate" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="handleCreate">
           Tạo tracker mới
         </el-button>
       </div>
@@ -60,7 +60,11 @@
             </div>
             <div class="stats-info">
               <div class="stats-value">
-                {{ statistics.diem_trung_binh !== null ? statistics.diem_trung_binh.toFixed(1) : '-' }}
+                {{
+                  statistics.diem_trung_binh !== null
+                    ? statistics.diem_trung_binh.toFixed(1)
+                    : '-'
+                }}
               </div>
               <div class="stats-label">Điểm TB</div>
             </div>
@@ -149,7 +153,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleFilterChange" :icon="Search">
+          <el-button type="primary" :icon="Search" @click="handleFilterChange">
             Tìm kiếm
           </el-button>
         </el-form-item>
@@ -167,8 +171,13 @@
       >
         <el-table-column type="index" label="STT" width="60" />
 
-        <el-table-column prop="ten_tracker" label="Tên tracker" min-width="220" fixed>
-          <template #default="{ row }">
+        <el-table-column
+          prop="ten_tracker"
+          label="Tên tracker"
+          min-width="220"
+          fixed
+        >
+          <template #default="{row}">
             <div class="tracker-name">
               <strong>{{ row.ten_tracker }}</strong>
               <div v-if="row.ghi_chu" class="orangehrm-text-muted">
@@ -179,8 +188,10 @@
         </el-table-column>
 
         <el-table-column prop="nhan_vien_id" label="Nhân viên" min-width="180">
-          <template #default="{ row }">
-            <div v-if="typeof row.nhan_vien_id === 'object' && row.nhan_vien_id">
+          <template #default="{row}">
+            <div
+              v-if="typeof row.nhan_vien_id === 'object' && row.nhan_vien_id"
+            >
               <strong>{{ row.nhan_vien_id.ma_nhan_vien }}</strong>
               <div class="orangehrm-text-muted">
                 {{ row.nhan_vien_id.ho_dem }} {{ row.nhan_vien_id.ten }}
@@ -189,16 +200,25 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="nguoi_danh_gia_id" label="Người đánh giá" min-width="180">
-          <template #default="{ row }">
-            <div v-if="typeof row.nguoi_danh_gia_id === 'object' && row.nguoi_danh_gia_id">
+        <el-table-column
+          prop="nguoi_danh_gia_id"
+          label="Người đánh giá"
+          min-width="180"
+        >
+          <template #default="{row}">
+            <div
+              v-if="
+                typeof row.nguoi_danh_gia_id === 'object' &&
+                row.nguoi_danh_gia_id
+              "
+            >
               {{ row.nguoi_danh_gia_id.ho_dem }} {{ row.nguoi_danh_gia_id.ten }}
             </div>
           </template>
         </el-table-column>
 
         <el-table-column label="Kỳ đánh giá" width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div v-if="row.ky_danh_gia">
               {{ formatDate(row.ky_danh_gia.tu_ngay) }} -
               {{ formatDate(row.ky_danh_gia.den_ngay) }}
@@ -207,7 +227,7 @@
         </el-table-column>
 
         <el-table-column label="Tiến độ" width="180">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="progress-cell">
               <el-progress
                 :percentage="row.tien_do_tong || 0"
@@ -218,9 +238,18 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="diem_trung_binh" label="Điểm TB" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag v-if="row.diem_trung_binh" :type="getScoreType(row.diem_trung_binh)" size="large">
+        <el-table-column
+          prop="diem_trung_binh"
+          label="Điểm TB"
+          width="100"
+          align="center"
+        >
+          <template #default="{row}">
+            <el-tag
+              v-if="row.diem_trung_binh"
+              :type="getScoreType(row.diem_trung_binh)"
+              size="large"
+            >
               {{ row.diem_trung_binh.toFixed(1) }}
             </el-tag>
             <span v-else class="orangehrm-text-muted">-</span>
@@ -228,7 +257,7 @@
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row.trang_thai)" size="small">
               {{ row.trang_thai }}
             </el-tag>
@@ -236,17 +265,24 @@
         </el-table-column>
 
         <el-table-column label="Mục tiêu" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag type="info" size="small">{{ row.muc_tieu?.length || 0 }}</el-tag>
+          <template #default="{row}">
+            <el-tag type="info" size="small">{{
+              row.muc_tieu?.length || 0
+            }}</el-tag>
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button size="small" :icon="View" @click="handleView(row)">Xem</el-button>
+              <el-button size="small" :icon="View" @click="handleView(row)"
+                >Xem</el-button
+              >
               <el-button
-                v-if="row.trang_thai !== 'Đã hoàn thành' && row.trang_thai !== 'Đã hủy'"
+                v-if="
+                  row.trang_thai !== 'Đã hoàn thành' &&
+                  row.trang_thai !== 'Đã hủy'
+                "
                 size="small"
                 :icon="Edit"
                 @click="handleEdit(row)"
@@ -301,7 +337,11 @@ import {
 import {ElMessage, ElMessageBox} from 'element-plus';
 import performanceTrackerService from '@/services/performanceTrackerService';
 import nhanVienService from '@/services/nhanVienService';
-import {PerformanceTracker, NhanVien, PerformanceTrackerStatistics} from '@/types';
+import {
+  PerformanceTracker,
+  NhanVien,
+  PerformanceTrackerStatistics,
+} from '@/types';
 
 const router = useRouter();
 const trackerList = ref<PerformanceTracker[]>([]);
@@ -344,7 +384,8 @@ const loadData = async () => {
 
     if (filters.q) params.q = filters.q;
     if (filters.nhan_vien_id) params.nhan_vien_id = filters.nhan_vien_id;
-    if (filters.nguoi_danh_gia_id) params.nguoi_danh_gia_id = filters.nguoi_danh_gia_id;
+    if (filters.nguoi_danh_gia_id)
+      params.nguoi_danh_gia_id = filters.nguoi_danh_gia_id;
     if (filters.trang_thai) params.trang_thai = filters.trang_thai;
     if (filters.tu_ngay) params.tu_ngay = filters.tu_ngay;
     if (filters.den_ngay) params.den_ngay = filters.den_ngay;
@@ -365,7 +406,8 @@ const loadStatistics = async () => {
   try {
     const params: any = {};
     if (filters.nhan_vien_id) params.nhan_vien_id = filters.nhan_vien_id;
-    if (filters.nguoi_danh_gia_id) params.nguoi_danh_gia_id = filters.nguoi_danh_gia_id;
+    if (filters.nguoi_danh_gia_id)
+      params.nguoi_danh_gia_id = filters.nguoi_danh_gia_id;
     if (filters.tu_ngay) params.tu_ngay = filters.tu_ngay;
     if (filters.den_ngay) params.den_ngay = filters.den_ngay;
 
@@ -418,7 +460,11 @@ const handleCreate = () => {
 };
 
 const handleView = (item: PerformanceTracker) => {
-  router.push({name: 'performance-tracker-form', params: {id: item._id}, query: {mode: 'view'}});
+  router.push({
+    name: 'performance-tracker-form',
+    params: {id: item._id},
+    query: {mode: 'view'},
+  });
 };
 
 const handleEdit = (item: PerformanceTracker) => {
@@ -427,11 +473,15 @@ const handleEdit = (item: PerformanceTracker) => {
 
 const handleDelete = async (id: string) => {
   try {
-    await ElMessageBox.confirm('Bạn có chắc chắn muốn xóa tracker này?', 'Xác nhận xóa', {
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-      type: 'warning',
-    });
+    await ElMessageBox.confirm(
+      'Bạn có chắc chắn muốn xóa tracker này?',
+      'Xác nhận xóa',
+      {
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning',
+      },
+    );
 
     await performanceTrackerService.delete(id);
     ElMessage.success('Xóa tracker thành công');
@@ -458,7 +508,7 @@ const truncateText = (text: string, maxLength: number): string => {
 
 const getStatusType = (status: string): string => {
   const types: Record<string, string> = {
-    'Nháp': 'info',
+    Nháp: 'info',
     'Đang theo dõi': 'warning',
     'Đã hoàn thành': 'success',
     'Đã hủy': 'danger',

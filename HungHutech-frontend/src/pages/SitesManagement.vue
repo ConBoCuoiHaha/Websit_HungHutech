@@ -2,7 +2,9 @@
   <div class="sites-container">
     <div class="page-header">
       <h1>📍 Quản lý Địa điểm Chấm công</h1>
-      <p class="subtitle">Quản lý các địa điểm cho phép nhân viên chấm công qua ứng dụng di động</p>
+      <p class="subtitle">
+        Quản lý các địa điểm cho phép nhân viên chấm công qua ứng dụng di động
+      </p>
     </div>
 
     <!-- Toolbar -->
@@ -10,19 +12,19 @@
       <div class="search-box">
         <input
           v-model="searchQuery"
-          @input="handleSearch"
           placeholder="🔍 Tìm kiếm theo tên, địa chỉ, mã..."
           class="search-input"
+          @input="handleSearch"
         />
       </div>
-      <button @click="openCreateForm" class="btn-primary">
+      <button class="btn-primary" @click="openCreateForm">
         ➕ Thêm địa điểm
       </button>
     </div>
 
     <!-- Table -->
     <div class="table-container">
-      <table class="sites-table" v-if="!loading && sites.length > 0">
+      <table v-if="!loading && sites.length > 0" class="sites-table">
         <thead>
           <tr>
             <th>Mã</th>
@@ -37,27 +39,48 @@
         </thead>
         <tbody>
           <tr v-for="site in sites" :key="site._id">
-            <td><strong>{{ site.siteId }}</strong></td>
+            <td>
+              <strong>{{ site.siteId }}</strong>
+            </td>
             <td>{{ site.name }}</td>
             <td>{{ site.address }}</td>
             <td class="coordinates">
-              <span>{{ site.latitude?.toFixed(6) }}, {{ site.longitude?.toFixed(6) }}</span>
+              <span
+                >{{ site.latitude?.toFixed(6) }},
+                {{ site.longitude?.toFixed(6) }}</span
+              >
             </td>
-            <td><span class="radius-badge">{{ site.radius }}m</span></td>
             <td>
-              <span :class="site.isActive ? 'status-active' : 'status-inactive'">
+              <span class="radius-badge">{{ site.radius }}m</span>
+            </td>
+            <td>
+              <span
+                :class="site.isActive ? 'status-active' : 'status-inactive'"
+              >
                 {{ site.isActive ? '🟢 Hoạt động' : '🔴 Tắt' }}
               </span>
             </td>
             <td>{{ formatDate(site.createdAt) }}</td>
             <td class="actions-col">
-              <button @click="editSite(site)" class="btn-action btn-edit" title="Sửa">
+              <button
+                class="btn-action btn-edit"
+                title="Sửa"
+                @click="editSite(site)"
+              >
                 ✏️
               </button>
-              <button @click="toggleSite(site)" class="btn-action btn-toggle" :title="site.isActive ? 'Tắt' : 'Bật'">
+              <button
+                class="btn-action btn-toggle"
+                :title="site.isActive ? 'Tắt' : 'Bật'"
+                @click="toggleSite(site)"
+              >
                 {{ site.isActive ? '🔴' : '🟢' }}
               </button>
-              <button @click="deleteSite(site)" class="btn-action btn-delete" title="Xóa">
+              <button
+                class="btn-action btn-delete"
+                title="Xóa"
+                @click="deleteSite(site)"
+              >
                 🗑️
               </button>
             </td>
@@ -74,7 +97,9 @@
       <!-- Empty State -->
       <div v-if="!loading && sites.length === 0" class="empty-state">
         <p>📭 Chưa có địa điểm nào</p>
-        <button @click="openCreateForm" class="btn-primary">Thêm địa điểm đầu tiên</button>
+        <button class="btn-primary" @click="openCreateForm">
+          Thêm địa điểm đầu tiên
+        </button>
       </div>
     </div>
 
@@ -83,10 +108,10 @@
       <div class="modal-content" @click.stop>
         <div class="modal-header">
           <h2>{{ editingId ? '✏️ Sửa' : '➕ Thêm' }} Địa điểm</h2>
-          <button @click="closeForm" class="btn-close">✖</button>
+          <button class="btn-close" @click="closeForm">✖</button>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="modal-body">
+        <form class="modal-body" @submit.prevent="handleSubmit">
           <div class="form-group">
             <label class="form-label required">Tên địa điểm</label>
             <input
@@ -137,13 +162,17 @@
           <div class="form-group">
             <button
               type="button"
-              @click="getCurrentLocation"
               class="btn-secondary"
               :disabled="gettingLocation"
+              @click="getCurrentLocation"
             >
-              {{ gettingLocation ? '⏳ Đang lấy...' : '📍 Lấy vị trí hiện tại' }}
+              {{
+                gettingLocation ? '⏳ Đang lấy...' : '📍 Lấy vị trí hiện tại'
+              }}
             </button>
-            <small class="form-text">Sử dụng GPS của trình duyệt để lấy tọa độ hiện tại</small>
+            <small class="form-text"
+              >Sử dụng GPS của trình duyệt để lấy tọa độ hiện tại</small
+            >
           </div>
 
           <div class="form-group">
@@ -156,7 +185,10 @@
               class="form-control"
               required
             />
-            <small class="form-text">Nhân viên cần ở trong bán kính {{ form.radius }}m để chấm công</small>
+            <small class="form-text"
+              >Nhân viên cần ở trong bán kính {{ form.radius }}m để chấm
+              công</small
+            >
           </div>
 
           <div class="form-group">
@@ -167,7 +199,7 @@
           </div>
 
           <div class="form-actions">
-            <button type="button" @click="closeForm" class="btn-cancel">
+            <button type="button" class="btn-cancel" @click="closeForm">
               Hủy
             </button>
             <button type="submit" class="btn-save" :disabled="saving">
@@ -181,8 +213,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import sitesService, { type Site } from '@/services/sitesService';
+import {ref, onMounted} from 'vue';
+import sitesService, {type Site} from '@/services/sitesService';
 
 const sites = ref<Site[]>([]);
 const searchQuery = ref('');
@@ -198,7 +230,7 @@ const form = ref({
   longitude: 106.7009,
   latitude: 10.7756,
   radius: 150,
-  isActive: true
+  isActive: true,
 });
 
 onMounted(() => {
@@ -210,12 +242,15 @@ async function loadSites() {
     loading.value = true;
     const response = await sitesService.getAll({
       q: searchQuery.value,
-      limit: 100
+      limit: 100,
     });
     sites.value = response.data;
   } catch (error: any) {
     console.error('Error loading sites:', error);
-    alert('❌ Lỗi khi tải danh sách địa điểm: ' + (error.response?.data?.msg || error.message));
+    alert(
+      '❌ Lỗi khi tải danh sách địa điểm: ' +
+        (error.response?.data?.msg || error.message),
+    );
   } finally {
     loading.value = false;
   }
@@ -233,7 +268,7 @@ function openCreateForm() {
     longitude: 106.7009,
     latitude: 10.7756,
     radius: 150,
-    isActive: true
+    isActive: true,
   };
   showForm.value = true;
 }
@@ -246,7 +281,7 @@ function editSite(site: Site) {
     longitude: site.longitude!,
     latitude: site.latitude!,
     radius: site.radius,
-    isActive: site.isActive
+    isActive: site.isActive,
   };
   showForm.value = true;
 }
@@ -288,12 +323,20 @@ async function toggleSite(site: Site) {
     loadSites();
   } catch (error: any) {
     console.error('Error toggling site:', error);
-    alert('❌ Lỗi khi cập nhật trạng thái: ' + (error.response?.data?.msg || error.message));
+    alert(
+      '❌ Lỗi khi cập nhật trạng thái: ' +
+        (error.response?.data?.msg || error.message),
+    );
   }
 }
 
 async function deleteSite(site: Site) {
-  if (!confirm(`⚠️ Xóa địa điểm "${site.name}"?\n\nThao tác này không thể hoàn tác!`)) return;
+  if (
+    !confirm(
+      `⚠️ Xóa địa điểm "${site.name}"?\n\nThao tác này không thể hoàn tác!`,
+    )
+  )
+    return;
 
   try {
     await sitesService.delete(site._id!);
@@ -318,18 +361,27 @@ function getCurrentLocation() {
       form.value.latitude = position.coords.latitude;
       form.value.longitude = position.coords.longitude;
       gettingLocation.value = false;
-      alert('✅ Đã lấy vị trí hiện tại!\n\nLat: ' + position.coords.latitude.toFixed(6) + '\nLng: ' + position.coords.longitude.toFixed(6));
+      alert(
+        '✅ Đã lấy vị trí hiện tại!\n\nLat: ' +
+          position.coords.latitude.toFixed(6) +
+          '\nLng: ' +
+          position.coords.longitude.toFixed(6),
+      );
     },
     (error) => {
       gettingLocation.value = false;
       console.error('Geolocation error:', error);
-      alert('❌ Không thể lấy vị trí:\n' + error.message + '\n\nVui lòng:\n1. Bật GPS\n2. Cho phép trình duyệt truy cập vị trí\n3. Sử dụng HTTPS');
+      alert(
+        '❌ Không thể lấy vị trí:\n' +
+          error.message +
+          '\n\nVui lòng:\n1. Bật GPS\n2. Cho phép trình duyệt truy cập vị trí\n3. Sử dụng HTTPS',
+      );
     },
     {
       enableHighAccuracy: true,
       timeout: 10000,
-      maximumAge: 0
-    }
+      maximumAge: 0,
+    },
   );
 }
 
@@ -406,7 +458,7 @@ function formatDate(dateString?: string): string {
 .table-container {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -511,8 +563,12 @@ function formatDate(dateString?: string): string {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Modal Styles */
@@ -531,8 +587,12 @@ function formatDate(dateString?: string): string {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -666,7 +726,7 @@ function formatDate(dateString?: string): string {
   color: #2c3e50;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-label input[type='checkbox'] {
   width: 18px;
   height: 18px;
   cursor: pointer;

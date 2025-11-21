@@ -4,7 +4,14 @@
     <el-card class="orangehrm-employee-header" shadow="never">
       <div class="orangehrm-employee-header-content">
         <div class="orangehrm-employee-avatar-section">
-          <el-avatar :size="120" :src="employee?.avatar_url ? uploadService.getFileUrl(employee.avatar_url) : undefined">
+          <el-avatar
+            :size="120"
+            :src="
+              employee?.avatar_url
+                ? uploadService.getFileUrl(employee.avatar_url)
+                : undefined
+            "
+          >
             <el-icon :size="60"><User /></el-icon>
           </el-avatar>
           <el-upload
@@ -22,17 +29,29 @@
           <h1 class="orangehrm-employee-name">
             {{ employee?.ho_dem }} {{ employee?.ten }}
           </h1>
-          <p class="orangehrm-employee-id">Mã NV: {{ employee?.ma_nhan_vien }}</p>
+          <p class="orangehrm-employee-id">
+            Mã NV: {{ employee?.ma_nhan_vien }}
+          </p>
           <div class="orangehrm-employee-tags">
-            <el-tag v-if="employee?.thong_tin_cong_viec?.chuc_danh_id" type="primary">
+            <el-tag
+              v-if="employee?.thong_tin_cong_viec?.chuc_danh_id"
+              type="primary"
+            >
               {{ employee.thong_tin_cong_viec.chuc_danh_id.ten_chuc_danh }}
             </el-tag>
-            <el-tag v-if="employee?.thong_tin_cong_viec?.phong_ban_id" type="success">
+            <el-tag
+              v-if="employee?.thong_tin_cong_viec?.phong_ban_id"
+              type="success"
+            >
               {{ employee.thong_tin_cong_viec.phong_ban_id.ten }}
             </el-tag>
             <el-tag
               v-if="employee?.thong_tin_cong_viec?.trang_thai_lao_dong_id"
-              :type="getEmploymentStatusType(employee.thong_tin_cong_viec.trang_thai_lao_dong_id.ten)"
+              :type="
+                getEmploymentStatusType(
+                  employee.thong_tin_cong_viec.trang_thai_lao_dong_id.ten,
+                )
+              "
             >
               {{ employee.thong_tin_cong_viec.trang_thai_lao_dong_id.ten }}
             </el-tag>
@@ -40,8 +59,13 @@
         </div>
 
         <div class="orangehrm-employee-actions">
-          <el-button @click="handleBack" :icon="Back">Quay lại</el-button>
-          <el-button v-if="canEdit" type="primary" @click="activeTab = 'personal'" :icon="Edit">
+          <el-button :icon="Back" @click="handleBack">Quay lại</el-button>
+          <el-button
+            v-if="canEdit"
+            type="primary"
+            :icon="Edit"
+            @click="activeTab = 'personal'"
+          >
             Chỉnh sửa
           </el-button>
         </div>
@@ -86,6 +110,14 @@
             @reload="loadEmployee"
           />
         </el-tab-pane>
+        <!-- Tab Thong tin BHXH -->
+        <el-tab-pane label="Th�ng tin BHXH" name="insurance">
+          <EmployeeInsuranceInfo
+            :employee="employee"
+            :loading="loading"
+            @reload="loadEmployee"
+          />
+        </el-tab-pane>
 
         <!-- Tab Báo cáo -->
         <el-tab-pane label="Báo cáo cho" name="report">
@@ -122,7 +154,6 @@
             @reload="loadEmployee"
           />
         </el-tab-pane>
-
         <!-- Tab Liên hệ khẩn cấp -->
         <el-tab-pane label="Liên hệ khẩn cấp" name="emergency">
           <EmployeeEmergencyContacts
@@ -168,6 +199,7 @@ import EmployeePersonalInfo from '@/components/employee/EmployeePersonalInfo.vue
 import EmployeeContactInfo from '@/components/employee/EmployeeContactInfo.vue';
 import EmployeeJobInfo from '@/components/employee/EmployeeJobInfo.vue';
 import EmployeeSalaryInfo from '@/components/employee/EmployeeSalaryInfo.vue';
+import EmployeeInsuranceInfo from '@/components/employee/EmployeeInsuranceInfo.vue';
 import EmployeeReportInfo from '@/components/employee/EmployeeReportInfo.vue';
 import EmployeeQualifications from '@/components/employee/EmployeeQualifications.vue';
 import EmployeeDependents from '@/components/employee/EmployeeDependents.vue';
@@ -225,7 +257,10 @@ const handleAvatarUpload = async (file: File) => {
   }
 
   try {
-    const uploadResult = await uploadService.uploadEmployeePhoto(employeeId.value, file);
+    const uploadResult = await uploadService.uploadEmployeePhoto(
+      employeeId.value,
+      file,
+    );
     ElMessage.success('Tải ảnh đại diện thành công');
 
     // Reload employee to get updated avatar

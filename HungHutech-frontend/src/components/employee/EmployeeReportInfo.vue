@@ -4,12 +4,17 @@
       <div class="orangehrm-form-section">
         <div class="orangehrm-section-header">
           <h3 class="orangehrm-section-title">Báo cáo cho</h3>
-          <el-button v-if="!isEditing" type="primary" @click="isEditing = true" :icon="Edit">
+          <el-button
+            v-if="!isEditing"
+            type="primary"
+            :icon="Edit"
+            @click="isEditing = true"
+          >
             Chỉnh sửa
           </el-button>
           <template v-else>
             <el-button @click="handleCancel">Hủy</el-button>
-            <el-button type="primary" @click="handleSave" :loading="saving">
+            <el-button type="primary" :loading="saving" @click="handleSave">
               Lưu thay đổi
             </el-button>
           </template>
@@ -33,14 +38,17 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Danh sách quản lý hiện tại" v-if="currentManagers.length > 0">
+        <el-form-item
+          v-if="currentManagers.length > 0"
+          label="Danh sách quản lý hiện tại"
+        >
           <el-tag
             v-for="manager in currentManagers"
             :key="manager._id"
             closable
-            @close="removeManager(manager._id)"
             :disable-transitions="false"
             style="margin-right: 10px; margin-bottom: 10px"
+            @close="removeManager(manager._id)"
           >
             {{ manager.ma_nhan_vien }} - {{ manager.ho_dem }} {{ manager.ten }}
           </el-tag>
@@ -75,16 +83,19 @@ const managersLoading = ref(false);
 
 const currentManagers = computed(() => {
   if (!props.employee?.thong_tin_cong_viec?.quan_ly_truc_tiep_ids) return [];
-  return props.employee.thong_tin_cong_viec.quan_ly_truc_tiep_ids.filter((m): m is NhanVien => typeof m === 'object');
+  return props.employee.thong_tin_cong_viec.quan_ly_truc_tiep_ids.filter(
+    (m): m is NhanVien => typeof m === 'object',
+  );
 });
 
 watch(
   () => props.employee,
   (newEmployee) => {
     if (newEmployee?.thong_tin_cong_viec?.quan_ly_truc_tiep_ids) {
-      managerIds.value = newEmployee.thong_tin_cong_viec.quan_ly_truc_tiep_ids.map((m: any) =>
-        typeof m === 'object' ? m._id : m
-      );
+      managerIds.value =
+        newEmployee.thong_tin_cong_viec.quan_ly_truc_tiep_ids.map((m: any) =>
+          typeof m === 'object' ? m._id : m,
+        );
     }
   },
   {immediate: true},
@@ -94,9 +105,12 @@ const loadAvailableManagers = async () => {
   try {
     managersLoading.value = true;
     const response = await nhanVienService.getAll({limit: 1000});
-    const list: any[] = (response as any)?.data || (response as any)?.items || [];
+    const list: any[] =
+      (response as any)?.data || (response as any)?.items || [];
     // Exclude current employee from list
-    availableManagers.value = list.filter((emp: any) => emp?._id && emp._id !== props.employee?._id);
+    availableManagers.value = list.filter(
+      (emp: any) => emp?._id && emp._id !== props.employee?._id,
+    );
   } catch (err) {
     console.error('Error loading managers:', err);
   } finally {
@@ -129,14 +143,15 @@ const handleSave = async () => {
 const handleCancel = () => {
   isEditing.value = false;
   if (props.employee?.thong_tin_cong_viec?.quan_ly_truc_tiep_ids) {
-    managerIds.value = props.employee.thong_tin_cong_viec.quan_ly_truc_tiep_ids.map((m: any) =>
-      typeof m === 'object' ? m._id : m
-    );
+    managerIds.value =
+      props.employee.thong_tin_cong_viec.quan_ly_truc_tiep_ids.map((m: any) =>
+        typeof m === 'object' ? m._id : m,
+      );
   }
 };
 
 const removeManager = (managerId: string) => {
-  managerIds.value = managerIds.value.filter(id => id !== managerId);
+  managerIds.value = managerIds.value.filter((id) => id !== managerId);
 };
 
 // Ensure managers are loaded when component mounts and when entering edit mode

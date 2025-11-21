@@ -4,7 +4,7 @@
       <template #header>
         <div class="orangehrm-card-header">
           <h2 class="orangehrm-card-title">Quản lý Người dùng</h2>
-          <el-button type="primary" @click="handleAdd" :icon="Plus">
+          <el-button type="primary" :icon="Plus" @click="handleAdd">
             Thêm Người dùng
           </el-button>
         </div>
@@ -28,8 +28,8 @@
               v-model="filterRole"
               placeholder="Lọc theo vai trò"
               clearable
-              @change="handleSearch"
               style="width: 100%"
+              @change="handleSearch"
             >
               <el-option label="Admin" value="admin" />
               <el-option label="Quản lý" value="manager" />
@@ -37,7 +37,7 @@
             </el-select>
           </el-col>
           <el-col :span="4">
-            <el-button type="primary" @click="handleSearch" :icon="Search">
+            <el-button type="primary" :icon="Search" @click="handleSearch">
               Tìm kiếm
             </el-button>
           </el-col>
@@ -56,7 +56,8 @@
         <el-table-column label="Nhân viên liên kết" min-width="180">
           <template #default="scope">
             <span v-if="scope.row.nhan_vien_id">
-              {{ scope.row.nhan_vien_id.ho_dem }} {{ scope.row.nhan_vien_id.ten }}
+              {{ scope.row.nhan_vien_id.ho_dem }}
+              {{ scope.row.nhan_vien_id.ten }}
             </span>
             <el-tag v-else type="info" size="small">Chưa liên kết</el-tag>
           </template>
@@ -77,7 +78,7 @@
         </el-table-column>
         <el-table-column label="Thao tác" width="200" align="center">
           <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.row)" :icon="Edit">
+            <el-button size="small" :icon="Edit" @click="handleEdit(scope.row)">
               Sửa
             </el-button>
             <el-button
@@ -118,23 +119,52 @@
         label-width="140px"
       >
         <el-form-item label="Email" prop="email" required>
-          <el-input v-model="form.email" type="email" placeholder="user@company.com" :disabled="editMode" />
+          <el-input
+            v-model="form.email"
+            type="email"
+            placeholder="user@company.com"
+            :disabled="editMode"
+          />
         </el-form-item>
 
         <el-form-item label="Vai trò" prop="role" required>
-          <el-select v-model="form.role" placeholder="Chọn vai trò" style="width: 100%">
+          <el-select
+            v-model="form.role"
+            placeholder="Chọn vai trò"
+            style="width: 100%"
+          >
             <el-option label="Admin" value="admin" />
             <el-option label="Quản lý" value="manager" />
             <el-option label="Nhân viên" value="employee" />
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="!editMode" label="Mật khẩu" prop="password" required>
-          <el-input v-model="form.password" type="password" placeholder="Mật khẩu" show-password />
+        <el-form-item
+          v-if="!editMode"
+          label="Mật khẩu"
+          prop="password"
+          required
+        >
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="Mật khẩu"
+            show-password
+          />
         </el-form-item>
 
-        <el-form-item v-if="!editMode" label="Xác nhận MK" prop="confirmPassword" required>
-          <el-input v-model="form.confirmPassword" type="password" placeholder="Nhập lại mật khẩu" show-password />
+        <el-form-item
+          v-if="!editMode"
+          label="Xác nhận MK"
+          prop="confirmPassword"
+          required
+        >
+          <el-input
+            v-model="form.confirmPassword"
+            type="password"
+            placeholder="Nhập lại mật khẩu"
+            show-password
+          />
         </el-form-item>
 
         <el-form-item label="Nhân viên" prop="nhan_vien_id">
@@ -155,13 +185,17 @@
         </el-form-item>
 
         <el-form-item label="Trạng thái" prop="active">
-          <el-switch v-model="form.active" active-text="Hoạt động" inactive-text="Khóa" />
+          <el-switch
+            v-model="form.active"
+            active-text="Hoạt động"
+            inactive-text="Khóa"
+          />
         </el-form-item>
       </el-form>
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editMode ? 'Cập nhật' : 'Thêm mới' }}
         </el-button>
       </template>
@@ -249,7 +283,9 @@ const loadUsers = async () => {
     total.value = response.pagination?.total || 0;
   } catch (err: any) {
     console.error('Error loading users:', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải danh sách người dùng');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải danh sách người dùng',
+    );
   } finally {
     loading.value = false;
   }
@@ -306,23 +342,31 @@ const handleEdit = (row: any) => {
 
 const handleToggleStatus = async (row: any) => {
   try {
-    const employeeName = row.nhan_vien_id ? `${row.nhan_vien_id.ho_dem} ${row.nhan_vien_id.ten}` : row.email;
+    const employeeName = row.nhan_vien_id
+      ? `${row.nhan_vien_id.ho_dem} ${row.nhan_vien_id.ten}`
+      : row.email;
     await ElMessageBox.confirm(
-      `Bạn có chắc chắn muốn ${row.active ? 'khóa' : 'mở khóa'} người dùng "${employeeName}"?`,
+      `Bạn có chắc chắn muốn ${
+        row.active ? 'khóa' : 'mở khóa'
+      } người dùng "${employeeName}"?`,
       'Xác nhận',
       {
         confirmButtonText: 'Xác nhận',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     await userService.update(row._id, {active: !row.active});
-    ElMessage.success(`${row.active ? 'Khóa' : 'Mở khóa'} người dùng thành công`);
+    ElMessage.success(
+      `${row.active ? 'Khóa' : 'Mở khóa'} người dùng thành công`,
+    );
     loadUsers();
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật trạng thái');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể cập nhật trạng thái',
+      );
     }
   }
 };
@@ -385,7 +429,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-user-list {
   padding: $spacing-xl;

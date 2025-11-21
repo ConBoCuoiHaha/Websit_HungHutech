@@ -10,21 +10,27 @@
       <div class="stat-card">
         <div class="stat-icon">📝</div>
         <div class="stat-content">
-          <div class="stat-value">{{ (stats.totalLogs || 0).toLocaleString() }}</div>
+          <div class="stat-value">
+            {{ (stats.totalLogs || 0).toLocaleString() }}
+          </div>
           <div class="stat-label">Tổng lượt truy cập</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon">👥</div>
         <div class="stat-content">
-          <div class="stat-value">{{ (stats.totalUsers || 0).toLocaleString() }}</div>
+          <div class="stat-value">
+            {{ (stats.totalUsers || 0).toLocaleString() }}
+          </div>
           <div class="stat-label">Người dùng hoạt động</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon">⚡</div>
         <div class="stat-content">
-          <div class="stat-value">{{ (stats.avgResponseTime || 0).toFixed(0) }}ms</div>
+          <div class="stat-value">
+            {{ (stats.avgResponseTime || 0).toFixed(0) }}ms
+          </div>
           <div class="stat-label">Thời gian phản hồi TB</div>
         </div>
       </div>
@@ -42,12 +48,16 @@
       <div class="filters-row">
         <input
           v-model="filters.search"
-          @input="handleSearch"
           placeholder="🔍 Tìm kiếm theo endpoint, IP, user..."
           class="search-input"
+          @input="handleSearch"
         />
 
-        <select v-model="filters.action" @change="fetchLogs" class="filter-select">
+        <select
+          v-model="filters.action"
+          class="filter-select"
+          @change="fetchLogs"
+        >
           <option value="">Tất cả hành động</option>
           <option value="LOGIN">LOGIN</option>
           <option value="LOGOUT">LOGOUT</option>
@@ -58,7 +68,11 @@
           <option value="EXPORT">EXPORT</option>
         </select>
 
-        <select v-model="filters.method" @change="fetchLogs" class="filter-select">
+        <select
+          v-model="filters.method"
+          class="filter-select"
+          @change="fetchLogs"
+        >
           <option value="">Tất cả methods</option>
           <option value="GET">GET</option>
           <option value="POST">POST</option>
@@ -69,22 +83,24 @@
 
         <input
           v-model="filters.startDate"
-          @change="fetchLogs"
           type="date"
           class="date-input"
           placeholder="Từ ngày"
+          @change="fetchLogs"
         />
 
         <input
           v-model="filters.endDate"
-          @change="fetchLogs"
           type="date"
           class="date-input"
           placeholder="Đến ngày"
+          @change="fetchLogs"
         />
 
-        <button @click="resetFilters" class="btn-secondary">🔄 Reset</button>
-        <button @click="showStatsModal = true" class="btn-info">📊 Thống kê</button>
+        <button class="btn-secondary" @click="resetFilters">🔄 Reset</button>
+        <button class="btn-info" @click="showStatsModal = true">
+          📊 Thống kê
+        </button>
       </div>
     </div>
 
@@ -112,7 +128,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="log in logs" :key="log._id" :class="{ 'error-row': log.statusCode >= 400 }">
+          <tr
+            v-for="log in logs"
+            :key="log._id"
+            :class="{'error-row': log.statusCode >= 400}"
+          >
             <td>{{ formatDateTime(log.timestamp) }}</td>
             <td>
               <div v-if="log.userId" class="user-info">
@@ -134,13 +154,20 @@
             <td class="endpoint-cell">{{ log.endpoint }}</td>
             <td>{{ log.ipAddress }}</td>
             <td>
-              <span class="status-badge" :class="getStatusClass(log.statusCode)">
+              <span
+                class="status-badge"
+                :class="getStatusClass(log.statusCode)"
+              >
                 {{ log.statusCode }}
               </span>
             </td>
             <td>{{ log.responseTime }}ms</td>
             <td>
-              <button @click="viewDetails(log)" class="btn-icon" title="Xem chi tiết">
+              <button
+                class="btn-icon"
+                title="Xem chi tiết"
+                @click="viewDetails(log)"
+              >
                 👁️
               </button>
             </td>
@@ -151,20 +178,22 @@
       <!-- Pagination -->
       <div v-if="pagination.totalPages > 1" class="pagination">
         <button
-          @click="changePage(pagination.page - 1)"
           :disabled="pagination.page === 1"
           class="btn-page"
+          @click="changePage(pagination.page - 1)"
         >
           ← Trước
         </button>
         <span class="page-info">
-          Trang {{ pagination.page }} / {{ pagination.totalPages }}
-          ({{ pagination.total }} bản ghi)
+          Trang {{ pagination.page }} / {{ pagination.totalPages }} ({{
+            pagination.total
+          }}
+          bản ghi)
         </span>
         <button
-          @click="changePage(pagination.page + 1)"
           :disabled="pagination.page === pagination.totalPages"
           class="btn-page"
+          @click="changePage(pagination.page + 1)"
         >
           Sau →
         </button>
@@ -172,11 +201,15 @@
     </div>
 
     <!-- Details Modal -->
-    <div v-if="showDetailsModal" class="modal-overlay" @click.self="showDetailsModal = false">
+    <div
+      v-if="showDetailsModal"
+      class="modal-overlay"
+      @click.self="showDetailsModal = false"
+    >
       <div class="modal-content modal-large">
         <div class="modal-header">
           <h2>📄 Chi tiết Log</h2>
-          <button @click="showDetailsModal = false" class="btn-close">✕</button>
+          <button class="btn-close" @click="showDetailsModal = false">✕</button>
         </div>
         <div class="modal-body">
           <div v-if="selectedLog" class="details-grid">
@@ -199,7 +232,10 @@
             </div>
             <div class="detail-item">
               <strong>Method:</strong>
-              <span class="method-badge" :class="getMethodClass(selectedLog.method)">
+              <span
+                class="method-badge"
+                :class="getMethodClass(selectedLog.method)"
+              >
                 {{ selectedLog.method }}
               </span>
             </div>
@@ -217,11 +253,16 @@
             </div>
             <div class="detail-item">
               <strong>User Agent:</strong>
-              <span class="text-small">{{ selectedLog.userAgent || 'N/A' }}</span>
+              <span class="text-small">{{
+                selectedLog.userAgent || 'N/A'
+              }}</span>
             </div>
             <div class="detail-item">
               <strong>Status Code:</strong>
-              <span class="status-badge" :class="getStatusClass(selectedLog.statusCode)">
+              <span
+                class="status-badge"
+                :class="getStatusClass(selectedLog.statusCode)"
+              >
                 {{ selectedLog.statusCode }}
               </span>
             </div>
@@ -231,7 +272,9 @@
             </div>
             <div v-if="selectedLog.details" class="detail-item full-width">
               <strong>Chi tiết:</strong>
-              <pre class="json-viewer">{{ JSON.stringify(selectedLog.details, null, 2) }}</pre>
+              <pre class="json-viewer">{{
+                JSON.stringify(selectedLog.details, null, 2)
+              }}</pre>
             </div>
           </div>
         </div>
@@ -239,11 +282,15 @@
     </div>
 
     <!-- Stats Modal -->
-    <div v-if="showStatsModal" class="modal-overlay" @click.self="showStatsModal = false">
+    <div
+      v-if="showStatsModal"
+      class="modal-overlay"
+      @click.self="showStatsModal = false"
+    >
       <div class="modal-content modal-large">
         <div class="modal-header">
           <h2>📊 Thống kê Chi tiết</h2>
-          <button @click="showStatsModal = false" class="btn-close">✕</button>
+          <button class="btn-close" @click="showStatsModal = false">✕</button>
         </div>
         <div class="modal-body">
           <div v-if="stats" class="stats-details">
@@ -262,7 +309,9 @@
                   <tr v-for="user in stats.topUsers" :key="user._id">
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
-                    <td><strong>{{ user.count }}</strong></td>
+                    <td>
+                      <strong>{{ user.count }}</strong>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -281,7 +330,9 @@
                 <tbody>
                   <tr v-for="ip in stats.topIPs" :key="ip._id">
                     <td>{{ ip._id }}</td>
-                    <td><strong>{{ ip.count }}</strong></td>
+                    <td>
+                      <strong>{{ ip.count }}</strong>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -304,7 +355,9 @@
                         {{ action._id }}
                       </span>
                     </td>
-                    <td><strong>{{ action.count }}</strong></td>
+                    <td>
+                      <strong>{{ action.count }}</strong>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -317,8 +370,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import auditLogsService, { type AuditLog, type AuditStats } from '@/services/auditLogsService';
+import {ref, onMounted} from 'vue';
+import auditLogsService, {
+  type AuditLog,
+  type AuditStats,
+} from '@/services/auditLogsService';
 
 const logs = ref<AuditLog[]>([]);
 const stats = ref<AuditStats | null>(null);
@@ -334,14 +390,14 @@ const filters = ref({
   startDate: '',
   endDate: '',
   page: 1,
-  limit: 20
+  limit: 20,
 });
 
 const pagination = ref({
   total: 0,
   page: 1,
   limit: 20,
-  totalPages: 1
+  totalPages: 1,
 });
 
 let searchTimeout: NodeJS.Timeout;
@@ -356,7 +412,7 @@ async function fetchLogs() {
   try {
     const params: any = {
       page: filters.value.page,
-      limit: filters.value.limit
+      limit: filters.value.limit,
     };
 
     if (filters.value.search) params.search = filters.value.search;
@@ -381,7 +437,10 @@ async function fetchStats() {
     if (filters.value.startDate) params.startDate = filters.value.startDate;
     if (filters.value.endDate) params.endDate = filters.value.endDate;
 
-    stats.value = await auditLogsService.getStats(params.startDate, params.endDate);
+    stats.value = await auditLogsService.getStats(
+      params.startDate,
+      params.endDate,
+    );
   } catch (error: any) {
     console.error('Error fetching stats:', error);
   }
@@ -403,7 +462,7 @@ function resetFilters() {
     startDate: '',
     endDate: '',
     page: 1,
-    limit: 20
+    limit: 20,
   };
   fetchLogs();
   fetchStats();
@@ -427,30 +486,30 @@ function formatDateTime(dateString: string): string {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
   });
 }
 
 function getActionClass(action: string): string {
   const classes: Record<string, string> = {
-    'LOGIN': 'badge-success',
-    'LOGOUT': 'badge-info',
-    'CREATE': 'badge-primary',
-    'READ': 'badge-secondary',
-    'UPDATE': 'badge-warning',
-    'DELETE': 'badge-danger',
-    'EXPORT': 'badge-info'
+    LOGIN: 'badge-success',
+    LOGOUT: 'badge-info',
+    CREATE: 'badge-primary',
+    READ: 'badge-secondary',
+    UPDATE: 'badge-warning',
+    DELETE: 'badge-danger',
+    EXPORT: 'badge-info',
   };
   return classes[action] || 'badge-secondary';
 }
 
 function getMethodClass(method: string): string {
   const classes: Record<string, string> = {
-    'GET': 'method-get',
-    'POST': 'method-post',
-    'PUT': 'method-put',
-    'PATCH': 'method-patch',
-    'DELETE': 'method-delete'
+    GET: 'method-get',
+    POST: 'method-post',
+    PUT: 'method-put',
+    PATCH: 'method-patch',
+    DELETE: 'method-delete',
   };
   return classes[method] || '';
 }
@@ -580,12 +639,12 @@ function getStatusClass(status: number): string {
 }
 
 .btn-info {
-  background: #2196F3;
+  background: #2196f3;
   color: white;
 }
 
 .btn-info:hover {
-  background: #1976D2;
+  background: #1976d2;
 }
 
 /* Table */
@@ -639,12 +698,30 @@ function getStatusClass(status: number): string {
   text-transform: uppercase;
 }
 
-.badge-success { background: #d4edda; color: #155724; }
-.badge-info { background: #d1ecf1; color: #0c5460; }
-.badge-primary { background: #cce5ff; color: #004085; }
-.badge-secondary { background: #e2e3e5; color: #383d41; }
-.badge-warning { background: #fff3cd; color: #856404; }
-.badge-danger { background: #f8d7da; color: #721c24; }
+.badge-success {
+  background: #d4edda;
+  color: #155724;
+}
+.badge-info {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+.badge-primary {
+  background: #cce5ff;
+  color: #004085;
+}
+.badge-secondary {
+  background: #e2e3e5;
+  color: #383d41;
+}
+.badge-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+.badge-danger {
+  background: #f8d7da;
+  color: #721c24;
+}
 
 .method-badge {
   display: inline-block;
@@ -655,11 +732,26 @@ function getStatusClass(status: number): string {
   font-family: monospace;
 }
 
-.method-get { background: #61affe; color: white; }
-.method-post { background: #49cc90; color: white; }
-.method-put { background: #fca130; color: white; }
-.method-patch { background: #50e3c2; color: white; }
-.method-delete { background: #f93e3e; color: white; }
+.method-get {
+  background: #61affe;
+  color: white;
+}
+.method-post {
+  background: #49cc90;
+  color: white;
+}
+.method-put {
+  background: #fca130;
+  color: white;
+}
+.method-patch {
+  background: #50e3c2;
+  color: white;
+}
+.method-delete {
+  background: #f93e3e;
+  color: white;
+}
 
 .status-badge {
   display: inline-block;
@@ -670,10 +762,22 @@ function getStatusClass(status: number): string {
   font-family: monospace;
 }
 
-.status-success { background: #4caf50; color: white; }
-.status-redirect { background: #ff9800; color: white; }
-.status-client-error { background: #f44336; color: white; }
-.status-server-error { background: #9c27b0; color: white; }
+.status-success {
+  background: #4caf50;
+  color: white;
+}
+.status-redirect {
+  background: #ff9800;
+  color: white;
+}
+.status-client-error {
+  background: #f44336;
+  color: white;
+}
+.status-server-error {
+  background: #9c27b0;
+  color: white;
+}
 
 /* User Info */
 .user-info {

@@ -9,6 +9,9 @@ const Site = require('../../schemas/site.model');
 const ChamCong = require('../../schemas/chamCong.model');
 const NhanVien = require('../../schemas/nhanVien.model');
 const CaLamViec = require('../../schemas/caLamViec.model');
+const OvertimeRequest = require('../../schemas/overtimeRequest.model');
+const {startOfDay, classifyOvertimeType} = require('../../services/overtimeHelper');
+const timeRuleEngine = require('../../services/timeRuleEngine');
 
 const router = express.Router();
 
@@ -41,6 +44,7 @@ router.get('/nonce', async (req, res) => {
 
 // POST body validator
 const SHIFT_EARLY_MINUTES = 30;
+const AUTO_OT_MINUTES = 30;
 
 function combineTimeWithDate(baseDate, hhmm) {
   if (!hhmm) return null;
@@ -81,6 +85,48 @@ function buildDefaultShift(today) {
     shiftEnd,
     earliestCheckIn,
   };
+}
+
+async function ensureAutoOvertimeRequest({employeeId, record, shiftContext, now}) {
+  try {
+    if (!employeeId || !shiftContext?.shiftEnd) return;
+    const overtimeMs = now - shiftContext.shiftEnd;
+    if (overtimeMs < AUTO_OT_MINUTES * 60000) return;
+    const ngay = startOfDay(record.ngay || now);
+    const hours = Number((overtimeMs / 3600000).toFixed(2));
+    if (hours <= 0) return;
+    const {type, multiplier} = await classifyOvertimeType(ngay, shiftContext.shiftEnd, now);
+    const existing = await OvertimeRequest.findOne({
+      nhan_vien_id: employeeId,
+      ngay,
+      auto_created: true,
+      trang_thai: {$in: ['Cho duyet', 'Da duyet']},
+    });
+    if (existing) {
+      existing.thoi_gian_ket_thuc = now;
+      existing.so_gio = hours;
+      existing.he_so = Number(multiplier.toFixed(2));
+      existing.loai_ngay = type;
+      await existing.save();
+      timeRuleEngine.queueRecalc(employeeId, ngay);
+      return;
+    }
+    await OvertimeRequest.create({
+      nhan_vien_id: employeeId,
+      ngay,
+      thoi_gian_bat_dau: shiftContext.shiftEnd,
+      thoi_gian_ket_thuc: now,
+      so_gio: hours,
+      loai_ngay: type,
+      he_so: Number(multiplier.toFixed(2)),
+      trang_thai: 'Cho duyet',
+      ly_do: 'Tu dong de xuat tang ca tu cham cong mobile',
+      auto_created: true,
+    });
+    timeRuleEngine.queueRecalc(employeeId, ngay);
+  } catch (err) {
+    console.error('ensureAutoOvertimeRequest error', err);
+  }
 }
 
 const checkBodyValidators = [
@@ -190,11 +236,14 @@ async function processCheck(req, res, type) {
         flags,
       });
       await record.save();
+      timeRuleEngine.queueRecalc(employeeId, today);
     } else {
       if (!record) return res.status(404).json({ msg: 'Bạn chưa check-in hôm nay' });
       if (record.thoi_gian_ra) return res.status(400).json({ msg: 'Hôm nay bạn đã check-out rồi' });
       record.thoi_gian_ra = now;
       await record.save();
+      await ensureAutoOvertimeRequest({ employeeId, record, shiftContext, now });
+      timeRuleEngine.queueRecalc(employeeId, today);
     }
 
     // 8) Đánh dấu nonce đã dùng

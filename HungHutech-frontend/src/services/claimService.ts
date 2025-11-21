@@ -5,7 +5,9 @@ class ClaimService {
   private readonly BASE_URL = '/claims';
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<Claim>> {
-    const response = await api.get<PaginatedResponse<Claim>>(this.BASE_URL, {params});
+    const response = await api.get<PaginatedResponse<Claim>>(this.BASE_URL, {
+      params,
+    });
     return response.data;
   }
 
@@ -14,7 +16,10 @@ class ClaimService {
     return response.data;
   }
 
-  async getByNhanVienId(nhanVienId: string, params?: PaginationParams): Promise<PaginatedResponse<Claim>> {
+  async getByNhanVienId(
+    nhanVienId: string,
+    params?: PaginationParams,
+  ): Promise<PaginatedResponse<Claim>> {
     const response = await api.get<PaginatedResponse<Claim>>(this.BASE_URL, {
       params: {...params, nhan_vien_id: nhanVienId},
     });

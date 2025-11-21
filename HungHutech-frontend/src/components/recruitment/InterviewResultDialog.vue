@@ -1,10 +1,10 @@
 <template>
   <el-dialog
     :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
     title="Nhập kết quả phỏng vấn"
     width="900px"
     :close-on-click-modal="false"
+    @update:model-value="$emit('update:modelValue', $event)"
     @close="handleClose"
   >
     <div v-if="interview" class="interview-result-form">
@@ -85,8 +85,8 @@
               :key="index"
               closable
               type="success"
-              @close="removeStrength(index)"
               class="tag-item"
+              @close="removeStrength(index)"
             >
               {{ tag }}
             </el-tag>
@@ -103,8 +103,8 @@
               v-else
               class="button-new-tag"
               size="small"
-              @click="showInputStrength"
               :icon="Plus"
+              @click="showInputStrength"
             >
               Thêm điểm mạnh
             </el-button>
@@ -118,8 +118,8 @@
               :key="index"
               closable
               type="warning"
-              @close="removeWeakness(index)"
               class="tag-item"
+              @close="removeWeakness(index)"
             >
               {{ tag }}
             </el-tag>
@@ -136,8 +136,8 @@
               v-else
               class="button-new-tag"
               size="small"
-              @click="showInputWeakness"
               :icon="Plus"
+              @click="showInputWeakness"
             >
               Thêm điểm yếu
             </el-button>
@@ -145,7 +145,9 @@
         </el-form-item>
 
         <!-- Ý kiến người phỏng vấn -->
-        <el-divider content-position="left">Ý kiến từng người phỏng vấn</el-divider>
+        <el-divider content-position="left"
+          >Ý kiến từng người phỏng vấn</el-divider
+        >
 
         <div
           v-for="(opinion, index) in formData.y_kien_nguoi_phong_van"
@@ -193,8 +195,8 @@
           type="primary"
           plain
           :icon="Plus"
-          @click="addOpinion"
           style="width: 100%; margin-top: 10px"
+          @click="addOpinion"
         >
           Thêm ý kiến người phỏng vấn
         </el-button>
@@ -203,7 +205,7 @@
 
     <template #footer>
       <el-button @click="handleClose">Hủy</el-button>
-      <el-button type="primary" @click="handleSubmit" :loading="submitting">
+      <el-button type="primary" :loading="submitting" @click="handleSubmit">
         Lưu kết quả
       </el-button>
     </template>
@@ -211,8 +213,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, nextTick } from 'vue';
-import { ElMessage } from 'element-plus';
+import {ref, reactive, watch, nextTick} from 'vue';
+import {ElMessage} from 'element-plus';
 import {
   Plus,
   Delete,
@@ -221,8 +223,14 @@ import {
   CircleClose,
   Warning,
 } from '@element-plus/icons-vue';
-import type { FormInstance, FormRules } from 'element-plus';
-import type { Interview, Candidate, Vacancy, NhanVien, InterviewerOpinion } from '@/types';
+import type {FormInstance, FormRules} from 'element-plus';
+import type {
+  Interview,
+  Candidate,
+  Vacancy,
+  NhanVien,
+  InterviewerOpinion,
+} from '@/types';
 import interviewService from '@/services/interviewService';
 import nhanVienService from '@/services/nhanVienService';
 
@@ -265,7 +273,9 @@ const formData = reactive({
 
 // Validation rules
 const rules = reactive<FormRules>({
-  quyet_dinh: [{ required: true, message: 'Vui lòng chọn quyết định', trigger: 'change' }],
+  quyet_dinh: [
+    {required: true, message: 'Vui lòng chọn quyết định', trigger: 'change'},
+  ],
 });
 
 // Tags input handlers
@@ -333,7 +343,9 @@ const handleSubmit = async () => {
       diem_manh: formData.diem_manh,
       diem_yeu: formData.diem_yeu,
       quyet_dinh: formData.quyet_dinh,
-      y_kien_nguoi_phong_van: formData.y_kien_nguoi_phong_van.filter((o) => o.nhan_vien_id),
+      y_kien_nguoi_phong_van: formData.y_kien_nguoi_phong_van.filter(
+        (o) => o.nhan_vien_id,
+      ),
     };
 
     submitting.value = true;
@@ -407,7 +419,9 @@ watch(
           y_kien_nguoi_phong_van:
             newVal.ket_qua_phong_van.y_kien_nguoi_phong_van?.map((o) => ({
               nhan_vien_id:
-                typeof o.nhan_vien_id === 'object' ? o.nhan_vien_id._id : o.nhan_vien_id,
+                typeof o.nhan_vien_id === 'object'
+                  ? o.nhan_vien_id._id
+                  : o.nhan_vien_id,
               y_kien: o.y_kien || '',
               diem: o.diem || 0,
             })) || [],
@@ -417,7 +431,9 @@ watch(
         if (newVal.nguoi_phong_van && newVal.nguoi_phong_van.length > 0) {
           formData.y_kien_nguoi_phong_van = newVal.nguoi_phong_van.map((i) => ({
             nhan_vien_id:
-              typeof i.nhan_vien_id === 'object' ? i.nhan_vien_id._id : i.nhan_vien_id,
+              typeof i.nhan_vien_id === 'object'
+                ? i.nhan_vien_id._id
+                : i.nhan_vien_id,
             y_kien: '',
             diem: 0,
           }));
@@ -426,14 +442,14 @@ watch(
 
       // Load employee options
       try {
-        const response = await nhanVienService.getAll({ limit: 1000 });
+        const response = await nhanVienService.getAll({limit: 1000});
         employeeOptions.value = response.items;
       } catch (err) {
         console.error('Error loading employees:', err);
       }
     }
   },
-  { immediate: true }
+  {immediate: true},
 );
 </script>
 

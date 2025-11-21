@@ -5,7 +5,9 @@ class KPIService {
   private readonly BASE_URL = '/performance/kpis';
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<KPI>> {
-    const response = await api.get<PaginatedResponse<KPI>>(this.BASE_URL, {params});
+    const response = await api.get<PaginatedResponse<KPI>>(this.BASE_URL, {
+      params,
+    });
     return response.data;
   }
 

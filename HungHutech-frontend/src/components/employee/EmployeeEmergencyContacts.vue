@@ -2,7 +2,7 @@
   <div v-loading="loading" class="orangehrm-emergency-contacts">
     <div class="section-header">
       <h3 class="orangehrm-section-title">Liên hệ khẩn cấp</h3>
-      <el-button type="primary" @click="handleAdd" :icon="Plus" size="small">
+      <el-button type="primary" :icon="Plus" size="small" @click="handleAdd">
         Thêm liên hệ
       </el-button>
     </div>
@@ -21,25 +21,46 @@
       </el-table-column>
       <el-table-column prop="dien_thoai_nha" label="ĐT nhà" width="130" />
       <el-table-column prop="di_dong" label="Di động" width="130" />
-      <el-table-column prop="dien_thoai_cong_viec" label="ĐT công việc" width="130" />
+      <el-table-column
+        prop="dien_thoai_cong_viec"
+        label="ĐT công việc"
+        width="130"
+      />
       <el-table-column label="Thao tác" width="150" align="center">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index)" :icon="Edit">
+          <el-button
+            size="small"
+            :icon="Edit"
+            @click="handleEdit(scope.$index)"
+          >
             Sửa
           </el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index)" :icon="Delete">
+          <el-button
+            size="small"
+            type="danger"
+            :icon="Delete"
+            @click="handleDelete(scope.$index)"
+          >
             Xóa
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-empty v-else description="Chưa có thông tin liên hệ khẩn cấp" :image-size="100" />
+    <el-empty
+      v-else
+      description="Chưa có thông tin liên hệ khẩn cấp"
+      :image-size="100"
+    />
 
     <!-- Dialog -->
     <el-dialog
       v-model="dialogVisible"
-      :title="editIndex === -1 ? 'Thêm liên hệ khẩn cấp' : 'Chỉnh sửa liên hệ khẩn cấp'"
+      :title="
+        editIndex === -1
+          ? 'Thêm liên hệ khẩn cấp'
+          : 'Chỉnh sửa liên hệ khẩn cấp'
+      "
       width="600px"
     >
       <el-form
@@ -53,7 +74,11 @@
         </el-form-item>
 
         <el-form-item label="Mối quan hệ" prop="moi_quan_he" required>
-          <el-select v-model="form.moi_quan_he" placeholder="Chọn mối quan hệ" style="width: 100%">
+          <el-select
+            v-model="form.moi_quan_he"
+            placeholder="Chọn mối quan hệ"
+            style="width: 100%"
+          >
             <el-option label="Cha" value="Cha" />
             <el-option label="Mẹ" value="Mẹ" />
             <el-option label="Vợ/Chồng" value="Vợ/Chồng" />
@@ -67,21 +92,30 @@
         </el-form-item>
 
         <el-form-item label="ĐT nhà" prop="dien_thoai_nha">
-          <el-input v-model="form.dien_thoai_nha" placeholder="Số điện thoại nhà" />
+          <el-input
+            v-model="form.dien_thoai_nha"
+            placeholder="Số điện thoại nhà"
+          />
         </el-form-item>
 
         <el-form-item label="Di động" prop="di_dong" required>
-          <el-input v-model="form.di_dong" placeholder="Số điện thoại di động" />
+          <el-input
+            v-model="form.di_dong"
+            placeholder="Số điện thoại di động"
+          />
         </el-form-item>
 
         <el-form-item label="ĐT công việc" prop="dien_thoai_cong_viec">
-          <el-input v-model="form.dien_thoai_cong_viec" placeholder="Số điện thoại công việc" />
+          <el-input
+            v-model="form.dien_thoai_cong_viec"
+            placeholder="Số điện thoại công việc"
+          />
         </el-form-item>
       </el-form>
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -121,8 +155,12 @@ const form = reactive({
 
 const formRules: FormRules = {
   ten: [{required: true, message: 'Vui lòng nhập họ tên', trigger: 'blur'}],
-  moi_quan_he: [{required: true, message: 'Vui lòng chọn mối quan hệ', trigger: 'change'}],
-  di_dong: [{required: true, message: 'Vui lòng nhập số di động', trigger: 'blur'}],
+  moi_quan_he: [
+    {required: true, message: 'Vui lòng chọn mối quan hệ', trigger: 'change'},
+  ],
+  di_dong: [
+    {required: true, message: 'Vui lòng nhập số di động', trigger: 'blur'},
+  ],
 };
 
 watch(
@@ -167,7 +205,7 @@ const handleDelete = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedContacts = [...contacts.value];
@@ -181,7 +219,9 @@ const handleDelete = async (index: number) => {
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa liên hệ khẩn cấp');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa liên hệ khẩn cấp',
+      );
     }
   } finally {
     saving.value = false;
@@ -211,12 +251,16 @@ const handleSave = async () => {
     });
 
     ElMessage.success(
-      editIndex.value === -1 ? 'Thêm liên hệ khẩn cấp thành công' : 'Cập nhật liên hệ khẩn cấp thành công'
+      editIndex.value === -1
+        ? 'Thêm liên hệ khẩn cấp thành công'
+        : 'Cập nhật liên hệ khẩn cấp thành công',
     );
     dialogVisible.value = false;
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lưu liên hệ khẩn cấp');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể lưu liên hệ khẩn cấp',
+    );
   } finally {
     saving.value = false;
   }

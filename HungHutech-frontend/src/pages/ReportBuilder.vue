@@ -2,10 +2,12 @@
   <div class="report-builder-page">
     <!-- Page Header -->
     <div class="page-header">
-      <h1 class="page-title">{{ isEditMode ? 'Chỉnh sửa Báo cáo' : 'Tạo Báo cáo mới' }}</h1>
+      <h1 class="page-title">
+        {{ isEditMode ? 'Chỉnh sửa Báo cáo' : 'Tạo Báo cáo mới' }}
+      </h1>
       <div class="page-actions">
         <el-button @click="handleCancel">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ isEditMode ? 'Cập nhật' : 'Lưu báo cáo' }}
         </el-button>
       </div>
@@ -13,7 +15,11 @@
 
     <el-card shadow="never">
       <!-- Steps -->
-      <el-steps :active="activeStep" finish-status="success" class="steps-container">
+      <el-steps
+        :active="activeStep"
+        finish-status="success"
+        class="steps-container"
+      >
         <el-step title="Thông tin cơ bản" />
         <el-step title="Chọn cột hiển thị" />
         <el-step title="Thiết lập bộ lọc" />
@@ -24,7 +30,11 @@
       <div class="step-content">
         <!-- Step 1: Basic Info -->
         <div v-show="activeStep === 0" class="step-panel">
-          <el-form :model="reportForm" label-width="150px" label-position="left">
+          <el-form
+            :model="reportForm"
+            label-width="150px"
+            label-position="left"
+          >
             <el-form-item label="Tên báo cáo" required>
               <el-input
                 v-model="reportForm.ten_bao_cao"
@@ -55,7 +65,10 @@
         <!-- Step 2: Select Columns -->
         <div v-show="activeStep === 1" class="step-panel">
           <h3>Chọn các cột muốn hiển thị trong báo cáo</h3>
-          <el-checkbox-group v-model="reportForm.cot_hien_thi" class="column-checkboxes">
+          <el-checkbox-group
+            v-model="reportForm.cot_hien_thi"
+            class="column-checkboxes"
+          >
             <el-checkbox
               v-for="field in availableFields"
               :key="field.value"
@@ -142,7 +155,11 @@
         <!-- Step 4: Sorting & Preview -->
         <div v-show="activeStep === 3" class="step-panel">
           <h3>Thiết lập sắp xếp</h3>
-          <el-form :model="reportForm" label-width="150px" label-position="left">
+          <el-form
+            :model="reportForm"
+            label-width="150px"
+            label-position="left"
+          >
             <el-form-item label="Sắp xếp theo">
               <el-select
                 v-model="reportForm.sap_xep.truong"
@@ -172,7 +189,11 @@
           <div class="preview-section">
             <div class="preview-header">
               <h3>Xem trước kết quả</h3>
-              <el-button type="primary" @click="handlePreview" :loading="previewing">
+              <el-button
+                type="primary"
+                :loading="previewing"
+                @click="handlePreview"
+              >
                 Tạo xem trước
               </el-button>
             </div>
@@ -186,7 +207,7 @@
                   :label="getFieldLabel(col)"
                   min-width="120"
                 >
-                  <template #default="{ row }">
+                  <template #default="{row}">
                     {{ formatCellValue(row[col]) }}
                   </template>
                 </el-table-column>
@@ -223,12 +244,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { Plus, Delete } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+import {ref, reactive, onMounted, computed} from 'vue';
+import {useRouter, useRoute} from 'vue-router';
+import {Plus, Delete} from '@element-plus/icons-vue';
+import {ElMessage} from 'element-plus';
 import reportService from '@/services/reportService';
-import { Report, ReportCriteria, ReportSort } from '@/types';
+import {Report, ReportCriteria, ReportSort} from '@/types';
 
 const router = useRouter();
 const route = useRoute();
@@ -253,57 +274,60 @@ const reportForm = reactive<Partial<Report>>({
 });
 
 // Field configurations for each report type
-const fieldConfigs: Record<string, Array<{ label: string; value: string }>> = {
+const fieldConfigs: Record<string, Array<{label: string; value: string}>> = {
   'Nhan vien': [
-    { label: 'Mã nhân viên', value: 'ma_nhan_vien' },
-    { label: 'Họ đệm', value: 'ho_dem' },
-    { label: 'Tên', value: 'ten' },
-    { label: 'Email', value: 'lien_he.email_cong_viec' },
-    { label: 'Ngày sinh', value: 'ngay_sinh' },
-    { label: 'Giới tính', value: 'gioi_tinh' },
-    { label: 'Phòng ban', value: 'thong_tin_cong_viec.phong_ban_id' },
-    { label: 'Chức danh', value: 'thong_tin_cong_viec.chuc_danh_id' },
-    { label: 'Ngày vào làm', value: 'thong_tin_cong_viec.ngay_vao_lam' },
-    { label: 'Trạng thái lao động', value: 'thong_tin_cong_viec.trang_thai_lao_dong_id' },
+    {label: 'Mã nhân viên', value: 'ma_nhan_vien'},
+    {label: 'Họ đệm', value: 'ho_dem'},
+    {label: 'Tên', value: 'ten'},
+    {label: 'Email', value: 'lien_he.email_cong_viec'},
+    {label: 'Ngày sinh', value: 'ngay_sinh'},
+    {label: 'Giới tính', value: 'gioi_tinh'},
+    {label: 'Phòng ban', value: 'thong_tin_cong_viec.phong_ban_id'},
+    {label: 'Chức danh', value: 'thong_tin_cong_viec.chuc_danh_id'},
+    {label: 'Ngày vào làm', value: 'thong_tin_cong_viec.ngay_vao_lam'},
+    {
+      label: 'Trạng thái lao động',
+      value: 'thong_tin_cong_viec.trang_thai_lao_dong_id',
+    },
   ],
   'Cham cong': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Ngày', value: 'ngay' },
-    { label: 'Thời gian vào', value: 'thoi_gian_vao' },
-    { label: 'Thời gian ra', value: 'thoi_gian_ra' },
-    { label: 'Ghi chú', value: 'ghi_chu' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Ngày', value: 'ngay'},
+    {label: 'Thời gian vào', value: 'thoi_gian_vao'},
+    {label: 'Thời gian ra', value: 'thoi_gian_ra'},
+    {label: 'Ghi chú', value: 'ghi_chu'},
   ],
   'Nghi phep': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Loại ngày nghỉ', value: 'loai_ngay_nghi_id' },
-    { label: 'Ngày bắt đầu', value: 'ngay_bat_dau' },
-    { label: 'Ngày kết thúc', value: 'ngay_ket_thuc' },
-    { label: 'Số ngày', value: 'so_ngay' },
-    { label: 'Trạng thái', value: 'trang_thai' },
-    { label: 'Lý do', value: 'ly_do' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Loại ngày nghỉ', value: 'loai_ngay_nghi_id'},
+    {label: 'Ngày bắt đầu', value: 'ngay_bat_dau'},
+    {label: 'Ngày kết thúc', value: 'ngay_ket_thuc'},
+    {label: 'Số ngày', value: 'so_ngay'},
+    {label: 'Trạng thái', value: 'trang_thai'},
+    {label: 'Lý do', value: 'ly_do'},
   ],
   'Boi hoan': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Trạng thái', value: 'trang_thai' },
-    { label: 'Tổng tiền', value: 'tong_tien' },
-    { label: 'Ngày tạo', value: 'ngay_tao' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Trạng thái', value: 'trang_thai'},
+    {label: 'Tổng tiền', value: 'tong_tien'},
+    {label: 'Ngày tạo', value: 'ngay_tao'},
   ],
-  'Luong': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Tháng', value: 'thang' },
-    { label: 'Lương cơ bản', value: 'luong_co_ban' },
-    { label: 'Phụ cấp', value: 'phu_cap' },
-    { label: 'Thưởng', value: 'thuong' },
-    { label: 'Khấu trừ', value: 'khau_tru' },
-    { label: 'Thực lãnh', value: 'thuc_lanh' },
+  Luong: [
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Tháng', value: 'thang'},
+    {label: 'Lương cơ bản', value: 'luong_co_ban'},
+    {label: 'Phụ cấp', value: 'phu_cap'},
+    {label: 'Thưởng', value: 'thuong'},
+    {label: 'Khấu trừ', value: 'khau_tru'},
+    {label: 'Thực lãnh', value: 'thuc_lanh'},
   ],
   'Hieu suat': [
-    { label: 'Nhân viên', value: 'nhan_vien_id' },
-    { label: 'Người đánh giá', value: 'nguoi_danh_gia_id' },
-    { label: 'Từ ngày', value: 'tu_ngay' },
-    { label: 'Đến ngày', value: 'den_ngay' },
-    { label: 'Điểm tổng', value: 'diem_tong' },
-    { label: 'Trạng thái', value: 'trang_thai' },
+    {label: 'Nhân viên', value: 'nhan_vien_id'},
+    {label: 'Người đánh giá', value: 'nguoi_danh_gia_id'},
+    {label: 'Từ ngày', value: 'tu_ngay'},
+    {label: 'Đến ngày', value: 'den_ngay'},
+    {label: 'Điểm tổng', value: 'diem_tong'},
+    {label: 'Trạng thái', value: 'trang_thai'},
   ],
 };
 
@@ -315,7 +339,7 @@ const handleReportTypeChange = () => {
   // Reset columns and criteria when report type changes
   reportForm.cot_hien_thi = [];
   reportForm.tieu_chi = [];
-  reportForm.sap_xep = { truong: '', thu_tu: 'asc' };
+  reportForm.sap_xep = {truong: '', thu_tu: 'asc'};
   previewData.value = [];
   previewTotal.value = 0;
 };
@@ -412,9 +436,7 @@ const handleSave = async () => {
     router.push('/bao-cao');
   } catch (err: any) {
     console.error('Error saving report:', err);
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể lưu báo cáo'
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể lưu báo cáo');
   } finally {
     saving.value = false;
   }
@@ -450,7 +472,7 @@ onMounted(async () => {
       reportForm.loai_bao_cao = report.loai_bao_cao;
       reportForm.tieu_chi = report.tieu_chi || [];
       reportForm.cot_hien_thi = report.cot_hien_thi || [];
-      reportForm.sap_xep = report.sap_xep || { truong: '', thu_tu: 'asc' };
+      reportForm.sap_xep = report.sap_xep || {truong: '', thu_tu: 'asc'};
     } catch (err: any) {
       console.error('Error loading report:', err);
       ElMessage.error('Không thể tải báo cáo');

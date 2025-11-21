@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Bồi hoàn chi phí</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Tạo yêu cầu bồi hoàn
         </el-button>
       </div>
@@ -29,7 +29,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Nhân viên" v-if="isAdminOrManager">
+        <el-form-item v-if="isAdminOrManager" label="Nhân viên">
           <el-select
             v-model="filters.nhan_vien_id"
             placeholder="Tất cả"
@@ -61,8 +61,10 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column prop="nhan_vien_id" label="Nhân viên" min-width="200">
-          <template #default="{ row }">
-            <div v-if="typeof row.nhan_vien_id === 'object' && row.nhan_vien_id">
+          <template #default="{row}">
+            <div
+              v-if="typeof row.nhan_vien_id === 'object' && row.nhan_vien_id"
+            >
               <strong>{{ row.nhan_vien_id.ma_nhan_vien }}</strong>
               <div class="orangehrm-text-muted">
                 {{ row.nhan_vien_id.ho_dem }} {{ row.nhan_vien_id.ten }}
@@ -71,20 +73,32 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="tong_tien" label="Tổng tiền" width="150" align="right">
-          <template #default="{ row }">
-            <strong class="orangehrm-amount">{{ formatCurrency(row.tong_tien) }}</strong>
+        <el-table-column
+          prop="tong_tien"
+          label="Tổng tiền"
+          width="150"
+          align="right"
+        >
+          <template #default="{row}">
+            <strong class="orangehrm-amount">{{
+              formatCurrency(row.tong_tien)
+            }}</strong>
           </template>
         </el-table-column>
 
-        <el-table-column prop="items" label="Số khoản" width="100" align="center">
-          <template #default="{ row }">
+        <el-table-column
+          prop="items"
+          label="Số khoản"
+          width="100"
+          align="center"
+        >
+          <template #default="{row}">
             {{ row.items?.length || 0 }} khoản
           </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="140">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row.trang_thai)" size="small">
               {{ getStatusText(row.trang_thai) }}
             </el-tag>
@@ -92,13 +106,13 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="240" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
               <el-button size="small" :icon="View" @click="handleView(row)">
                 Xem
@@ -142,7 +156,9 @@
     <!-- Create/Edit Dialog -->
     <el-dialog
       v-model="showCreateDialog"
-      :title="editingId ? 'Chỉnh sửa yêu cầu bồi hoàn' : 'Tạo yêu cầu bồi hoàn mới'"
+      :title="
+        editingId ? 'Chỉnh sửa yêu cầu bồi hoàn' : 'Tạo yêu cầu bồi hoàn mới'
+      "
       width="800px"
       :close-on-click-modal="false"
     >
@@ -153,7 +169,12 @@
         label-width="140px"
         label-position="left"
       >
-        <el-form-item label="Nhân viên" prop="nhan_vien_id" required v-if="isAdminOrManager">
+        <el-form-item
+          v-if="isAdminOrManager"
+          label="Nhân viên"
+          prop="nhan_vien_id"
+          required
+        >
           <el-select
             v-model="form.nhan_vien_id"
             placeholder="Chọn nhân viên..."
@@ -171,7 +192,11 @@
 
         <el-divider>Danh sách các khoản chi phí</el-divider>
 
-        <div v-for="(item, index) in form.items" :key="index" class="orangehrm-claim-item">
+        <div
+          v-for="(item, index) in form.items"
+          :key="index"
+          class="orangehrm-claim-item"
+        >
           <el-row :gutter="20">
             <el-col :span="8">
               <el-form-item
@@ -241,8 +266,8 @@
               type="danger"
               size="small"
               :icon="Delete"
-              @click="removeItem(index)"
               :disabled="form.items.length <= 1"
+              @click="removeItem(index)"
             >
               Xóa khoản này
             </el-button>
@@ -251,33 +276,52 @@
           <el-divider v-if="index < form.items.length - 1" />
         </div>
 
-        <el-button type="primary" :icon="Plus" @click="addItem" style="width: 100%">
+        <el-button
+          type="primary"
+          :icon="Plus"
+          style="width: 100%"
+          @click="addItem"
+        >
           Thêm khoản chi phí
         </el-button>
 
         <el-divider />
 
         <el-form-item label="Tổng tiền">
-          <strong class="orangehrm-total-amount">{{ formatCurrency(totalAmount) }}</strong>
+          <strong class="orangehrm-total-amount">{{
+            formatCurrency(totalAmount)
+          }}</strong>
         </el-form-item>
       </el-form>
 
       <template #footer>
         <el-button @click="closeDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editingId ? 'Cập nhật' : 'Tạo mới' }}
         </el-button>
       </template>
     </el-dialog>
 
     <!-- View Details Dialog -->
-    <el-dialog v-model="showViewDialog" title="Chi tiết yêu cầu bồi hoàn" width="700px">
+    <el-dialog
+      v-model="showViewDialog"
+      title="Chi tiết yêu cầu bồi hoàn"
+      width="700px"
+    >
       <div v-if="selectedClaim" class="orangehrm-claim-details">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="Nhân viên">
-            <div v-if="typeof selectedClaim.nhan_vien_id === 'object' && selectedClaim.nhan_vien_id">
+            <div
+              v-if="
+                typeof selectedClaim.nhan_vien_id === 'object' &&
+                selectedClaim.nhan_vien_id
+              "
+            >
               <strong>{{ selectedClaim.nhan_vien_id.ma_nhan_vien }}</strong>
-              <div>{{ selectedClaim.nhan_vien_id.ho_dem }} {{ selectedClaim.nhan_vien_id.ten }}</div>
+              <div>
+                {{ selectedClaim.nhan_vien_id.ho_dem }}
+                {{ selectedClaim.nhan_vien_id.ten }}
+              </div>
             </div>
           </el-descriptions-item>
 
@@ -288,7 +332,9 @@
           </el-descriptions-item>
 
           <el-descriptions-item label="Tổng tiền">
-            <strong class="orangehrm-amount">{{ formatCurrency(selectedClaim.tong_tien) }}</strong>
+            <strong class="orangehrm-amount">{{
+              formatCurrency(selectedClaim.tong_tien)
+            }}</strong>
           </el-descriptions-item>
 
           <el-descriptions-item label="Số khoản">
@@ -310,25 +356,30 @@
           <el-table-column type="index" label="STT" width="60" />
 
           <el-table-column prop="ngay" label="Ngày" width="120">
-            <template #default="{ row }">
+            <template #default="{row}">
               {{ formatDate(row.ngay) }}
             </template>
           </el-table-column>
 
           <el-table-column prop="danh_muc" label="Danh mục" width="140">
-            <template #default="{ row }">
+            <template #default="{row}">
               {{ row.danh_muc || '-' }}
             </template>
           </el-table-column>
 
           <el-table-column prop="mo_ta" label="Mô tả" min-width="200">
-            <template #default="{ row }">
+            <template #default="{row}">
               {{ row.mo_ta || '-' }}
             </template>
           </el-table-column>
 
-          <el-table-column prop="so_tien" label="Số tiền" width="140" align="right">
-            <template #default="{ row }">
+          <el-table-column
+            prop="so_tien"
+            label="Số tiền"
+            width="140"
+            align="right"
+          >
+            <template #default="{row}">
               {{ formatCurrency(row.so_tien) }}
             </template>
           </el-table-column>
@@ -390,7 +441,9 @@ const form = reactive<{
 });
 
 const formRules: FormRules = {
-  nhan_vien_id: [{required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'}],
+  nhan_vien_id: [
+    {required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'},
+  ],
 };
 
 const totalAmount = computed(() => {
@@ -477,7 +530,9 @@ const handleView = (item: Claim) => {
 const handleEdit = (item: Claim) => {
   editingId.value = item._id;
   form.nhan_vien_id =
-    typeof item.nhan_vien_id === 'object' ? item.nhan_vien_id._id : item.nhan_vien_id;
+    typeof item.nhan_vien_id === 'object'
+      ? item.nhan_vien_id._id
+      : item.nhan_vien_id;
   form.items = item.items.map((i) => ({...i}));
   showCreateDialog.value = true;
 };
@@ -509,7 +564,9 @@ const handleSave = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error saving claim:', err);
-      ElMessage.error(err.response?.data?.msg || 'Không thể lưu yêu cầu bồi hoàn');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể lưu yêu cầu bồi hoàn',
+      );
     } finally {
       saving.value = false;
     }
@@ -534,7 +591,9 @@ const handleDelete = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error deleting claim:', err);
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa yêu cầu bồi hoàn');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa yêu cầu bồi hoàn',
+      );
     }
   }
 };

@@ -45,7 +45,7 @@
         >
           <el-menu-item index="/dashboard">
             <el-icon><Odometer /></el-icon>
-            <span>Dashboard</span>
+            <span>Tổng quan</span>
           </el-menu-item>
 
           <el-menu-item index="/thong-tin-cua-toi">
@@ -67,6 +67,12 @@
             <el-menu-item index="/nhan-vien/them">Thêm Nhân viên</el-menu-item>
             <el-menu-item index="/phong-ban">Phòng ban</el-menu-item>
             <el-menu-item index="/chuc-danh">Chức danh</el-menu-item>
+            <el-menu-item index="/ho-so-nhan-su">Hồ sơ nhân sự</el-menu-item>
+            <el-menu-item index="/hop-dong">Hợp đồng lao động</el-menu-item>
+            <el-menu-item index="/offboarding">Checklist nghỉ việc</el-menu-item>
+            <el-menu-item index="/pim/yeu-cau-cap-nhat"
+              >Yêu cầu cập nhật hồ sơ</el-menu-item
+            >
           </el-sub-menu>
 
           <el-sub-menu index="leave">
@@ -74,12 +80,18 @@
               <el-icon><Calendar /></el-icon>
               <span>Nghỉ phép</span>
             </template>
-            <el-menu-item index="/nghi-phep">Danh sách đơn nghỉ phép</el-menu-item>
+            <el-menu-item index="/nghi-phep"
+              >Danh sách đơn nghỉ phép</el-menu-item
+            >
             <el-menu-item index="/nghi-phep/so-du">Số dư phép</el-menu-item>
-            <el-menu-item index="/nghi-phep/phe-duyet">Phê duyệt đơn nghỉ</el-menu-item>
+            <el-menu-item index="/nghi-phep/phe-duyet"
+              >Phê duyệt đơn nghỉ</el-menu-item
+            >
             <el-menu-item index="/nghi-phep/gan-phep">Gán phép</el-menu-item>
             <el-menu-item index="/nghi-phep/loai">Loại nghỉ phép</el-menu-item>
-            <el-menu-item index="/nghi-phep/quyen">Quyền nghỉ phép</el-menu-item>
+            <el-menu-item index="/nghi-phep/quyen"
+              >Quyền nghỉ phép</el-menu-item
+            >
             <el-menu-item index="/nghi-phep/ngay-le">Ngày lễ</el-menu-item>
           </el-sub-menu>
 
@@ -88,23 +100,37 @@
               <el-icon><Clock /></el-icon>
               <span>Thời gian</span>
             </template>
-            <el-menu-item index="/timesheet/my-timesheet">Bảng chấm công của tôi</el-menu-item>
-            <el-menu-item index="/timesheet/phe-duyet">Phê duyệt timesheet</el-menu-item>
+            <el-menu-item index="/timesheet/my-timesheet"
+              >Bảng chấm công của tôi</el-menu-item
+            >
+            <el-menu-item index="/timesheet/phe-duyet"
+              >Phê duyệt timesheet</el-menu-item
+            >
             <el-menu-item index="/cham-cong">Chấm công hàng ngày</el-menu-item>
-            <el-menu-item index="/cham-cong/bang-cong">Bảng chấm công</el-menu-item>
+            <el-menu-item index="/cham-cong/bang-cong"
+              >Bảng chấm công</el-menu-item
+            >
             <el-menu-item index="/ca-lam-viec">Ca làm việc</el-menu-item>
             <el-menu-item index="/du-an">Quản lý Dự án</el-menu-item>
             <el-menu-item index="/hoat-dong">Quản lý Hoạt động</el-menu-item>
-          </el-sub-menu>
+            <el-menu-item index="/tang-ca/duyet">Duyệt tăng ca</el-menu-item>
+            <el-menu-item index="/luong/bang-luong">Bảng lương</el-menu-item>
+            <el-menu-item index="/thoi-gian/rule-engine">Bộ quy tắc Time/OT</el-menu-item>
+            <el-menu-item index="/thoi-gian/phan-ca">Phân ca linh hoạt</el-menu-item>
+        </el-sub-menu>
 
-          <el-sub-menu index="claims">
+        <el-sub-menu index="claims">
             <template #title>
               <el-icon><Tickets /></el-icon>
               <span>Bồi hoàn</span>
             </template>
             <el-menu-item index="/boi-hoan">Danh sách yêu cầu</el-menu-item>
-            <el-menu-item index="/boi-hoan/phe-duyet">Phê duyệt bồi hoàn</el-menu-item>
+            <el-menu-item index="/boi-hoan/phe-duyet"
+              >Phê duyệt bồi hoàn</el-menu-item
+            >
           </el-sub-menu>
+
+          <el-menu-item index="/consent-hub">Trung tâm đồng thuận</el-menu-item>
 
           <el-sub-menu index="recruitment">
             <template #title>
@@ -113,6 +139,8 @@
             </template>
             <el-menu-item index="/tuyen-dung">Vị trí tuyển dụng</el-menu-item>
             <el-menu-item index="/tuyen-dung/ung-vien">Ứng viên</el-menu-item>
+            <el-menu-item index="/tuyen-dung/pipeline">Quy trình ứng viên</el-menu-item>
+            <el-menu-item index="/tuyen-dung/candidate-pool">Ngân hàng ứng viên</el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="performance">
@@ -121,9 +149,21 @@
               <span>Hiệu suất</span>
             </template>
             <el-menu-item index="/hieu-suat/kpi">Quản lý KPI</el-menu-item>
-            <el-menu-item index="/hieu-suat/danh-gia">Đánh giá hiệu suất</el-menu-item>
+            <el-menu-item index="/hieu-suat/danh-gia"
+              >Đánh giá hiệu suất</el-menu-item
+            >
           </el-sub-menu>
 
+          <el-sub-menu index="reporting">
+            <template #title>
+              <el-icon><Document /></el-icon>
+              <span>Báo cáo</span>
+            </template>
+            <el-menu-item index="/bao-cao">Báo cáo tuỳ chỉnh</el-menu-item>
+            <el-menu-item index="/bao-cao/phap-ly"
+              >Báo cáo pháp lý</el-menu-item
+            >
+          </el-sub-menu>
           <!-- Admin menu -->
           <el-sub-menu index="admin">
             <template #title>
@@ -133,8 +173,12 @@
             <el-menu-item index="/admin/nguoi-dung">Người dùng</el-menu-item>
             <el-menu-item index="/admin/dia-diem">Địa điểm</el-menu-item>
             <el-menu-item index="/admin/bac-luong">Bậc lương</el-menu-item>
-            <el-menu-item index="/admin/sites">📍 Địa điểm Chấm công</el-menu-item>
-            <el-menu-item index="/admin/audit-logs">📊 Lịch sử Truy cập</el-menu-item>
+            <el-menu-item index="/admin/sites"
+              >📍 Địa điểm Chấm công</el-menu-item
+            >
+            <el-menu-item index="/admin/audit-logs"
+              >📊 Lịch sử Truy cập</el-menu-item
+            >
             <el-menu-item index="/phong-ban">Phòng ban</el-menu-item>
             <el-menu-item index="/chuc-danh">Chức danh</el-menu-item>
           </el-sub-menu>
@@ -148,11 +192,114 @@
         </div>
       </el-main>
     </el-container>
+    <el-dialog
+      v-model="consentDialogVisible"
+      width="720px"
+      title="Đồng ý xử lý dữ liệu cá nhân"
+      :close-on-click-modal="allowConsentClose"
+      :close-on-press-escape="allowConsentClose"
+      :show-close="allowConsentClose"
+      class="consent-dialog-wrapper"
+    >
+      <div v-loading="consentLoading" class="consent-dialog">
+        <el-alert
+          type="info"
+          show-icon
+          title="Minh bạch sử dụng dữ liệu"
+          description="Công ty cần sự đồng ý của bạn theo Nghị định 13/2023/NĐ-CP để xử lý dữ liệu cá nhân phục vụ quản lý nhân sự và tính lương."
+        />
+        <el-skeleton
+          v-if="consentLoading && consentItems.length === 0"
+          :rows="4"
+          animated
+        />
+        <template v-else>
+          <el-empty
+            v-if="consentItems.length === 0"
+            description="Chưa có mục đích dữ liệu nào được khai báo"
+          />
+          <div v-else class="consent-dialog-list">
+            <el-card
+              v-for="item in consentItems"
+              :key="item.key"
+              :body-style="{padding: '16px'}"
+              class="consent-dialog-card"
+            >
+              <div class="consent-card-head">
+                <div>
+                  <h4>
+                    {{ item.name }}
+                    <el-tag
+                      v-if="item.required"
+                      type="danger"
+                      size="small"
+                      effect="plain"
+                    >
+                      Bắt buộc
+                    </el-tag>
+                  </h4>
+                  <p>{{ item.description }}</p>
+                </div>
+                <div class="consent-card-switch">
+                  <el-switch
+                    v-model="consentSelections[item.key]"
+                    :disabled="item.required && consentSelections[item.key]"
+                    inline-prompt
+                    active-text="Đồng ý"
+                    inactive-text="Từ chối"
+                  />
+                </div>
+              </div>
+              <ul class="consent-card-meta">
+                <li>
+                  <strong>Loại dữ liệu:</strong>
+                  <span v-if="item.data_types?.length">
+                    {{ item.data_types.join(', ') }}
+                  </span>
+                  <span v-else>---</span>
+                </li>
+                <li>
+                  <strong>Chia sẻ với:</strong>
+                  <span v-if="item.recipients?.length">
+                    {{ item.recipients.join(', ') }}
+                  </span>
+                  <span v-else>---</span>
+                </li>
+                <li>
+                  <strong>Cơ sở pháp lý:</strong>
+                  {{ item.legal_basis || '---' }}
+                </li>
+                <li>
+                  <strong>Thời hạn lưu trữ:</strong>
+                  {{ item.retention || 'Theo chính sách công ty' }}
+                </li>
+              </ul>
+            </el-card>
+          </div>
+        </template>
+      </div>
+      <template #footer>
+        <el-button
+          v-if="allowConsentClose"
+          @click="consentDialogVisible = false"
+        >
+          Để sau
+        </el-button>
+        <el-button
+          type="primary"
+          :disabled="hasMissingRequired"
+          :loading="consentSaving"
+          @click="handleSaveConsentChoices"
+        >
+          Lưu lựa chọn
+        </el-button>
+      </template> </el-dialog
+    >\r\n
   </el-container>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, watch} from 'vue';
+import {ref, reactive, computed, onMounted, onUnmounted, watch} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 import {
   User,
@@ -162,9 +309,12 @@ import {
   Clock,
   Tickets,
   Setting,
+  Document,
 } from '@element-plus/icons-vue';
 import {ElMessage} from 'element-plus';
 import {getCurrentUser, logout} from '@/modules/auth/services/auth.service';
+import consentService from '@/services/consentService';
+import {ConsentView} from '@/types';
 
 const router = useRouter();
 const route = useRoute();
@@ -172,9 +322,58 @@ const route = useRoute();
 const user = ref<any>(null);
 const activeMenu = ref('/dashboard');
 
+const consentDialogVisible = ref(false);
+const consentLoading = ref(false);
+const consentSaving = ref(false);
+const consentItems = ref<ConsentView[]>([]);
+const consentSelections = reactive<Record<string, boolean>>({});
+
+const resetConsentSelections = (items: ConsentView[]) => {
+  Object.keys(consentSelections).forEach(
+    (key) => delete consentSelections[key],
+  );
+  items.forEach((item) => {
+    consentSelections[item.key] = item.status === 'Accepted';
+  });
+};
+
+const hasMissingRequired = computed(() =>
+  consentItems.value.some(
+    (item) => item.required && !consentSelections[item.key],
+  ),
+);
+
+const allowConsentClose = computed(() => !hasMissingRequired.value);
+
+const loadConsentStatus = async () => {
+  consentLoading.value = true;
+  try {
+    const result = await consentService.getMyConsents();
+    consentItems.value = result.items;
+    resetConsentSelections(result.items);
+    if (result.pendingRequired) {
+      consentDialogVisible.value = true;
+    }
+  } catch (err) {
+    console.error('loadConsentStatus error', err);
+  } finally {
+    consentLoading.value = false;
+  }
+};
+
+const handleConsentEvent = () => {
+  loadConsentStatus();
+};
+
 onMounted(() => {
   user.value = getCurrentUser();
   activeMenu.value = route.path;
+  loadConsentStatus();
+  window.addEventListener('consent-updated', handleConsentEvent);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('consent-updated', handleConsentEvent);
 });
 
 watch(
@@ -186,7 +385,10 @@ watch(
 
 const userName = computed(() => {
   if (user.value) {
-    return `${user.value.firstName || ''} ${user.value.lastName || ''}`.trim() || user.value.username;
+    const fullName = [user.value.firstName || '', user.value.lastName || '']
+      .join(' ')
+      .trim();
+    return fullName || user.value.username;
   }
   return 'User';
 });
@@ -206,6 +408,37 @@ const handleCommand = async (command: string) => {
     }
   }
 };
+
+const handleSaveConsentChoices = async () => {
+  if (hasMissingRequired.value) {
+    ElMessage.warning('Vui lòng đồng ý các mục đích bắt buộc');
+    return;
+  }
+
+  consentSaving.value = true;
+  try {
+    const payload = consentItems.value.map((item) => ({
+      purpose: item.key,
+      accepted: consentSelections[item.key],
+    }));
+    const result = await consentService.saveConsents(payload);
+    consentItems.value = result.items;
+    resetConsentSelections(result.items);
+    consentDialogVisible.value = result.pendingRequired;
+    if (!result.pendingRequired) {
+      ElMessage.success('Đã cập nhật lựa chọn dữ liệu cá nhân');
+    } else {
+      ElMessage.warning('Còn mục đích bắt buộc chưa được đồng ý');
+    }
+  } catch (error: any) {
+    console.error('handleSaveConsentChoices error', error);
+    ElMessage.error(
+      error.response?.data?.msg || 'Không thể cập nhật trạng thái đồng ý',
+    );
+  } finally {
+    consentSaving.value = false;
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -217,7 +450,11 @@ const handleCommand = async (command: string) => {
 // Topbar Styles
 .orangehrm-topbar {
   height: 60px !important;
-  background: linear-gradient(135deg, $primary-gradient-start 0%, $primary-gradient-end 100%);
+  background: linear-gradient(
+    135deg,
+    $primary-gradient-start 0%,
+    $primary-gradient-end 100%
+  );
   padding: 0 $spacing-xl;
   box-shadow: $box-shadow-sm;
 }
@@ -274,6 +511,11 @@ const handleCommand = async (command: string) => {
   background-color: $white;
   border-right: 1px solid $border-color;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  flex-shrink: 0;
 }
 
 .orangehrm-menu {
@@ -332,10 +574,71 @@ const handleCommand = async (command: string) => {
   min-height: 600px;
 }
 
+.consent-dialog-wrapper {
+  :deep(.el-dialog__body) {
+    padding-top: $spacing-md;
+  }
+}
+
+.consent-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.consent-dialog-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.consent-dialog-card {
+  .consent-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: $spacing-lg;
+    flex-wrap: wrap;
+
+    h4 {
+      margin: 0;
+      font-size: $font-size-lg;
+    }
+
+    p {
+      margin: $spacing-xxs 0 0 0;
+      color: $text-secondary;
+    }
+  }
+
+  .consent-card-switch {
+    display: flex;
+    align-items: center;
+  }
+
+  .consent-card-meta {
+    margin: $spacing-md 0 0 0;
+    padding-left: $spacing-lg;
+    list-style: none;
+
+    li {
+      margin-bottom: $spacing-xxs;
+      color: $text-secondary;
+
+      strong {
+        color: $text-primary;
+        margin-right: $spacing-xxs;
+      }
+    }
+  }
+}
+
 // Responsive
 @media (max-width: 768px) {
   .orangehrm-aside {
     width: 200px !important;
+    position: relative;
+    top: 0;
+    height: auto;
   }
 
   .orangehrm-topbar {
@@ -357,3 +660,5 @@ const handleCommand = async (command: string) => {
   }
 }
 </style>
+
+

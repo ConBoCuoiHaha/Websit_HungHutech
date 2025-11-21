@@ -1,5 +1,10 @@
 import api from './api';
-import { Interview, PaginatedResponse, PaginationParams, InterviewSchedule } from '@/types';
+import {
+  Interview,
+  PaginatedResponse,
+  PaginationParams,
+  InterviewSchedule,
+} from '@/types';
 
 interface InterviewFilterParams extends PaginationParams {
   ung_vien_id?: string;
@@ -22,8 +27,13 @@ class InterviewService {
   private readonly BASE_URL = '/recruitment/interviews';
 
   // Lấy tất cả lịch phỏng vấn với filter
-  async getAll(params?: InterviewFilterParams): Promise<PaginatedResponse<Interview>> {
-    const response = await api.get<PaginatedResponse<Interview>>(this.BASE_URL, { params });
+  async getAll(
+    params?: InterviewFilterParams,
+  ): Promise<PaginatedResponse<Interview>> {
+    const response = await api.get<PaginatedResponse<Interview>>(
+      this.BASE_URL,
+      {params},
+    );
     return response.data;
   }
 
@@ -60,19 +70,27 @@ class InterviewService {
 
   // Xác nhận lịch phỏng vấn
   async confirm(id: string): Promise<Interview> {
-    const response = await api.patch<Interview>(`${this.BASE_URL}/${id}/confirm`);
+    const response = await api.patch<Interview>(
+      `${this.BASE_URL}/${id}/confirm`,
+    );
     return response.data;
   }
 
   // Hủy lịch phỏng vấn
   async cancel(id: string, ly_do?: string): Promise<Interview> {
-    const response = await api.patch<Interview>(`${this.BASE_URL}/${id}/cancel`, { ly_do });
+    const response = await api.patch<Interview>(
+      `${this.BASE_URL}/${id}/cancel`,
+      {ly_do},
+    );
     return response.data;
   }
 
   // Lấy lịch phỏng vấn theo ngày/tuần cho interviewer
   async getSchedule(params: ScheduleParams): Promise<InterviewSchedule> {
-    const response = await api.get<InterviewSchedule>(`${this.BASE_URL}/schedule`, { params });
+    const response = await api.get<InterviewSchedule>(
+      `${this.BASE_URL}/schedule`,
+      {params},
+    );
     return response.data;
   }
 }

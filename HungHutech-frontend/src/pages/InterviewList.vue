@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Quản lý lịch phỏng vấn</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showCreateDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
           Tạo lịch phỏng vấn
         </el-button>
       </div>
@@ -69,9 +69,15 @@
             @change="handleFilterChange"
           >
             <el-option label="Sơ tuyển" value="Sơ tuyển" />
-            <el-option label="Phỏng vấn chuyên môn" value="Phỏng vấn chuyên môn" />
+            <el-option
+              label="Phỏng vấn chuyên môn"
+              value="Phỏng vấn chuyên môn"
+            />
             <el-option label="Phỏng vấn quản lý" value="Phỏng vấn quản lý" />
-            <el-option label="Phỏng vấn cuối cùng" value="Phỏng vấn cuối cùng" />
+            <el-option
+              label="Phỏng vấn cuối cùng"
+              value="Phỏng vấn cuối cùng"
+            />
           </el-select>
         </el-form-item>
 
@@ -100,7 +106,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleFilterChange" :icon="Search">
+          <el-button type="primary" :icon="Search" @click="handleFilterChange">
             Tìm kiếm
           </el-button>
         </el-form-item>
@@ -108,16 +114,28 @@
     </el-card>
 
     <!-- Calendar View -->
-    <el-card v-if="viewMode === 'calendar'" class="orangehrm-calendar-card" shadow="never">
+    <el-card
+      v-if="viewMode === 'calendar'"
+      class="orangehrm-calendar-card"
+      shadow="never"
+    >
       <el-calendar v-model="calendarDate">
-        <template #date-cell="{ data }">
+        <template #date-cell="{data}">
           <div class="calendar-day">
-            <div class="calendar-day-number">{{ data.day.split('-').slice(-1)[0] }}</div>
-            <div v-if="getInterviewsForDate(data.day).length > 0" class="calendar-day-interviews">
+            <div class="calendar-day-number">
+              {{ data.day.split('-').slice(-1)[0] }}
+            </div>
+            <div
+              v-if="getInterviewsForDate(data.day).length > 0"
+              class="calendar-day-interviews"
+            >
               <div
                 v-for="interview in getInterviewsForDate(data.day).slice(0, 3)"
                 :key="interview._id"
-                :class="['interview-item', getInterviewStatusClass(interview.trang_thai)]"
+                :class="[
+                  'interview-item',
+                  getInterviewStatusClass(interview.trang_thai),
+                ]"
                 @click="handleViewInterview(interview)"
               >
                 <el-icon><User /></el-icon>
@@ -128,7 +146,10 @@
                   {{ getCandidateName(interview.ung_vien_id) }}
                 </span>
               </div>
-              <div v-if="getInterviewsForDate(data.day).length > 3" class="more-interviews">
+              <div
+                v-if="getInterviewsForDate(data.day).length > 3"
+                class="more-interviews"
+              >
                 +{{ getInterviewsForDate(data.day).length - 3 }} lịch khác
               </div>
             </div>
@@ -149,22 +170,24 @@
         <el-table-column type="index" label="STT" width="60" />
 
         <el-table-column label="Ứng viên" min-width="180">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="interview-candidate-info">
               <strong>{{ getCandidateName(row.ung_vien_id) }}</strong>
-              <div class="candidate-email">{{ getCandidateEmail(row.ung_vien_id) }}</div>
+              <div class="candidate-email">
+                {{ getCandidateEmail(row.ung_vien_id) }}
+              </div>
             </div>
           </template>
         </el-table-column>
 
         <el-table-column label="Vị trí tuyển dụng" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ getVacancyTitle(row.vi_tri_tuyen_dung_id) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Loại phỏng vấn" width="180">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getInterviewTypeTag(row.loai_phong_van)">
               {{ row.loai_phong_van }}
             </el-tag>
@@ -172,16 +195,20 @@
         </el-table-column>
 
         <el-table-column label="Ngày giờ" width="160">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="interview-datetime">
-              <div><el-icon><Calendar /></el-icon> {{ formatDate(row.ngay_gio) }}</div>
-              <div><el-icon><Clock /></el-icon> {{ formatTime(row.ngay_gio) }}</div>
+              <div>
+                <el-icon><Calendar /></el-icon> {{ formatDate(row.ngay_gio) }}
+              </div>
+              <div>
+                <el-icon><Clock /></el-icon> {{ formatTime(row.ngay_gio) }}
+              </div>
             </div>
           </template>
         </el-table-column>
 
         <el-table-column label="Hình thức" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getInterviewFormatTag(row.hinh_thuc)" size="small">
               {{ row.hinh_thuc }}
             </el-tag>
@@ -189,7 +216,7 @@
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row.trang_thai)" size="small">
               {{ row.trang_thai }}
             </el-tag>
@@ -197,34 +224,38 @@
         </el-table-column>
 
         <el-table-column label="Thao tác" width="220" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-button
               link
               type="primary"
               size="small"
-              @click="handleViewInterview(row)"
               :icon="View"
+              @click="handleViewInterview(row)"
             >
               Xem
             </el-button>
             <el-button
+              v-if="canEdit(row)"
               link
               type="primary"
               size="small"
-              @click="handleEdit(row)"
               :icon="Edit"
-              v-if="canEdit(row)"
+              @click="handleEdit(row)"
             >
               Sửa
             </el-button>
             <el-dropdown v-if="canManage(row)">
               <el-button link type="primary" size="small">
-                Hành động <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                Hành động
+                <el-icon class="el-icon--right"><arrow-down /></el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item
-                    v-if="row.trang_thai === 'Đã lên lịch' || row.trang_thai === 'Đang chờ xác nhận'"
+                    v-if="
+                      row.trang_thai === 'Đã lên lịch' ||
+                      row.trang_thai === 'Đang chờ xác nhận'
+                    "
                     @click="handleConfirm(row)"
                   >
                     <el-icon><Check /></el-icon>
@@ -238,13 +269,16 @@
                     Nhập kết quả
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="row.trang_thai !== 'Đã hủy' && row.trang_thai !== 'Đã hoàn thành'"
+                    v-if="
+                      row.trang_thai !== 'Đã hủy' &&
+                      row.trang_thai !== 'Đã hoàn thành'
+                    "
                     @click="handleCancel(row)"
                   >
                     <el-icon><Close /></el-icon>
                     Hủy lịch
                   </el-dropdown-item>
-                  <el-dropdown-item @click="handleDelete(row)" divided>
+                  <el-dropdown-item divided @click="handleDelete(row)">
                     <el-icon><Delete /></el-icon>
                     Xóa
                   </el-dropdown-item>
@@ -262,9 +296,9 @@
         :page-sizes="[10, 20, 50, 100]"
         :total="pagination.total"
         layout="total, sizes, prev, pager, next, jumper"
+        class="orangehrm-pagination"
         @size-change="handleSizeChange"
         @current-change="handlePageChange"
-        class="orangehrm-pagination"
       />
     </el-card>
 
@@ -314,7 +348,9 @@
           <h3>Thông tin phỏng vấn</h3>
           <el-descriptions :column="2" border>
             <el-descriptions-item label="Loại phỏng vấn">
-              <el-tag :type="getInterviewTypeTag(viewingInterview.loai_phong_van)">
+              <el-tag
+                :type="getInterviewTypeTag(viewingInterview.loai_phong_van)"
+              >
                 {{ viewingInterview.loai_phong_van }}
               </el-tag>
             </el-descriptions-item>
@@ -339,7 +375,11 @@
               label="Link phỏng vấn"
               :span="2"
             >
-              <el-link :href="viewingInterview.link_phong_van" target="_blank" type="primary">
+              <el-link
+                :href="viewingInterview.link_phong_van"
+                target="_blank"
+                type="primary"
+              >
                 {{ viewingInterview.link_phong_van }}
               </el-link>
             </el-descriptions-item>
@@ -347,11 +387,14 @@
         </div>
 
         <!-- Người phỏng vấn -->
-        <div class="detail-section" v-if="viewingInterview.nguoi_phong_van?.length">
+        <div
+          v-if="viewingInterview.nguoi_phong_van?.length"
+          class="detail-section"
+        >
           <h3>Người phỏng vấn</h3>
           <el-table :data="viewingInterview.nguoi_phong_van" border>
             <el-table-column label="Họ tên" prop="nhan_vien_id">
-              <template #default="{ row }">
+              <template #default="{row}">
                 {{ getEmployeeName(row.nhan_vien_id) }}
               </template>
             </el-table-column>
@@ -361,8 +404,8 @@
 
         <!-- Kết quả phỏng vấn -->
         <div
-          class="detail-section"
           v-if="viewingInterview.ket_qua_phong_van?.quyet_dinh"
+          class="detail-section"
         >
           <h3>Kết quả phỏng vấn</h3>
           <el-descriptions :column="2" border>
@@ -392,31 +435,37 @@
             </el-descriptions-item>
             <el-descriptions-item label="Điểm mạnh" :span="2">
               <el-tag
-                v-for="(item, index) in viewingInterview.ket_qua_phong_van.diem_manh"
+                v-for="(item, index) in viewingInterview.ket_qua_phong_van
+                  .diem_manh"
                 :key="index"
                 type="success"
                 class="tag-item"
               >
                 {{ item }}
               </el-tag>
-              <span v-if="!viewingInterview.ket_qua_phong_van.diem_manh?.length">-</span>
+              <span v-if="!viewingInterview.ket_qua_phong_van.diem_manh?.length"
+                >-</span
+              >
             </el-descriptions-item>
             <el-descriptions-item label="Điểm yếu" :span="2">
               <el-tag
-                v-for="(item, index) in viewingInterview.ket_qua_phong_van.diem_yeu"
+                v-for="(item, index) in viewingInterview.ket_qua_phong_van
+                  .diem_yeu"
                 :key="index"
                 type="warning"
                 class="tag-item"
               >
                 {{ item }}
               </el-tag>
-              <span v-if="!viewingInterview.ket_qua_phong_van.diem_yeu?.length">-</span>
+              <span v-if="!viewingInterview.ket_qua_phong_van.diem_yeu?.length"
+                >-</span
+              >
             </el-descriptions-item>
           </el-descriptions>
         </div>
 
         <!-- Ghi chú -->
-        <div class="detail-section" v-if="viewingInterview.ghi_chu">
+        <div v-if="viewingInterview.ghi_chu" class="detail-section">
           <h3>Ghi chú</h3>
           <p>{{ viewingInterview.ghi_chu }}</p>
         </div>
@@ -426,8 +475,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import {ref, reactive, onMounted, computed} from 'vue';
+import {ElMessage, ElMessageBox} from 'element-plus';
 import {
   Refresh,
   Plus,
@@ -443,7 +492,7 @@ import {
   Close,
   ArrowDown,
 } from '@element-plus/icons-vue';
-import type { Interview, Candidate, Vacancy, NhanVien } from '@/types';
+import type {Interview, Candidate, Vacancy, NhanVien} from '@/types';
 import interviewService from '@/services/interviewService';
 import InterviewFormDialog from '@/components/recruitment/InterviewFormDialog.vue';
 import InterviewResultDialog from '@/components/recruitment/InterviewResultDialog.vue';
@@ -540,7 +589,9 @@ const handleViewChange = () => {
 // Calendar helpers
 const getInterviewsForDate = (date: string) => {
   return interviewList.value.filter((interview) => {
-    const interviewDate = new Date(interview.ngay_gio).toISOString().split('T')[0];
+    const interviewDate = new Date(interview.ngay_gio)
+      .toISOString()
+      .split('T')[0];
     return interviewDate === date;
   });
 };
@@ -560,7 +611,7 @@ const handleDelete = async (interview: Interview) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     await interviewService.delete(interview._id);
@@ -568,7 +619,9 @@ const handleDelete = async (interview: Interview) => {
     loadData();
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa lịch phỏng vấn');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa lịch phỏng vấn',
+      );
     }
   }
 };
@@ -579,20 +632,22 @@ const handleConfirm = async (interview: Interview) => {
     ElMessage.success('Xác nhận lịch phỏng vấn thành công');
     loadData();
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể xác nhận lịch phỏng vấn');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể xác nhận lịch phỏng vấn',
+    );
   }
 };
 
 const handleCancel = async (interview: Interview) => {
   try {
-    const { value: ly_do } = await ElMessageBox.prompt(
+    const {value: ly_do} = await ElMessageBox.prompt(
       'Vui lòng nhập lý do hủy lịch phỏng vấn',
       'Hủy lịch phỏng vấn',
       {
         confirmButtonText: 'Xác nhận',
         cancelButtonText: 'Hủy',
         inputPlaceholder: 'Lý do hủy...',
-      }
+      },
     );
 
     await interviewService.cancel(interview._id, ly_do);
@@ -600,7 +655,9 @@ const handleCancel = async (interview: Interview) => {
     loadData();
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể hủy lịch phỏng vấn');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể hủy lịch phỏng vấn',
+      );
     }
   }
 };
@@ -616,7 +673,9 @@ const handleViewInterview = async (interview: Interview) => {
     viewingInterview.value = data;
     showViewDialog.value = true;
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải thông tin lịch phỏng vấn');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải thông tin lịch phỏng vấn',
+    );
   }
 };
 
@@ -634,7 +693,10 @@ const handleResultSuccess = () => {
 
 // Permissions
 const canEdit = (interview: Interview) => {
-  return interview.trang_thai !== 'Đã hoàn thành' && interview.trang_thai !== 'Đã hủy';
+  return (
+    interview.trang_thai !== 'Đã hoàn thành' &&
+    interview.trang_thai !== 'Đã hủy'
+  );
 };
 
 const canManage = (interview: Interview) => {
@@ -684,7 +746,7 @@ const formatDate = (dateString: string) => {
 
 const formatTime = (dateString: string) => {
   const date = new Date(dateString);
-  return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
 };
 
 const formatDateTime = (dateString: string) => {

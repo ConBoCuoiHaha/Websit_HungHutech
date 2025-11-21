@@ -1,4 +1,11 @@
 const NhanVien = require('../schemas/nhanVien.model.js');
+const TrangThaiLaoDong = require('../schemas/trangThaiLaoDong.model');
+const {ensureOffboardingForEmployee} = require('../services/offboardingService');
+
+const normalizeText = (value = '') =>
+  value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const TERMINATION_REGEX = /(nghi|thoi|ket thuc|resign|terminate)/;
+const isTerminationStatus = (name = '') => TERMINATION_REGEX.test(normalizeText(name));
 
 exports.createNhanVien = async (req, res) => {
   try {
@@ -202,7 +209,34 @@ exports.updateNhanVien = async (req, res) => {
       }
     }
 
-    console.log('📝 Final updateData after cleaning empty strings:', JSON.stringify(updateData, null, 2));
+    console.log('?? Final updateData after cleaning empty strings:', JSON.stringify(updateData, null, 2));
+
+    const existingEmployee = await NhanVien.findById(req.params.id).populate(
+      'thong_tin_cong_viec.trang_thai_lao_dong_id',
+    );
+    if (!existingEmployee) {
+      console.log('? Employee not found:', req.params.id);
+      return res.status(404).json({ msg: 'Kh�ng t�m th?y nh�n vi�n' });
+    }
+
+    const previousStatusName =
+      existingEmployee.thong_tin_cong_viec?.trang_thai_lao_dong_id?.ten || '';
+    let nextStatusName = previousStatusName;
+    if (updateData.thong_tin_cong_viec?.trang_thai_lao_dong_id) {
+      const statusDoc = await TrangThaiLaoDong.findById(
+        updateData.thong_tin_cong_viec.trang_thai_lao_dong_id,
+      ).select('ten');
+      if (statusDoc?.ten) {
+        nextStatusName = statusDoc.ten;
+      }
+    }
+    const shouldTriggerOffboarding =
+      !isTerminationStatus(previousStatusName) && isTerminationStatus(nextStatusName);
+    const inferredLastWorkingDay =
+      updateData.thong_tin_cong_viec?.ngay_nghi ||
+      updateData.thong_tin_cong_viec?.ngay_thoi_viec ||
+      existingEmployee.thong_tin_cong_viec?.ngay_nghi ||
+      null;
 
     const nhanVien = await NhanVien.findByIdAndUpdate(
       req.params.id,
@@ -211,9 +245,18 @@ exports.updateNhanVien = async (req, res) => {
     );
 
     if (!nhanVien) {
-      console.log('❌ Employee not found:', req.params.id);
-      return res.status(404).json({ msg: 'Không tìm thấy nhân viên' });
+      console.log('? Employee not found:', req.params.id);
+      return res.status(404).json({ msg: 'Kh�ng t�m th?y nh�n vi�n' });
     }
+
+    if (shouldTriggerOffboarding) {
+      await ensureOffboardingForEmployee(nhanVien, {
+        lastWorkingDay: inferredLastWorkingDay,
+        reason: `Trang thai cap nhat thanh: ${nextStatusName || 'khong ro'}`,
+        requested_by: req.user?.id || null,
+      });
+    }
+
 
     console.log('✅ Employee updated successfully');
     res.json(nhanVien);
@@ -282,3 +325,4 @@ exports.deleteNhanVien = async (req, res) => {
     res.status(500).send('Lỗi máy chủ');
   }
 };
+

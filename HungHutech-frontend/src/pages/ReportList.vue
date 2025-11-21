@@ -4,8 +4,8 @@
     <div class="page-header">
       <h1 class="page-title">Quản lý Báo cáo</h1>
       <div class="page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="handleCreateNew" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="handleCreateNew">
           Tạo báo cáo mới
         </el-button>
       </div>
@@ -53,13 +53,13 @@
         :empty-text="error || 'Không có báo cáo nào'"
       >
         <el-table-column prop="ten_bao_cao" label="Tên báo cáo" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong class="report-name">{{ row.ten_bao_cao }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Loại báo cáo" min-width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getReportTypeTagType(row.loai_bao_cao)">
               {{ getReportTypeLabel(row.loai_bao_cao) }}
             </el-tag>
@@ -67,31 +67,31 @@
         </el-table-column>
 
         <el-table-column label="Số tiêu chí" width="120" align="center">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.tieu_chi?.length || 0 }}
           </template>
         </el-table-column>
 
         <el-table-column label="Số cột" width="100" align="center">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.cot_hien_thi?.length || 0 }}
           </template>
         </el-table-column>
 
         <el-table-column label="Người tạo" min-width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ getUserEmail(row.nguoi_tao_id) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Ngày cập nhật" min-width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_cap_nhat) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="280" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
               <el-button
                 size="small"
@@ -146,8 +146,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import {ref, reactive, onMounted} from 'vue';
+import {useRouter} from 'vue-router';
 import {
   Search,
   Refresh,
@@ -157,9 +157,9 @@ import {
   Delete,
   Download,
 } from '@element-plus/icons-vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import {ElMessage, ElMessageBox} from 'element-plus';
 import reportService from '@/services/reportService';
-import { Report, User } from '@/types';
+import {Report, User} from '@/types';
 
 const router = useRouter();
 
@@ -247,7 +247,7 @@ const handleDelete = async (id: string) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     await reportService.delete(id);
@@ -267,7 +267,7 @@ const getReportTypeLabel = (type: string): string => {
     'Cham cong': 'Chấm công',
     'Nghi phep': 'Nghỉ phép',
     'Boi hoan': 'Bồi hoàn',
-    'Luong': 'Lương',
+    Luong: 'Lương',
     'Hieu suat': 'Hiệu suất',
   };
   return labels[type] || type;
@@ -279,7 +279,7 @@ const getReportTypeTagType = (type: string): string => {
     'Cham cong': 'success',
     'Nghi phep': 'warning',
     'Boi hoan': 'danger',
-    'Luong': 'info',
+    Luong: 'info',
     'Hieu suat': '',
   };
   return types[type] || '';

@@ -4,8 +4,13 @@ import {TrangThaiLaoDong, PaginatedResponse, PaginationParams} from '@/types';
 class TrangThaiLaoDongService {
   private readonly BASE_URL = '/trangthailaodong';
 
-  async getAll(params?: PaginationParams): Promise<PaginatedResponse<TrangThaiLaoDong>> {
-    const response = await api.get<PaginatedResponse<TrangThaiLaoDong>>(this.BASE_URL, {params});
+  async getAll(
+    params?: PaginationParams,
+  ): Promise<PaginatedResponse<TrangThaiLaoDong>> {
+    const response = await api.get<PaginatedResponse<TrangThaiLaoDong>>(
+      this.BASE_URL,
+      {params},
+    );
     return response.data;
   }
 
@@ -19,8 +24,14 @@ class TrangThaiLaoDongService {
     return response.data;
   }
 
-  async update(id: string, data: Partial<TrangThaiLaoDong>): Promise<TrangThaiLaoDong> {
-    const response = await api.put<TrangThaiLaoDong>(`${this.BASE_URL}/${id}`, data);
+  async update(
+    id: string,
+    data: Partial<TrangThaiLaoDong>,
+  ): Promise<TrangThaiLaoDong> {
+    const response = await api.put<TrangThaiLaoDong>(
+      `${this.BASE_URL}/${id}`,
+      data,
+    );
     return response.data;
   }
 

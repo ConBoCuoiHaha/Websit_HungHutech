@@ -1,6 +1,7 @@
 const ChamCong = require('../schemas/chamCong.model.js');
 const {parseListParams} = require('../utils/pagination');
 const NhanVien = require('../schemas/nhanVien.model');
+const timeRuleEngine = require('../services/timeRuleEngine');
 
 // Lấy ngày hiện tại (local), bỏ giờ/phút/giây
 const getToday = () => {
@@ -20,6 +21,7 @@ exports.clockIn = async (req, res) => {
     }
     record = new ChamCong({ nhan_vien_id, ngay, thoi_gian_vao: new Date(), ghi_chu });
     await record.save();
+    timeRuleEngine.queueRecalc(record.nhan_vien_id, record.ngay);
     res.status(201).json(record);
   } catch (err) {
     res.status(500).json({ msg: 'Lỗi máy chủ', error: err.message });
@@ -41,6 +43,7 @@ exports.clockOut = async (req, res) => {
     record.thoi_gian_ra = new Date();
     if (ghi_chu) record.ghi_chu = ghi_chu;
     await record.save();
+    timeRuleEngine.queueRecalc(record.nhan_vien_id, record.ngay);
     res.json(record);
   } catch (err) {
     res.status(500).json({ msg: 'Lỗi máy chủ', error: err.message });
@@ -128,6 +131,7 @@ exports.updateAttendanceRecord = async (req, res) => {
     if (!record) {
       return res.status(404).json({ msg: 'Không tìm thấy bản ghi chấm công.' });
     }
+    timeRuleEngine.queueRecalc(record.nhan_vien_id, record.ngay);
     res.json(record);
   } catch (err) {
     res.status(500).json({ msg: 'Lỗi máy chủ', error: err.message });

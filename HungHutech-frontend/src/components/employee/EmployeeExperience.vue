@@ -3,7 +3,13 @@
     <div class="orangehrm-form-section">
       <div class="section-header">
         <h3 class="orangehrm-section-title">Kinh nghiệm làm việc</h3>
-        <el-button v-if="!isEditing" type="primary" @click="handleAdd" :icon="Plus" size="small">
+        <el-button
+          v-if="!isEditing"
+          type="primary"
+          :icon="Plus"
+          size="small"
+          @click="handleAdd"
+        >
           Thêm kinh nghiệm
         </el-button>
       </div>
@@ -28,26 +34,48 @@
             {{ formatDate(scope.row.ngay_ket_thuc) }}
           </template>
         </el-table-column>
-        <el-table-column prop="mo_ta" label="Mô tả" min-width="200" show-overflow-tooltip />
+        <el-table-column
+          prop="mo_ta"
+          label="Mô tả"
+          min-width="200"
+          show-overflow-tooltip
+        />
         <el-table-column label="Thao tác" width="150" align="center">
           <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.$index)" :icon="Edit">
+            <el-button
+              size="small"
+              :icon="Edit"
+              @click="handleEdit(scope.$index)"
+            >
               Sửa
             </el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.$index)" :icon="Delete">
+            <el-button
+              size="small"
+              type="danger"
+              :icon="Delete"
+              @click="handleDelete(scope.$index)"
+            >
               Xóa
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <el-empty v-else description="Chưa có kinh nghiệm làm việc" :image-size="100" />
+      <el-empty
+        v-else
+        description="Chưa có kinh nghiệm làm việc"
+        :image-size="100"
+      />
     </div>
 
     <!-- Add/Edit Dialog -->
     <el-dialog
       v-model="dialogVisible"
-      :title="editIndex === -1 ? 'Thêm kinh nghiệm làm việc' : 'Chỉnh sửa kinh nghiệm làm việc'"
+      :title="
+        editIndex === -1
+          ? 'Thêm kinh nghiệm làm việc'
+          : 'Chỉnh sửa kinh nghiệm làm việc'
+      "
       width="700px"
     >
       <el-form
@@ -64,7 +92,10 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="Chức danh" prop="chuc_danh" required>
-              <el-input v-model="form.chuc_danh" placeholder="Vị trí công việc" />
+              <el-input
+                v-model="form.chuc_danh"
+                placeholder="Vị trí công việc"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -108,7 +139,7 @@
 
       <template #footer>
         <el-button @click="dialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSave">
           {{ editIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -150,9 +181,15 @@ const form = reactive({
 });
 
 const formRules: FormRules = {
-  cong_ty: [{required: true, message: 'Vui lòng nhập tên công ty', trigger: 'blur'}],
-  chuc_danh: [{required: true, message: 'Vui lòng nhập chức danh', trigger: 'blur'}],
-  ngay_bat_dau: [{required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'}],
+  cong_ty: [
+    {required: true, message: 'Vui lòng nhập tên công ty', trigger: 'blur'},
+  ],
+  chuc_danh: [
+    {required: true, message: 'Vui lòng nhập chức danh', trigger: 'blur'},
+  ],
+  ngay_bat_dau: [
+    {required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'},
+  ],
 };
 
 watch(
@@ -187,8 +224,12 @@ const handleEdit = (index: number) => {
   const exp = experiences.value[index];
   form.cong_ty = exp.cong_ty || '';
   form.chuc_danh = exp.chuc_danh || '';
-  form.ngay_bat_dau = exp.ngay_bat_dau ? dayjs(exp.ngay_bat_dau).format('YYYY-MM-DD') : '';
-  form.ngay_ket_thuc = exp.ngay_ket_thuc ? dayjs(exp.ngay_ket_thuc).format('YYYY-MM-DD') : '';
+  form.ngay_bat_dau = exp.ngay_bat_dau
+    ? dayjs(exp.ngay_bat_dau).format('YYYY-MM-DD')
+    : '';
+  form.ngay_ket_thuc = exp.ngay_ket_thuc
+    ? dayjs(exp.ngay_ket_thuc).format('YYYY-MM-DD')
+    : '';
   form.mo_ta = exp.mo_ta || '';
   dialogVisible.value = true;
 };
@@ -202,7 +243,7 @@ const handleDelete = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedExperiences = [...experiences.value];
@@ -248,7 +289,9 @@ const handleSave = async () => {
     });
 
     ElMessage.success(
-      editIndex.value === -1 ? 'Thêm kinh nghiệm thành công' : 'Cập nhật kinh nghiệm thành công'
+      editIndex.value === -1
+        ? 'Thêm kinh nghiệm thành công'
+        : 'Cập nhật kinh nghiệm thành công',
     );
     dialogVisible.value = false;
     emit('reload');

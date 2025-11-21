@@ -4,7 +4,7 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Chấm công hàng ngày</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadTodayAttendance" :icon="Refresh">
+        <el-button :icon="Refresh" @click="loadTodayAttendance">
           Tải lại
         </el-button>
       </div>
@@ -24,6 +24,42 @@
           <div class="orangehrm-clock">{{ currentTime }}</div>
         </div>
       </div>
+    </el-card>
+
+    <el-card
+      v-if="monthOtAlerts.length"
+      class="orangehrm-ot-alert-card"
+      shadow="never"
+    >
+      <template #header>
+        <div class="orangehrm-card-header">
+          <span>Canh bao tang ca (thang nay)</span>
+          <el-tag type="warning">Gioi han {{ monthOtLimit }}h</el-tag>
+        </div>
+      </template>
+      <el-table :data="monthOtAlerts" size="small" border>
+        <el-table-column label="Nhan vien" min-width="180">
+          <template #default="{row}">
+            <div class="orangehrm-ot-employee">
+              <strong>{{ row.ho_ten }}</strong>
+              <small>{{ row.ma_nhan_vien }}</small>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phong_ban" label="Phong ban" min-width="120" />
+        <el-table-column label="So gio" width="140">
+          <template #default="{row}">
+            {{ row.hours.toFixed(2) }}h / {{ row.limit }}h
+          </template>
+        </el-table-column>
+        <el-table-column label="Ti le" width="120" align="center">
+          <template #default="{row}">
+            <el-tag :type="row.percent >= 100 ? 'danger' : row.percent >= 80 ? 'warning' : 'success'">
+              {{ row.percent.toFixed(1) }}%
+            </el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
 
     <!-- Employee Selection -->
@@ -49,13 +85,16 @@
     </el-card>
 
     <!-- Clock In/Out Card -->
-    <el-row :gutter="16" v-if="selectedEmployeeId">
+    <el-row v-if="selectedEmployeeId" :gutter="16">
       <el-col :xs="24" :md="12">
         <el-card class="orangehrm-clock-card orangehrm-clock-in" shadow="hover">
           <div class="orangehrm-clock-content">
             <el-icon :size="48" color="#67C23A"><Timer /></el-icon>
             <h3>Giờ vào</h3>
-            <div v-if="todayAttendance?.thoi_gian_vao" class="orangehrm-clock-time">
+            <div
+              v-if="todayAttendance?.thoi_gian_vao"
+              class="orangehrm-clock-time"
+            >
               {{ formatTime(todayAttendance.thoi_gian_vao) }}
             </div>
             <div v-else class="orangehrm-clock-empty">Chưa chấm công</div>
@@ -65,8 +104,8 @@
               type="success"
               size="large"
               :icon="VideoPlay"
-              @click="handleClockIn"
               :loading="clockingIn"
+              @click="handleClockIn"
             >
               Chấm công vào
             </el-button>
@@ -76,22 +115,30 @@
       </el-col>
 
       <el-col :xs="24" :md="12">
-        <el-card class="orangehrm-clock-card orangehrm-clock-out" shadow="hover">
+        <el-card
+          class="orangehrm-clock-card orangehrm-clock-out"
+          shadow="hover"
+        >
           <div class="orangehrm-clock-content">
             <el-icon :size="48" color="#E6A23C"><Timer /></el-icon>
             <h3>Giờ ra</h3>
-            <div v-if="todayAttendance?.thoi_gian_ra" class="orangehrm-clock-time">
+            <div
+              v-if="todayAttendance?.thoi_gian_ra"
+              class="orangehrm-clock-time"
+            >
               {{ formatTime(todayAttendance.thoi_gian_ra) }}
             </div>
             <div v-else class="orangehrm-clock-empty">Chưa chấm công</div>
 
             <el-button
-              v-if="todayAttendance?.thoi_gian_vao && !todayAttendance?.thoi_gian_ra"
+              v-if="
+                todayAttendance?.thoi_gian_vao && !todayAttendance?.thoi_gian_ra
+              "
               type="warning"
               size="large"
               :icon="VideoPause"
-              @click="handleClockOut"
               :loading="clockingOut"
+              @click="handleClockOut"
             >
               Chấm công ra
             </el-button>
@@ -122,7 +169,10 @@
 
       <el-row :gutter="16">
         <el-col :xs="12" :sm="6">
-          <el-statistic title="Giờ vào" :value="formatTime(todayAttendance.thoi_gian_vao)">
+          <el-statistic
+            title="Giờ vào"
+            :value="formatTime(todayAttendance.thoi_gian_vao)"
+          >
             <template #prefix>
               <el-icon color="#67C23A"><VideoPlay /></el-icon>
             </template>
@@ -132,7 +182,11 @@
         <el-col :xs="12" :sm="6">
           <el-statistic
             title="Giờ ra"
-            :value="todayAttendance.thoi_gian_ra ? formatTime(todayAttendance.thoi_gian_ra) : '-'"
+            :value="
+              todayAttendance.thoi_gian_ra
+                ? formatTime(todayAttendance.thoi_gian_ra)
+                : '-'
+            "
           >
             <template #prefix>
               <el-icon color="#E6A23C"><VideoPause /></el-icon>
@@ -192,19 +246,19 @@
         stripe
       >
         <el-table-column prop="ngay" label="Ngày" width="150">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Giờ vào" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong>{{ formatTime(row.thoi_gian_vao) }}</strong>
           </template>
         </el-table-column>
 
         <el-table-column label="Giờ ra" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <strong>{{
               row.thoi_gian_ra ? formatTime(row.thoi_gian_ra) : '-'
             }}</strong>
@@ -212,13 +266,11 @@
         </el-table-column>
 
         <el-table-column label="Số giờ" width="120">
-          <template #default="{ row }">
-            {{ calculateHours(row) }} giờ
-          </template>
+          <template #default="{row}"> {{ calculateHours(row) }} giờ </template>
         </el-table-column>
 
         <el-table-column label="Trạng thái" width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row)" size="small">
               {{ getStatus(row) }}
             </el-tag>
@@ -226,7 +278,7 @@
         </el-table-column>
 
         <el-table-column label="Ghi chú" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ row.ghi_chu || '-' }}
           </template>
         </el-table-column>
@@ -257,7 +309,8 @@ import {
 import {ElMessage} from 'element-plus';
 import chamCongService from '@/services/chamCongService';
 import nhanVienService from '@/services/nhanVienService';
-import {ChamCong, NhanVien} from '@/types';
+import overtimeRequestService from '@/services/overtimeRequestService';
+import {ChamCong, NhanVien, OvertimeAlertGroups} from '@/types';
 
 const employees = ref<NhanVien[]>([]);
 const selectedEmployeeId = ref('');
@@ -269,6 +322,13 @@ const clockingOut = ref(false);
 const currentTime = ref('');
 const currentDay = ref('');
 let timeInterval: NodeJS.Timeout;
+const overtimeAlerts = ref<OvertimeAlertGroups | null>(null);
+
+const monthOtAlerts = computed(() => {
+  return overtimeAlerts.value?.month?.items?.slice(0, 5) || [];
+});
+
+const monthOtLimit = computed(() => overtimeAlerts.value?.month?.limit || 0);
 
 const todayFormatted = computed(() => {
   const today = new Date();
@@ -327,6 +387,14 @@ const loadEmployees = async () => {
   }
 };
 
+const loadOvertimeAlerts = async () => {
+  try {
+    overtimeAlerts.value = await overtimeRequestService.getAlerts();
+  } catch (err) {
+    console.error('Error loading overtime alerts', err);
+  }
+};
+
 const loadTodayAttendance = async () => {
   if (!selectedEmployeeId.value) return;
 
@@ -342,7 +410,9 @@ const loadTodayAttendance = async () => {
     });
 
     // Handle both array and paginated response
-    const historyArray = Array.isArray(history) ? history : (history as any).items || [];
+    const historyArray = Array.isArray(history)
+      ? history
+      : (history as any).items || [];
     todayAttendance.value = historyArray.length > 0 ? historyArray[0] : null;
 
     // Load recent 7 days
@@ -357,7 +427,9 @@ const loadTodayAttendance = async () => {
     });
 
     // Handle both array and paginated response
-    const dataArray = Array.isArray(recentData) ? recentData : (recentData as any).items || [];
+    const dataArray = Array.isArray(recentData)
+      ? recentData
+      : (recentData as any).items || [];
     recentHistory.value = dataArray.slice(0, 7);
   } catch (err: any) {
     console.error('Error loading attendance:', err);
@@ -382,9 +454,7 @@ const handleClockIn = async () => {
     await loadTodayAttendance();
   } catch (err: any) {
     console.error('Error clocking in:', err);
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể chấm công vào',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể chấm công vào');
   } finally {
     clockingIn.value = false;
   }
@@ -403,9 +473,7 @@ const handleClockOut = async () => {
     await loadTodayAttendance();
   } catch (err: any) {
     console.error('Error clocking out:', err);
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể chấm công ra',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể chấm công ra');
   } finally {
     clockingOut.value = false;
   }
@@ -453,6 +521,7 @@ onMounted(() => {
   updateTime();
   timeInterval = setInterval(updateTime, 1000);
   loadEmployees();
+  loadOvertimeAlerts();
 });
 
 onUnmounted(() => {
@@ -545,17 +614,31 @@ onUnmounted(() => {
   }
 }
 
+.orangehrm-ot-alert-card {
+  margin-bottom: $spacing-lg;
+}
+
+.orangehrm-ot-employee {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  small {
+    color: $text-secondary;
+  }
+}
+
 // Clock Cards
 .orangehrm-clock-card {
   margin-bottom: $spacing-lg;
   border-left: 4px solid;
 
   &.orangehrm-clock-in {
-    border-left-color: #67C23A;
+    border-left-color: #67c23a;
   }
 
   &.orangehrm-clock-out {
-    border-left-color: #E6A23C;
+    border-left-color: #e6a23c;
   }
 
   :deep(.el-card__body) {
@@ -661,3 +744,4 @@ onUnmounted(() => {
   }
 }
 </style>
+

@@ -20,9 +20,12 @@ class YeuCauNghiPhepService {
   async getAll(
     params?: YeuCauNghiPhepParams,
   ): Promise<PaginatedResponse<YeuCauNghiPhep>> {
-    const response = await api.get<PaginatedResponse<YeuCauNghiPhep>>(this.BASE_URL, {
-      params,
-    });
+    const response = await api.get<PaginatedResponse<YeuCauNghiPhep>>(
+      this.BASE_URL,
+      {
+        params,
+      },
+    );
     return response.data;
   }
 
@@ -31,18 +34,36 @@ class YeuCauNghiPhepService {
     return response.data;
   }
 
+  async getMy(
+    params?: Pick<YeuCauNghiPhepParams, 'page' | 'limit' | 'trang_thai'>,
+  ): Promise<PaginatedResponse<YeuCauNghiPhep>> {
+    const response = await api.get<PaginatedResponse<YeuCauNghiPhep>>(
+      `${this.BASE_URL}/my`,
+      {params},
+    );
+    return response.data;
+  }
+
   async create(data: Partial<YeuCauNghiPhep>): Promise<YeuCauNghiPhep> {
     const response = await api.post<YeuCauNghiPhep>(this.BASE_URL, data);
     return response.data;
   }
 
-  async updateStatus(id: string, data: UpdateStatusRequest): Promise<YeuCauNghiPhep> {
-    const response = await api.put<YeuCauNghiPhep>(`${this.BASE_URL}/${id}/status`, data);
+  async updateStatus(
+    id: string,
+    data: UpdateStatusRequest,
+  ): Promise<YeuCauNghiPhep> {
+    const response = await api.put<YeuCauNghiPhep>(
+      `${this.BASE_URL}/${id}/status`,
+      data,
+    );
     return response.data;
   }
 
   async cancel(id: string): Promise<YeuCauNghiPhep> {
-    const response = await api.put<YeuCauNghiPhep>(`${this.BASE_URL}/${id}/cancel`);
+    const response = await api.put<YeuCauNghiPhep>(
+      `${this.BASE_URL}/${id}/cancel`,
+    );
     return response.data;
   }
 

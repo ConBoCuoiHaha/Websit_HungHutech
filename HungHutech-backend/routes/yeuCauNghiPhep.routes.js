@@ -8,6 +8,7 @@ const {
   getYeuCauNghiPhepById,
   updateYeuCauStatus,
   cancelYeuCau,
+  listMyRequests,
 } = require('../controllers/yeuCauNghiPhep.controller.js');
 
 // Dành cho nhân viên và quản lý
@@ -15,7 +16,7 @@ router
   .route('/')
   .post(
     [
-      body('nhan_vien_id').isMongoId(),
+      body('nhan_vien_id').optional().isMongoId(),
       body('loai_ngay_nghi_id').isMongoId(),
       body('ngay_bat_dau').isISO8601(),
       body('ngay_ket_thuc').isISO8601(),
@@ -34,6 +35,12 @@ router
     handleValidation,
     getAllYeuCauNghiPhep,
   );
+router.get(
+  '/my',
+  [query('trang_thai').optional().isString()],
+  handleValidation,
+  listMyRequests,
+);
 
 // Dành cho nhân viên và quản lý
 router.route('/:id').get([param('id').isMongoId()], handleValidation, getYeuCauNghiPhepById);
@@ -55,4 +62,3 @@ router
 router.route('/:id/cancel').put([param('id').isMongoId()], handleValidation, cancelYeuCau);
 
 module.exports = router;
-

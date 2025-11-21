@@ -4,8 +4,8 @@
     <div class="orangehrm-page-header">
       <h1 class="orangehrm-page-title">Danh sách đơn nghỉ phép</h1>
       <div class="orangehrm-page-actions">
-        <el-button @click="loadData" :icon="Refresh">Tải lại</el-button>
-        <el-button type="primary" @click="showApplyDialog = true" :icon="Plus">
+        <el-button :icon="Refresh" @click="loadData">Tải lại</el-button>
+        <el-button type="primary" :icon="Plus" @click="showApplyDialog = true">
           Đăng ký nghỉ phép
         </el-button>
       </div>
@@ -81,7 +81,7 @@
         :empty-text="error || 'Không có dữ liệu'"
       >
         <el-table-column prop="nhan_vien_id" label="Nhân viên" min-width="180">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-employee-info">
               <strong>{{ getEmployeeName(row.nhan_vien_id) }}</strong>
               <span class="orangehrm-employee-code">
@@ -92,7 +92,7 @@
         </el-table-column>
 
         <el-table-column label="Loại nghỉ phép" min-width="140">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag type="info" size="small">
               {{ getLeaveTypeName(row.loai_ngay_nghi_id) }}
             </el-tag>
@@ -100,11 +100,12 @@
         </el-table-column>
 
         <el-table-column label="Thời gian nghỉ" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div class="orangehrm-leave-period">
               <div>
                 <el-icon><Calendar /></el-icon>
-                {{ formatDate(row.ngay_bat_dau) }} - {{ formatDate(row.ngay_ket_thuc) }}
+                {{ formatDate(row.ngay_bat_dau) }} -
+                {{ formatDate(row.ngay_ket_thuc) }}
               </div>
               <span class="orangehrm-leave-days">
                 ({{ row.so_ngay }} ngày)
@@ -114,7 +115,7 @@
         </el-table-column>
 
         <el-table-column label="Lý do" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <span class="orangehrm-leave-reason">
               {{ row.ly_do || '-' }}
             </span>
@@ -122,7 +123,7 @@
         </el-table-column>
 
         <el-table-column label="Trạng thái" min-width="130">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-tag :type="getStatusType(row.trang_thai)" size="small">
               {{ getStatusText(row.trang_thai) }}
             </el-tag>
@@ -130,19 +131,15 @@
         </el-table-column>
 
         <el-table-column label="Ngày tạo" min-width="120">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.ngay_tao) }}
           </template>
         </el-table-column>
 
         <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{ row }">
+          <template #default="{row}">
             <el-space>
-              <el-button
-                size="small"
-                :icon="View"
-                @click="handleView(row)"
-              >
+              <el-button size="small" :icon="View" @click="handleView(row)">
                 Xem
               </el-button>
               <el-button
@@ -265,7 +262,7 @@
 
       <template #footer>
         <el-button @click="closeApplyDialog">Hủy</el-button>
-        <el-button type="primary" @click="handleApply" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleApply">
           Đăng ký
         </el-button>
       </template>
@@ -346,13 +343,7 @@
 
 <script setup lang="ts">
 import {ref, reactive, onMounted} from 'vue';
-import {
-  Calendar,
-  Refresh,
-  Plus,
-  View,
-  Close,
-} from '@element-plus/icons-vue';
+import {Calendar, Refresh, Plus, View, Close} from '@element-plus/icons-vue';
 import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
 import yeuCauNghiPhepService from '@/services/yeuCauNghiPhepService';
 import loaiNgayNghiService from '@/services/loaiNgayNghiService';
@@ -395,7 +386,11 @@ const applyFormRules: FormRules = {
     {required: true, message: 'Vui lòng chọn nhân viên', trigger: 'change'},
   ],
   loai_ngay_nghi_id: [
-    {required: true, message: 'Vui lòng chọn loại nghỉ phép', trigger: 'change'},
+    {
+      required: true,
+      message: 'Vui lòng chọn loại nghỉ phép',
+      trigger: 'change',
+    },
   ],
   ngay_bat_dau: [
     {required: true, message: 'Vui lòng chọn ngày bắt đầu', trigger: 'change'},
@@ -425,7 +420,8 @@ const loadData = async () => {
     pagination.total = response.pagination?.total || 0;
   } catch (err: any) {
     console.error('Error loading leave requests:', err);
-    error.value = err.response?.data?.msg || 'Không thể tải danh sách đơn nghỉ phép';
+    error.value =
+      err.response?.data?.msg || 'Không thể tải danh sách đơn nghỉ phép';
     ElMessage.error(error.value);
   } finally {
     loading.value = false;
@@ -496,9 +492,7 @@ const handleApply = async () => {
       await loadData();
     } catch (err: any) {
       console.error('Error applying leave:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể đăng ký nghỉ phép',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể đăng ký nghỉ phép');
     } finally {
       saving.value = false;
     }
@@ -528,9 +522,7 @@ const handleCancel = async (id: string) => {
   } catch (err: any) {
     if (err !== 'cancel') {
       console.error('Error cancelling leave:', err);
-      ElMessage.error(
-        err.response?.data?.msg || 'Không thể hủy đơn nghỉ phép',
-      );
+      ElMessage.error(err.response?.data?.msg || 'Không thể hủy đơn nghỉ phép');
     }
   }
 };
@@ -586,7 +578,9 @@ const getStatusText = (status: string): string => {
   return statusMap[status] || status;
 };
 
-const getStatusType = (status: string): 'warning' | 'success' | 'danger' | 'info' => {
+const getStatusType = (
+  status: string,
+): 'warning' | 'success' | 'danger' | 'info' => {
   const typeMap: Record<string, 'warning' | 'success' | 'danger' | 'info'> = {
     'Cho duyet': 'warning',
     'Da duyet': 'success',

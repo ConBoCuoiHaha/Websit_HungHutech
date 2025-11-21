@@ -5,7 +5,12 @@
       <el-tab-pane label="Học vấn" name="education">
         <div class="section-header">
           <h3 class="orangehrm-section-title">Trình độ học vấn</h3>
-          <el-button type="primary" @click="handleAddEducation" :icon="Plus" size="small">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            size="small"
+            @click="handleAddEducation"
+          >
             Thêm học vấn
           </el-button>
         </div>
@@ -19,33 +24,56 @@
         >
           <el-table-column prop="truong" label="Trường" min-width="200" />
           <el-table-column prop="bang_cap" label="Bằng cấp" min-width="120" />
-          <el-table-column prop="chuyen_nganh" label="Chuyên ngành" min-width="150" />
+          <el-table-column
+            prop="chuyen_nganh"
+            label="Chuyên ngành"
+            min-width="150"
+          />
           <el-table-column label="Năm" min-width="120">
             <template #default="scope">
-              {{ scope.row.nam_bat_dau }} - {{ scope.row.nam_ket_thuc || 'Hiện tại' }}
+              {{ scope.row.nam_bat_dau }} -
+              {{ scope.row.nam_ket_thuc || 'Hiện tại' }}
             </template>
           </el-table-column>
           <el-table-column prop="diem_gpa" label="GPA" width="80" />
           <el-table-column label="Thao tác" width="150" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEditEducation(scope.$index)" :icon="Edit">
+              <el-button
+                size="small"
+                :icon="Edit"
+                @click="handleEditEducation(scope.$index)"
+              >
                 Sửa
               </el-button>
-              <el-button size="small" type="danger" @click="handleDeleteEducation(scope.$index)" :icon="Delete">
+              <el-button
+                size="small"
+                type="danger"
+                :icon="Delete"
+                @click="handleDeleteEducation(scope.$index)"
+              >
                 Xóa
               </el-button>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-empty v-else description="Chưa có thông tin học vấn" :image-size="100" />
+        <el-empty
+          v-else
+          description="Chưa có thông tin học vấn"
+          :image-size="100"
+        />
       </el-tab-pane>
 
       <!-- Skills Tab -->
       <el-tab-pane label="Kỹ năng" name="skills">
         <div class="section-header">
           <h3 class="orangehrm-section-title">Kỹ năng chuyên môn</h3>
-          <el-button type="primary" @click="handleAddSkill" :icon="Plus" size="small">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            size="small"
+            @click="handleAddSkill"
+          >
             Thêm kỹ năng
           </el-button>
         </div>
@@ -57,38 +85,71 @@
           class="orangehrm-table"
           style="margin-top: 20px"
         >
-          <el-table-column prop="ten_ky_nang" label="Tên kỹ năng" min-width="200" />
+          <el-table-column
+            prop="ten_ky_nang"
+            label="Tên kỹ năng"
+            min-width="200"
+          />
           <el-table-column label="Trình độ" width="120">
             <template #default="scope">
-              <el-tag :type="getSkillLevelType(scope.row.trinh_do)">{{ scope.row.trinh_do }}</el-tag>
+              <el-tag :type="getSkillLevelType(scope.row.trinh_do)">{{
+                scope.row.trinh_do
+              }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="nam_kinh_nghiem" label="Kinh nghiệm" width="120">
+          <el-table-column
+            prop="nam_kinh_nghiem"
+            label="Kinh nghiệm"
+            width="120"
+          >
             <template #default="scope">
               {{ scope.row.nam_kinh_nghiem }} năm
             </template>
           </el-table-column>
-          <el-table-column prop="ghi_chu" label="Ghi chú" min-width="200" show-overflow-tooltip />
+          <el-table-column
+            prop="ghi_chu"
+            label="Ghi chú"
+            min-width="200"
+            show-overflow-tooltip
+          />
           <el-table-column label="Thao tác" width="150" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEditSkill(scope.$index)" :icon="Edit">
+              <el-button
+                size="small"
+                :icon="Edit"
+                @click="handleEditSkill(scope.$index)"
+              >
                 Sửa
               </el-button>
-              <el-button size="small" type="danger" @click="handleDeleteSkill(scope.$index)" :icon="Delete">
+              <el-button
+                size="small"
+                type="danger"
+                :icon="Delete"
+                @click="handleDeleteSkill(scope.$index)"
+              >
                 Xóa
               </el-button>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-empty v-else description="Chưa có thông tin kỹ năng" :image-size="100" />
+        <el-empty
+          v-else
+          description="Chưa có thông tin kỹ năng"
+          :image-size="100"
+        />
       </el-tab-pane>
 
       <!-- Languages Tab -->
       <el-tab-pane label="Ngoại ngữ" name="languages">
         <div class="section-header">
           <h3 class="orangehrm-section-title">Trình độ ngoại ngữ</h3>
-          <el-button type="primary" @click="handleAddLanguage" :icon="Plus" size="small">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            size="small"
+            @click="handleAddLanguage"
+          >
             Thêm ngoại ngữ
           </el-button>
         </div>
@@ -108,27 +169,50 @@
           </el-table-column>
           <el-table-column prop="chung_chi" label="Chứng chỉ" min-width="120" />
           <el-table-column prop="diem_so" label="Điểm số" width="100" />
-          <el-table-column prop="ghi_chu" label="Ghi chú" min-width="200" show-overflow-tooltip />
+          <el-table-column
+            prop="ghi_chu"
+            label="Ghi chú"
+            min-width="200"
+            show-overflow-tooltip
+          />
           <el-table-column label="Thao tác" width="150" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEditLanguage(scope.$index)" :icon="Edit">
+              <el-button
+                size="small"
+                :icon="Edit"
+                @click="handleEditLanguage(scope.$index)"
+              >
                 Sửa
               </el-button>
-              <el-button size="small" type="danger" @click="handleDeleteLanguage(scope.$index)" :icon="Delete">
+              <el-button
+                size="small"
+                type="danger"
+                :icon="Delete"
+                @click="handleDeleteLanguage(scope.$index)"
+              >
                 Xóa
               </el-button>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-empty v-else description="Chưa có thông tin ngoại ngữ" :image-size="100" />
+        <el-empty
+          v-else
+          description="Chưa có thông tin ngoại ngữ"
+          :image-size="100"
+        />
       </el-tab-pane>
 
       <!-- Licenses Tab -->
       <el-tab-pane label="Giấy phép" name="licenses">
         <div class="section-header">
           <h3 class="orangehrm-section-title">Giấy phép & Chứng chỉ</h3>
-          <el-button type="primary" @click="handleAddLicense" :icon="Plus" size="small">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            size="small"
+            @click="handleAddLicense"
+          >
             Thêm giấy phép
           </el-button>
         </div>
@@ -140,8 +224,16 @@
           class="orangehrm-table"
           style="margin-top: 20px"
         >
-          <el-table-column prop="loai_giay_phep" label="Loại giấy phép" min-width="200" />
-          <el-table-column prop="so_giay_phep" label="Số giấy phép" min-width="150" />
+          <el-table-column
+            prop="loai_giay_phep"
+            label="Loại giấy phép"
+            min-width="200"
+          />
+          <el-table-column
+            prop="so_giay_phep"
+            label="Số giấy phép"
+            min-width="150"
+          />
           <el-table-column label="Ngày cấp" width="120">
             <template #default="scope">
               {{ formatDate(scope.row.ngay_cap) }}
@@ -155,17 +247,30 @@
           <el-table-column prop="noi_cap" label="Nơi cấp" min-width="150" />
           <el-table-column label="Thao tác" width="150" align="center">
             <template #default="scope">
-              <el-button size="small" @click="handleEditLicense(scope.$index)" :icon="Edit">
+              <el-button
+                size="small"
+                :icon="Edit"
+                @click="handleEditLicense(scope.$index)"
+              >
                 Sửa
               </el-button>
-              <el-button size="small" type="danger" @click="handleDeleteLicense(scope.$index)" :icon="Delete">
+              <el-button
+                size="small"
+                type="danger"
+                :icon="Delete"
+                @click="handleDeleteLicense(scope.$index)"
+              >
                 Xóa
               </el-button>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-empty v-else description="Chưa có thông tin giấy phép" :image-size="100" />
+        <el-empty
+          v-else
+          description="Chưa có thông tin giấy phép"
+          :image-size="100"
+        />
       </el-tab-pane>
     </el-tabs>
 
@@ -186,7 +291,11 @@
         </el-form-item>
 
         <el-form-item label="Bằng cấp" prop="bang_cap" required>
-          <el-select v-model="educationForm.bang_cap" placeholder="Chọn bằng cấp" style="width: 100%">
+          <el-select
+            v-model="educationForm.bang_cap"
+            placeholder="Chọn bằng cấp"
+            style="width: 100%"
+          >
             <el-option label="Trung học" value="Trung học" />
             <el-option label="Cao đẳng" value="Cao đẳng" />
             <el-option label="Đại học" value="Đại học" />
@@ -196,7 +305,10 @@
         </el-form-item>
 
         <el-form-item label="Chuyên ngành" prop="chuyen_nganh">
-          <el-input v-model="educationForm.chuyen_nganh" placeholder="Chuyên ngành học" />
+          <el-input
+            v-model="educationForm.chuyen_nganh"
+            placeholder="Chuyên ngành học"
+          />
         </el-form-item>
 
         <el-row :gutter="20">
@@ -229,7 +341,11 @@
 
       <template #footer>
         <el-button @click="educationDialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSaveEducation" :loading="saving">
+        <el-button
+          type="primary"
+          :loading="saving"
+          @click="handleSaveEducation"
+        >
           {{ editEducationIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -248,11 +364,18 @@
         label-width="140px"
       >
         <el-form-item label="Tên kỹ năng" prop="ten_ky_nang" required>
-          <el-input v-model="skillForm.ten_ky_nang" placeholder="Ví dụ: JavaScript, Project Management" />
+          <el-input
+            v-model="skillForm.ten_ky_nang"
+            placeholder="Ví dụ: JavaScript, Project Management"
+          />
         </el-form-item>
 
         <el-form-item label="Trình độ" prop="trinh_do" required>
-          <el-select v-model="skillForm.trinh_do" placeholder="Chọn trình độ" style="width: 100%">
+          <el-select
+            v-model="skillForm.trinh_do"
+            placeholder="Chọn trình độ"
+            style="width: 100%"
+          >
             <el-option label="Cơ bản" value="Cơ bản" />
             <el-option label="Trung bình" value="Trung bình" />
             <el-option label="Khá" value="Khá" />
@@ -283,7 +406,7 @@
 
       <template #footer>
         <el-button @click="skillDialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSaveSkill" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSaveSkill">
           {{ editSkillIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -292,7 +415,9 @@
     <!-- Language Dialog -->
     <el-dialog
       v-model="languageDialogVisible"
-      :title="editLanguageIndex === -1 ? 'Thêm ngoại ngữ' : 'Chỉnh sửa ngoại ngữ'"
+      :title="
+        editLanguageIndex === -1 ? 'Thêm ngoại ngữ' : 'Chỉnh sửa ngoại ngữ'
+      "
       width="600px"
     >
       <el-form
@@ -302,7 +427,11 @@
         label-width="140px"
       >
         <el-form-item label="Ngôn ngữ" prop="ngon_ngu" required>
-          <el-select v-model="languageForm.ngon_ngu" placeholder="Chọn ngôn ngữ" style="width: 100%">
+          <el-select
+            v-model="languageForm.ngon_ngu"
+            placeholder="Chọn ngôn ngữ"
+            style="width: 100%"
+          >
             <el-option label="Tiếng Anh" value="Tiếng Anh" />
             <el-option label="Tiếng Trung" value="Tiếng Trung" />
             <el-option label="Tiếng Nhật" value="Tiếng Nhật" />
@@ -315,7 +444,11 @@
         </el-form-item>
 
         <el-form-item label="Trình độ" prop="trinh_do" required>
-          <el-select v-model="languageForm.trinh_do" placeholder="Chọn trình độ" style="width: 100%">
+          <el-select
+            v-model="languageForm.trinh_do"
+            placeholder="Chọn trình độ"
+            style="width: 100%"
+          >
             <el-option label="A1 - Cơ bản" value="A1" />
             <el-option label="A2 - Sơ cấp" value="A2" />
             <el-option label="B1 - Trung cấp" value="B1" />
@@ -329,7 +462,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="Chứng chỉ" prop="chung_chi">
-              <el-select v-model="languageForm.chung_chi" placeholder="Loại chứng chỉ" style="width: 100%">
+              <el-select
+                v-model="languageForm.chung_chi"
+                placeholder="Loại chứng chỉ"
+                style="width: 100%"
+              >
                 <el-option label="TOEIC" value="TOEIC" />
                 <el-option label="IELTS" value="IELTS" />
                 <el-option label="TOEFL" value="TOEFL" />
@@ -343,7 +480,10 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="Điểm số" prop="diem_so">
-              <el-input v-model="languageForm.diem_so" placeholder="850/990, 6.5/9.0" />
+              <el-input
+                v-model="languageForm.diem_so"
+                placeholder="850/990, 6.5/9.0"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -360,7 +500,7 @@
 
       <template #footer>
         <el-button @click="languageDialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSaveLanguage" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSaveLanguage">
           {{ editLanguageIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -369,7 +509,9 @@
     <!-- License Dialog -->
     <el-dialog
       v-model="licenseDialogVisible"
-      :title="editLicenseIndex === -1 ? 'Thêm giấy phép' : 'Chỉnh sửa giấy phép'"
+      :title="
+        editLicenseIndex === -1 ? 'Thêm giấy phép' : 'Chỉnh sửa giấy phép'
+      "
       width="600px"
     >
       <el-form
@@ -379,17 +521,33 @@
         label-width="140px"
       >
         <el-form-item label="Loại giấy phép" prop="loai_giay_phep" required>
-          <el-select v-model="licenseForm.loai_giay_phep" placeholder="Chọn loại giấy phép" style="width: 100%">
+          <el-select
+            v-model="licenseForm.loai_giay_phep"
+            placeholder="Chọn loại giấy phép"
+            style="width: 100%"
+          >
             <el-option label="Bằng lái xe" value="Bằng lái xe" />
-            <el-option label="Chứng chỉ hành nghề" value="Chứng chỉ hành nghề" />
-            <el-option label="Giấy phép kinh doanh" value="Giấy phép kinh doanh" />
-            <el-option label="Chứng chỉ chuyên môn" value="Chứng chỉ chuyên môn" />
+            <el-option
+              label="Chứng chỉ hành nghề"
+              value="Chứng chỉ hành nghề"
+            />
+            <el-option
+              label="Giấy phép kinh doanh"
+              value="Giấy phép kinh doanh"
+            />
+            <el-option
+              label="Chứng chỉ chuyên môn"
+              value="Chứng chỉ chuyên môn"
+            />
             <el-option label="Khác" value="Khác" />
           </el-select>
         </el-form-item>
 
         <el-form-item label="Số giấy phép" prop="so_giay_phep" required>
-          <el-input v-model="licenseForm.so_giay_phep" placeholder="Số hiệu giấy phép" />
+          <el-input
+            v-model="licenseForm.so_giay_phep"
+            placeholder="Số hiệu giấy phép"
+          />
         </el-form-item>
 
         <el-row :gutter="20">
@@ -420,13 +578,16 @@
         </el-row>
 
         <el-form-item label="Nơi cấp" prop="noi_cap">
-          <el-input v-model="licenseForm.noi_cap" placeholder="Cơ quan cấp giấy phép" />
+          <el-input
+            v-model="licenseForm.noi_cap"
+            placeholder="Cơ quan cấp giấy phép"
+          />
         </el-form-item>
       </el-form>
 
       <template #footer>
         <el-button @click="licenseDialogVisible = false">Hủy</el-button>
-        <el-button type="primary" @click="handleSaveLicense" :loading="saving">
+        <el-button type="primary" :loading="saving" @click="handleSaveLicense">
           {{ editLicenseIndex === -1 ? 'Thêm' : 'Cập nhật' }}
         </el-button>
       </template>
@@ -470,9 +631,15 @@ const educationForm = reactive({
 });
 
 const educationFormRules: FormRules = {
-  truong: [{required: true, message: 'Vui lòng nhập tên trường', trigger: 'blur'}],
-  bang_cap: [{required: true, message: 'Vui lòng chọn bằng cấp', trigger: 'change'}],
-  nam_bat_dau: [{required: true, message: 'Vui lòng nhập năm bắt đầu', trigger: 'blur'}],
+  truong: [
+    {required: true, message: 'Vui lòng nhập tên trường', trigger: 'blur'},
+  ],
+  bang_cap: [
+    {required: true, message: 'Vui lòng chọn bằng cấp', trigger: 'change'},
+  ],
+  nam_bat_dau: [
+    {required: true, message: 'Vui lòng nhập năm bắt đầu', trigger: 'blur'},
+  ],
 };
 
 // Skills
@@ -489,8 +656,12 @@ const skillForm = reactive({
 });
 
 const skillFormRules: FormRules = {
-  ten_ky_nang: [{required: true, message: 'Vui lòng nhập tên kỹ năng', trigger: 'blur'}],
-  trinh_do: [{required: true, message: 'Vui lòng chọn trình độ', trigger: 'change'}],
+  ten_ky_nang: [
+    {required: true, message: 'Vui lòng nhập tên kỹ năng', trigger: 'blur'},
+  ],
+  trinh_do: [
+    {required: true, message: 'Vui lòng chọn trình độ', trigger: 'change'},
+  ],
 };
 
 // Languages
@@ -508,8 +679,12 @@ const languageForm = reactive({
 });
 
 const languageFormRules: FormRules = {
-  ngon_ngu: [{required: true, message: 'Vui lòng chọn ngôn ngữ', trigger: 'change'}],
-  trinh_do: [{required: true, message: 'Vui lòng chọn trình độ', trigger: 'change'}],
+  ngon_ngu: [
+    {required: true, message: 'Vui lòng chọn ngôn ngữ', trigger: 'change'},
+  ],
+  trinh_do: [
+    {required: true, message: 'Vui lòng chọn trình độ', trigger: 'change'},
+  ],
 };
 
 // Licenses
@@ -527,8 +702,16 @@ const licenseForm = reactive({
 });
 
 const licenseFormRules: FormRules = {
-  loai_giay_phep: [{required: true, message: 'Vui lòng chọn loại giấy phép', trigger: 'change'}],
-  so_giay_phep: [{required: true, message: 'Vui lòng nhập số giấy phép', trigger: 'blur'}],
+  loai_giay_phep: [
+    {
+      required: true,
+      message: 'Vui lòng chọn loại giấy phép',
+      trigger: 'change',
+    },
+  ],
+  so_giay_phep: [
+    {required: true, message: 'Vui lòng nhập số giấy phép', trigger: 'blur'},
+  ],
 };
 
 watch(
@@ -582,7 +765,7 @@ const handleDeleteEducation = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedEducations = [...educations.value];
@@ -596,7 +779,9 @@ const handleDeleteEducation = async (index: number) => {
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa thông tin học vấn');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa thông tin học vấn',
+      );
     }
   } finally {
     saving.value = false;
@@ -626,12 +811,16 @@ const handleSaveEducation = async () => {
     });
 
     ElMessage.success(
-      editEducationIndex.value === -1 ? 'Thêm thông tin học vấn thành công' : 'Cập nhật thông tin học vấn thành công'
+      editEducationIndex.value === -1
+        ? 'Thêm thông tin học vấn thành công'
+        : 'Cập nhật thông tin học vấn thành công',
     );
     educationDialogVisible.value = false;
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lưu thông tin học vấn');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể lưu thông tin học vấn',
+    );
   } finally {
     saving.value = false;
   }
@@ -666,7 +855,7 @@ const handleDeleteSkill = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedSkills = [...skills.value];
@@ -680,7 +869,9 @@ const handleDeleteSkill = async (index: number) => {
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa thông tin kỹ năng');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa thông tin kỹ năng',
+      );
     }
   } finally {
     saving.value = false;
@@ -710,12 +901,16 @@ const handleSaveSkill = async () => {
     });
 
     ElMessage.success(
-      editSkillIndex.value === -1 ? 'Thêm thông tin kỹ năng thành công' : 'Cập nhật thông tin kỹ năng thành công'
+      editSkillIndex.value === -1
+        ? 'Thêm thông tin kỹ năng thành công'
+        : 'Cập nhật thông tin kỹ năng thành công',
     );
     skillDialogVisible.value = false;
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lưu thông tin kỹ năng');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể lưu thông tin kỹ năng',
+    );
   } finally {
     saving.value = false;
   }
@@ -752,7 +947,7 @@ const handleDeleteLanguage = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedLanguages = [...languages.value];
@@ -766,7 +961,9 @@ const handleDeleteLanguage = async (index: number) => {
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa thông tin ngoại ngữ');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa thông tin ngoại ngữ',
+      );
     }
   } finally {
     saving.value = false;
@@ -796,12 +993,16 @@ const handleSaveLanguage = async () => {
     });
 
     ElMessage.success(
-      editLanguageIndex.value === -1 ? 'Thêm thông tin ngoại ngữ thành công' : 'Cập nhật thông tin ngoại ngữ thành công'
+      editLanguageIndex.value === -1
+        ? 'Thêm thông tin ngoại ngữ thành công'
+        : 'Cập nhật thông tin ngoại ngữ thành công',
     );
     languageDialogVisible.value = false;
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lưu thông tin ngoại ngữ');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể lưu thông tin ngoại ngữ',
+    );
   } finally {
     saving.value = false;
   }
@@ -838,7 +1039,7 @@ const handleDeleteLicense = async (index: number) => {
         confirmButtonText: 'Xóa',
         cancelButtonText: 'Hủy',
         type: 'warning',
-      }
+      },
     );
 
     const updatedLicenses = [...licenses.value];
@@ -852,7 +1053,9 @@ const handleDeleteLicense = async (index: number) => {
     emit('reload');
   } catch (err: any) {
     if (err !== 'cancel') {
-      ElMessage.error(err.response?.data?.msg || 'Không thể xóa thông tin giấy phép');
+      ElMessage.error(
+        err.response?.data?.msg || 'Không thể xóa thông tin giấy phép',
+      );
     }
   } finally {
     saving.value = false;
@@ -882,12 +1085,16 @@ const handleSaveLicense = async () => {
     });
 
     ElMessage.success(
-      editLicenseIndex.value === -1 ? 'Thêm thông tin giấy phép thành công' : 'Cập nhật thông tin giấy phép thành công'
+      editLicenseIndex.value === -1
+        ? 'Thêm thông tin giấy phép thành công'
+        : 'Cập nhật thông tin giấy phép thành công',
     );
     licenseDialogVisible.value = false;
     emit('reload');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lưu thông tin giấy phép');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể lưu thông tin giấy phép',
+    );
   } finally {
     saving.value = false;
   }
@@ -898,8 +1105,8 @@ const getSkillLevelType = (level: string) => {
   const typeMap: Record<string, string> = {
     'Cơ bản': 'info',
     'Trung bình': '',
-    'Khá': 'success',
-    'Giỏi': 'warning',
+    Khá: 'success',
+    Giỏi: 'warning',
     'Chuyên gia': 'danger',
   };
   return typeMap[level] || '';
@@ -913,7 +1120,7 @@ const formatDate = (date: any) => {
 
 <style lang="scss" scoped>
 @import './employee-form-styles.scss';
-@import "@/assets/styles/_variables.scss";
+@import '@/assets/styles/_variables.scss';
 
 .orangehrm-qualifications {
   :deep(.el-tabs--border-card) {

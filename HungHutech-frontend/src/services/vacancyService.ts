@@ -5,7 +5,9 @@ class VacancyService {
   private readonly BASE_URL = '/recruitment/vacancies';
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<Vacancy>> {
-    const response = await api.get<PaginatedResponse<Vacancy>>(this.BASE_URL, {params});
+    const response = await api.get<PaginatedResponse<Vacancy>>(this.BASE_URL, {
+      params,
+    });
     return response.data;
   }
 
