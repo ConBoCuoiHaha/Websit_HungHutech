@@ -3,10 +3,24 @@
     <!-- Topbar -->
     <el-header class="orangehrm-topbar">
       <div class="orangehrm-topbar-header">
+        <div class="orangehrm-topbar-left">
+          <el-button
+            class="orangehrm-mobile-menu-btn"
+            circle
+            plain
+            size="small"
+            @click="toggleSidebar"
+            :aria-label="sidebarOpen ? 'Dong menu' : 'Mo menu'"
+          >
+            <el-icon><Menu /></el-icon>
+          </el-button>
+
         <!-- Brand Logo -->
         <div class="orangehrm-topbar-header-logo">
           <span class="orangehrm-logo-emoji">🎓</span>
           <span class="orangehrm-brand">Hung Hutech</span>
+        </div>
+
         </div>
 
         <!-- User Info & Actions -->
@@ -37,7 +51,11 @@
 
     <el-container>
       <!-- Sidebar -->
-      <el-aside width="240px" class="orangehrm-aside">
+      <el-aside
+        width="240px"
+        class="orangehrm-aside"
+        :class="{'is-mobile': isMobile, 'is-open': sidebarOpen}"
+      >
         <el-menu
           :default-active="activeMenu"
           class="orangehrm-menu"
@@ -184,6 +202,12 @@
           </el-sub-menu>
         </el-menu>
       </el-aside>
+      <div
+        v-if="isMobile"
+        class="orangehrm-aside-backdrop"
+        :class="{'is-visible': sidebarOpen}"
+        @click="sidebarOpen = false"
+      />
 
       <!-- Main Content -->
       <el-main class="orangehrm-main">
@@ -308,6 +332,7 @@ import {
   Calendar,
   Clock,
   Tickets,
+  Menu,
   Setting,
   Document,
 } from '@element-plus/icons-vue';
@@ -321,6 +346,8 @@ const route = useRoute();
 
 const user = ref<any>(null);
 const activeMenu = ref('/dashboard');
+const isMobile = ref(false);
+const sidebarOpen = ref(true);
 
 const consentDialogVisible = ref(false);
 const consentLoading = ref(false);
@@ -365,21 +392,35 @@ const handleConsentEvent = () => {
   loadConsentStatus();
 };
 
+const handleResize = () => {
+  const mobile = window.innerWidth <= 1024;
+  if (mobile !== isMobile.value) {
+    sidebarOpen.value = !mobile;
+  }
+  isMobile.value = mobile;
+};
+
 onMounted(() => {
   user.value = getCurrentUser();
   activeMenu.value = route.path;
   loadConsentStatus();
+  handleResize();
   window.addEventListener('consent-updated', handleConsentEvent);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
   window.removeEventListener('consent-updated', handleConsentEvent);
+  window.removeEventListener('resize', handleResize);
 });
 
 watch(
   () => route.path,
   (newPath) => {
     activeMenu.value = newPath;
+    if (isMobile.value) {
+      sidebarOpen.value = false;
+    }
   },
 );
 
@@ -395,6 +436,9 @@ const userName = computed(() => {
 
 const handleMenuSelect = (index: string) => {
   router.push(index);
+  if (isMobile.value) {
+    sidebarOpen.value = false;
+  }
 };
 
 const handleCommand = async (command: string) => {
@@ -406,6 +450,12 @@ const handleCommand = async (command: string) => {
     } catch (error) {
       ElMessage.error('Có lỗi xảy ra khi đăng xuất');
     }
+  }
+};
+
+const toggleSidebar = () => {
+  if (isMobile.value) {
+    sidebarOpen.value = !sidebarOpen.value;
   }
 };
 
@@ -466,6 +516,12 @@ const handleSaveConsentChoices = async () => {
   align-items: center;
 }
 
+.orangehrm-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
 .orangehrm-topbar-header-logo {
   display: flex;
   align-items: center;
@@ -506,6 +562,18 @@ const handleSaveConsentChoices = async () => {
   }
 }
 
+.orangehrm-mobile-menu-btn {
+  display: none;
+  border: none;
+  background-color: rgba($white, 0.18);
+  color: $white;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba($white, 0.28);
+  }
+}
+
 // Sidebar Styles
 .orangehrm-aside {
   background-color: $white;
@@ -516,6 +584,22 @@ const handleSaveConsentChoices = async () => {
   top: 60px;
   height: calc(100vh - 60px);
   flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.orangehrm-aside.is-mobile {
+  position: fixed;
+  left: 0;
+  top: 60px;
+  width: 260px !important;
+  height: calc(100vh - 60px);
+  box-shadow: $box-shadow-lg;
+  transform: translateX(-100%);
+  z-index: 2001;
+}
+
+.orangehrm-aside.is-mobile.is-open {
+  transform: translateX(0);
 }
 
 .orangehrm-menu {
@@ -572,6 +656,10 @@ const handleSaveConsentChoices = async () => {
   box-shadow: $box-shadow-sm;
   padding: $spacing-xl;
   min-height: 600px;
+}
+
+.orangehrm-aside-backdrop {
+  display: none;
 }
 
 .consent-dialog-wrapper {
@@ -633,16 +721,36 @@ const handleSaveConsentChoices = async () => {
 }
 
 // Responsive
-@media (max-width: 768px) {
-  .orangehrm-aside {
-    width: 200px !important;
-    position: relative;
-    top: 0;
-    height: auto;
+@media (max-width: 1024px) {
+  .orangehrm-mobile-menu-btn {
+    display: inline-flex;
   }
 
   .orangehrm-topbar {
     padding: 0 $spacing-md;
+  }
+
+  .orangehrm-aside.is-mobile {
+    box-shadow: $box-shadow-lg;
+  }
+
+  .orangehrm-aside-backdrop {
+    display: block;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 2000;
+  }
+
+  .orangehrm-aside-backdrop.is-visible {
+    opacity: 1;
+    visibility: visible;
   }
 
   .orangehrm-main {

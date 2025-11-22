@@ -5,8 +5,12 @@
 
 import axios from 'axios';
 
-// Base API URL
-const API_BASE_URL = 'http://localhost:5000/api';
+// Base API URL: prefer global config injected by server, fall back env, finally localhost
+const runtimeBase =
+  (window as any)?.appGlobal?.baseUrl &&
+  `${(window as any).appGlobal.baseUrl}/api`;
+const API_BASE_URL =
+  runtimeBase || process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -46,7 +50,7 @@ apiClient.interceptors.response.use(
 
 // Auth API interfaces
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -73,11 +77,11 @@ export interface ResetPasswordRequest {
 
 // Auth Service
 export const login = async (
-  username: string,
+  email: string,
   password: string,
 ): Promise<LoginResponse> => {
   const response = await apiClient.post<LoginResponse>('/auth/login', {
-    username,
+    email,
     password,
   });
   return response.data;
