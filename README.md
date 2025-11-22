@@ -4,7 +4,8 @@ Hutech khu e
 Project Quản lý nhân sự (website + app mobile)
 
 Website: Vue js, nodejs, MongoDB  (Quản lý hệ thống)
-App mobile: java android (Chấm công bằng vân tay dựa trên định vị vị trí công ty"bắt buộc dùng wifi của công ty để chấm công")
+App mobile: java android (Chấm công bằng vân tay dựa trên định vị vị trí công ty"bắt buộc dùng wifi của công ty để chấm công") ->
+vào Cài đặt máy chủ(app mobile): cấu hình đúng ipv4 của server /5000/api.
 
 Cách chạy:
 cd HungHutech-backend
