@@ -1,9 +1,13 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 
-// Hardcode base URL để đảm bảo chắc chắn
-const API_BASE_URL = 'http://localhost:5000/api';
+// Base URL config via server-injected window.appGlobal or env
+const runtimeBase =
+  (window as any)?.appGlobal?.baseUrl &&
+  `${(window as any).appGlobal.baseUrl}/api`;
+const API_BASE_URL =
+  runtimeBase || process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-console.log('🔧 API Base URL:', API_BASE_URL);
+console.log('API Base URL:', API_BASE_URL);
 
 class ApiService {
   private axiosInstance: AxiosInstance;

@@ -1,14 +1,11 @@
-<template>
+﻿<template>
   <LoginLayout
     :login-logo-src="loginLogoSrc"
     :login-banner-src="loginBannerSrc"
   >
-    <!-- Login Title -->
-    <h5 class="orangehrm-login-title">Đăng nhập</h5>
+    <h5 class="orangehrm-login-title">Dang nhap</h5>
 
-    <!-- Login Form -->
     <div class="orangehrm-login-form">
-      <!-- Error Alert -->
       <div class="orangehrm-login-error">
         <el-alert
           v-if="errorMessage"
@@ -19,31 +16,29 @@
           class="orangehrm-login-alert"
         />
 
-        <!-- Demo Credentials (if enabled) -->
         <div v-if="isDemoMode" class="orangehrm-demo-credentials">
           <p><strong>Username:</strong> Admin</p>
           <p><strong>Password:</strong> admin123</p>
         </div>
       </div>
 
-      <!-- Login Form -->
       <el-form
         ref="loginFormRef"
         :model="loginForm"
         :rules="loginRules"
         @submit.prevent="handleLogin"
       >
-        <!-- Username Field -->
-        <el-form-item prop="username">
+        <!-- Email Field -->
+        <el-form-item prop="email">
           <el-input
-            v-model="loginForm.username"
-            placeholder="Tên đăng nhập"
+            v-model="loginForm.email"
+            placeholder="Email"
             size="large"
             :prefix-icon="User"
             autofocus
           >
             <template #prepend>
-              <span class="input-label">Tên đăng nhập</span>
+              <span class="input-label">Email</span>
             </template>
           </el-input>
         </el-form-item>
@@ -53,18 +48,17 @@
           <el-input
             v-model="loginForm.password"
             type="password"
-            placeholder="Mật khẩu"
+            placeholder="Mat khau"
             size="large"
             :prefix-icon="Lock"
             show-password
           >
             <template #prepend>
-              <span class="input-label">Mật khẩu</span>
+              <span class="input-label">Mat khau</span>
             </template>
           </el-input>
         </el-form-item>
 
-        <!-- Submit Button -->
         <el-form-item class="orangehrm-login-action">
           <el-button
             type="primary"
@@ -74,28 +68,25 @@
             native-type="submit"
             @click="handleLogin"
           >
-            Đăng nhập
+            Dang nhap
           </el-button>
         </el-form-item>
 
-        <!-- Forgot Password Link -->
         <div class="orangehrm-login-forgot">
           <span
             class="orangehrm-login-forgot-header"
             @click="navigateToForgotPassword"
           >
-            Quên mật khẩu?
+            Quen mat khau?
           </span>
         </div>
       </el-form>
 
-      <!-- Social Media Login Divider (if enabled) -->
       <el-divider v-if="showSocialAuth" class="orangehrm-login-seperator">
-        Hoặc
+        Hoac
       </el-divider>
     </div>
 
-    <!-- Footer with Social Media Links -->
     <div class="orangehrm-login-footer">
       <div v-if="showSocialMedia" class="orangehrm-login-footer-sm">
         <a href="https://www.linkedin.com/company/hutech/" target="_blank">
@@ -111,55 +102,37 @@
     </div>
   </LoginLayout>
 </template>
-
 <script lang="ts" setup>
 import {ref, reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
-import {
-  User,
-  Lock,
-  Position,
-  ChatDotRound,
-  VideoPlay,
-} from '@element-plus/icons-vue';
+import {User, Lock, Position, ChatDotRound, VideoPlay} from '@element-plus/icons-vue';
 import LoginLayout from '../components/LoginLayout.vue';
 import {login} from '../services/auth.service';
 
-// Router
 const router = useRouter();
 
-// Props
 const loginLogoSrc = '/logo.png';
 const loginBannerSrc = '/login-banner.png';
 const isDemoMode = false;
 const showSocialAuth = false;
 const showSocialMedia = true;
 
-// Form ref
 const loginFormRef = ref<FormInstance>();
 
-// Form data
 const loginForm = reactive({
-  username: '',
+  email: '',
   password: '',
 });
 
-// Form validation rules
 const loginRules: FormRules = {
-  username: [
-    {required: true, message: 'Vui lòng nhập tên đăng nhập', trigger: 'blur'},
-  ],
-  password: [
-    {required: true, message: 'Vui lòng nhập mật khẩu', trigger: 'blur'},
-  ],
+  email: [{required: true, message: 'Vui long nhap email', trigger: 'blur'}],
+  password: [{required: true, message: 'Vui long nhap mat khau', trigger: 'blur'}],
 };
 
-// State
 const loading = ref(false);
 const errorMessage = ref('');
 
-// Methods
 const handleLogin = async () => {
   if (!loginFormRef.value) return;
 
@@ -169,20 +142,15 @@ const handleLogin = async () => {
       errorMessage.value = '';
 
       try {
-        const response = await login(loginForm.username, loginForm.password);
-
-        // Store token in localStorage
+        const response = await login(loginForm.email, loginForm.password);
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
-
-        ElMessage.success('Đăng nhập thành công!');
-
-        // Navigate to dashboard
+        ElMessage.success('Dang nhap thanh cong!');
         router.push('/dashboard');
       } catch (error: any) {
         errorMessage.value =
           error.response?.data?.message ||
-          'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.';
+          'Dang nhap that bai. Vui long kiem tra lai thong tin.';
         ElMessage.error(errorMessage.value);
       } finally {
         loading.value = false;
@@ -195,7 +163,6 @@ const navigateToForgotPassword = () => {
   router.push('/auth/forgot-password');
 };
 </script>
-
 <style lang="scss" scoped>
 @import '@/assets/styles/theme.scss';
 
@@ -335,3 +302,4 @@ const navigateToForgotPassword = () => {
   }
 }
 </style>
+
