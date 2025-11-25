@@ -7,7 +7,7 @@ function parseListParams(query) {
   return {page, limit, skip, q, sort};
 }
 
-function buildSort(sortStr, fallback = '-ngay_tao') {
+function buildSort(sortStr, fallback = '-timestamp') {
   if (!sortStr) return fallback;
   // e.g. 'ten:asc,ngay_tao:desc'
   const fields = sortStr.split(',').map((s) => s.trim()).filter(Boolean);
@@ -26,4 +26,3 @@ function buildSearchQuery(q, fields) {
 }
 
 module.exports = { parseListParams, buildSort, buildSearchQuery };
-

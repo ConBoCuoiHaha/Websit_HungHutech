@@ -1,0 +1,20 @@
+    return `${(value || 0).toLocaleString('vi-VN')} ${currency}`;
+  }
+};
+
+const formatDateRange = (start?: string, end?: string) => {
+  if (!start || !end) return '---';
+  return `${new Date(start).toLocaleDateString('vi-VN')} - ${new Date(
+    end,
+  ).toLocaleDateString('vi-VN')}`;
+};
+
+const runStatusLabel = (status: PayrollRunStatus) => {
+  const item = runStatusOptions.find((opt) => opt.value === status);
+  return item?.label || status;
+};
+
+const statusTagType = (status: PayrollRunStatus) => {
+  if (status === 'Da_duyet' || status === 'Da_chi') return 'success';
+  if (status === 'Cho_duyet') return 'warning';
+  return 'info';

@@ -46,8 +46,9 @@ function auditLogger(req, res, next) {
       const responseTime = Date.now() - startTime;
 
       // Phân tích action từ method và path
-      const action = determineAction(req.method, req.path);
-      const resource = extractResource(req.path);
+      const fullPath = req.originalUrl || req.url || req.path;
+      const action = determineAction(req.method, fullPath);
+      const resource = extractResource(fullPath);
 
       // Lấy IP address
       const ipAddress =
@@ -62,9 +63,9 @@ function auditLogger(req, res, next) {
         username: req.user.username || req.user.email || 'unknown',
         action,
         resource,
-        resourceId: extractResourceId(req.path),
+        resourceId: extractResourceId(fullPath),
         method: req.method,
-        endpoint: req.originalUrl || req.url,
+        endpoint: fullPath,
         ipAddress,
         userAgent: req.headers['user-agent'] || 'unknown',
         statusCode: res.statusCode,

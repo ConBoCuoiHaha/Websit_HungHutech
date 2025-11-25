@@ -156,6 +156,8 @@ import {ref, reactive, watch} from 'vue';
 import {Edit} from '@element-plus/icons-vue';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
 import profileRequestService from '@/services/profileRequestService';
+import authService from '@/services/authService';
+import nhanVienService from '@/services/nhanVienService';
 import {NhanVien} from '@/types';
 
 const props = defineProps<{
@@ -221,7 +223,7 @@ watch(
 );
 
 const handleSave = async () => {
-  if (!formRef.value || !props.employee) return;
+  if (!props.employee || !formRef.value) return;
 
   try {
     await formRef.value.validate();
@@ -231,9 +233,11 @@ const handleSave = async () => {
 
   saving.value = true;
   try {
-    const request = await profileRequestService.create({
-      type: 'personal',
-      payload: {
+    const user = authService.getUser();
+    const canDirectUpdate = user && ['admin', 'manager'].includes(user.role);
+
+    if (canDirectUpdate) {
+      await nhanVienService.update(props.employee._id, {
         ho_dem: form.ho_dem,
         ten: form.ten,
         biet_danh: form.biet_danh,
@@ -244,26 +248,42 @@ const handleSave = async () => {
         so_cmnd: form.so_cmnd,
         thong_tin_ca_nhan: {
           cmnd_cccd: form.so_cmnd,
-          // @ts-ignore
           ngay_cap_cmnd: form.ngay_cap_cmnd,
-          // @ts-ignore
           noi_cap_cmnd: form.noi_cap_cmnd,
-          // @ts-ignore
           so_ho_chieu: form.so_ho_chieu,
         },
-      },
-    });
-    ElMessage.success(
-      'Da gui yeu cau cap nhat thong tin ca nhan, vui long cho HR phe duyet',
-    );
-    isEditing.value = false;
-    emit('request-submitted', {type: 'personal', requestId: request?._id});
-    emit('reload');
+      });
+      ElMessage.success('Cap nhat thong tin ca nhan thanh cong');
+      isEditing.value = false;
+      emit('reload');
+    } else {
+      const request = await profileRequestService.create({
+        type: 'personal',
+        payload: {
+          ho_dem: form.ho_dem,
+          ten: form.ten,
+          biet_danh: form.biet_danh,
+          ngay_sinh: form.ngay_sinh,
+          gioi_tinh: form.gioi_tinh,
+          tinh_trang_hon_nhan: form.tinh_trang_hon_nhan,
+          quoc_tich: form.quoc_tich,
+          so_cmnd: form.so_cmnd,
+          thong_tin_ca_nhan: {
+            cmnd_cccd: form.so_cmnd,
+            ngay_cap_cmnd: form.ngay_cap_cmnd,
+            noi_cap_cmnd: form.noi_cap_cmnd,
+            so_ho_chieu: form.so_ho_chieu,
+          },
+        },
+      });
+      ElMessage.success('Da gui yeu cau cap nhat thong tin ca nhan, vui long cho phe duyet');
+      isEditing.value = false;
+      emit('request-submitted', {type: 'personal', requestId: request?._id});
+      emit('reload');
+    }
   } catch (err) {
     console.error('Error creating personal info request:', err);
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể gửi yêu cầu cập nhật',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Khong the cap nhat thong tin ca nhan');
   } finally {
     saving.value = false;
   }
@@ -327,3 +347,5 @@ const handleCancel = () => {
   color: $text-secondary;
 }
 </style>
+
+

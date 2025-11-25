@@ -45,6 +45,7 @@ export interface PayrollPreviewPayload {
   ngay_bat_dau: string;
   ngay_ket_thuc: string;
   employee_ids?: string[];
+  settings?: Partial<PayrollSettings>;
 }
 
 class PayrollService {

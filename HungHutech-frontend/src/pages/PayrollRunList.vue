@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="payroll-page">
     <div class="page-header">
       <div>
@@ -221,7 +221,7 @@
               v-model="form.settings.ti_le_bhxh"
               :min="0"
               :max="1"
-              :step="0.005"
+              :step="0.005" :precision="3" controls-position="right"
             />
           </el-form-item>
         </el-col>
@@ -231,7 +231,7 @@
               v-model="form.settings.ti_le_bhyt"
               :min="0"
               :max="1"
-              :step="0.005"
+              :step="0.005" :precision="3" controls-position="right"
             />
           </el-form-item>
         </el-col>
@@ -241,7 +241,7 @@
               v-model="form.settings.ti_le_bhtn"
               :min="0"
               :max="1"
-              :step="0.005"
+              :step="0.005" :precision="3" controls-position="right"
             />
           </el-form-item>
         </el-col>
@@ -251,7 +251,7 @@
               v-model="form.settings.ti_le_kpcd"
               :min="0"
               :max="1"
-              :step="0.005"
+              :step="0.005" :precision="3" controls-position="right"
               :disabled="!form.settings.ap_dung_kpcd"
             />
           </el-form-item>
@@ -287,22 +287,41 @@
         </el-col>
       </el-row>
 
-      <div class="auto-fill-bar">
+            <div class="auto-fill-bar">
         <el-alert type="info" :closable="false" show-icon>
-          Có thể tự động lấy dữ liệu timesheet/OT và đơn nghỉ cho khoảng ngày đã
-          chọn.
+          C� th? t? d?ng l?y d? li?u timesheet/OT v� don ngh? cho kho?ng ng�y da
+          ch?n.
         </el-alert>
         <el-button
           type="primary"
-          plain
           :loading="autoFillLoading"
           @click="handleAutoFill"
         >
           Tự động lấy dữ liệu
         </el-button>
-      </div>
-
-      <div class="entries-header">
+        <el-button
+          type="success"
+          :loading="autoCalcLoading"
+          @click="handleAutoCalculate"
+        >
+          Tính lương tự động (theo quy định)
+        </el-button>
+        <div v-if="autoCalcSummary.employees > 0" class="auto-summary">
+          <el-tag type="info">NV: {{ autoCalcSummary.employees }}</el-tag>
+          <el-tag type="success"
+            >Tổng thu nhập: {{ formatCurrency(autoCalcSummary.gross) }}</el-tag
+          >
+          <el-tag type="warning"
+            >Khấu trừ: {{ formatCurrency(autoCalcSummary.deductions) }}</el-tag
+          >
+          <el-tag type="danger"
+            >Thuế TNCN: {{ formatCurrency(autoCalcSummary.tax) }}</el-tag
+          >
+          <el-tag type="success" effect="dark"
+            >Thực nhận: {{ formatCurrency(autoCalcSummary.net) }}</el-tag
+          >
+        </div>
+      </div><div class="entries-header">
         <el-divider content-position="left">Nhân viên trong kỳ</el-divider>
         <el-button type="primary" plain size="small" @click="addEntry"
           >Thêm dòng</el-button
@@ -545,11 +564,14 @@
       </div>
     </el-form>
 
-    <template #footer>
+        <template #footer>
+      <el-button :loading="manualCalcLoading" @click="handleManualCalculate">
+        Tính lương
+      </el-button>
       <el-button @click="closeCreateDialog">Hủy</el-button>
-      <el-button type="primary" :loading="saving" @click="handleCreateRun"
-        >Tạo bảng lương</el-button
-      >
+      <el-button type="primary" :loading="saving" @click="handleCreateRun">
+        Tạo bảng lương
+      </el-button>
     </template>
   </el-dialog>
 
@@ -765,8 +787,18 @@ const formRef = ref<FormInstance>();
 const showCreateDialog = ref(false);
 const saving = ref(false);
 const autoFillLoading = ref(false);
+const autoCalcLoading = ref(false);
+const autoCalcSummary = reactive({
+  employees: 0,
+  gross: 0,
+  deductions: 0,
+  net: 0,
+  tax: 0,
+});
+const manualCalcLoading = ref(false);
 const employees = ref<NhanVien[]>([]);
 const form = reactive({
+
   ky_luong: '',
   loai_ky: 'Thang',
   ngay_bat_dau: '',
@@ -827,6 +859,85 @@ const getRunTypeLabel = (type: PayrollRun['loai_ky']) => {
   if (type === 'Thang') return 'Kỳ tháng';
   if (type === 'Tuan') return 'Kỳ tuần';
   return 'Tùy chỉnh';
+};
+// Helpers for tính lương thủ công
+const TAX_BRACKETS = [
+  {threshold: 5000000, rate: 0.05},
+  {threshold: 10000000, rate: 0.1},
+  {threshold: 18000000, rate: 0.15},
+  {threshold: 32000000, rate: 0.2},
+  {threshold: 52000000, rate: 0.25},
+  {threshold: 80000000, rate: 0.3},
+  {threshold: 1000000000, rate: 0.35},
+];
+
+const toNumber = (val: unknown) => Number(val || 0) || 0;
+const roundVnd = (val: number) => Math.round(val);
+const sumMoneyItems = (items: MoneyItemForm[]) =>
+  roundVnd(items.reduce((acc, cur) => acc + toNumber(cur.so_tien), 0));
+
+const calcProgressiveTax = (taxable: number) => {
+  let remaining = taxable;
+  let tax = 0;
+  let prevThreshold = 0;
+  for (const bracket of TAX_BRACKETS) {
+    const slab = Math.min(remaining, bracket.threshold - prevThreshold);
+    if (slab > 0) {
+      tax += slab * bracket.rate;
+      remaining -= slab;
+    }
+    prevThreshold = bracket.threshold;
+    if (remaining <= 0) break;
+  }
+  return roundVnd(tax);
+};
+
+const calculateEntryLocal = (
+  entry: PayrollEntryForm,
+  settings = form.settings || defaultSettings,
+) => {
+  const gross =
+    toNumber(entry.luong_co_ban) +
+    sumMoneyItems(entry.phu_cap) +
+    sumMoneyItems(entry.thuong) +
+    sumMoneyItems(entry.ot);
+
+  const bhxh = roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_bhxh));
+  const bhyt = roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_bhyt));
+  const bhtn = roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_bhtn));
+  const kpcd = settings.ap_dung_kpcd
+    ? roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_kpcd))
+    : 0;
+
+  const extraDeductions = sumMoneyItems(entry.khoan_khau_tru);
+  const totalSocial = bhxh + bhyt + bhtn + kpcd;
+
+  const giamTruBanThan = toNumber(settings.giam_tru_ban_than);
+  const giamTruPhuThuoc =
+    toNumber(settings.giam_tru_phu_thuoc) * toNumber(entry.so_nguoi_phu_thuoc);
+
+  const taxable = Math.max(
+    gross - totalSocial - extraDeductions - giamTruBanThan - giamTruPhuThuoc,
+    0,
+  );
+  const tax = calcProgressiveTax(taxable);
+  const net = gross - totalSocial - extraDeductions - tax;
+
+  return {
+    gross: roundVnd(gross),
+    deductions: roundVnd(totalSocial + extraDeductions),
+    tax,
+    net: roundVnd(net),
+    details: {
+      bhxh,
+      bhyt,
+      bhtn,
+      kpcd,
+      extraDeductions,
+      giamTruBanThan,
+      giamTruPhuThuoc,
+    },
+  };
 };
 
 const loadRuns = async () => {
@@ -1020,6 +1131,13 @@ const applyPreviewEntries = (previewEntries: PayrollPreviewEntry[] = []) => {
   });
 };
 
+const resetAutoSummary = () => {
+  autoCalcSummary.employees = 0;
+  autoCalcSummary.gross = 0;
+  autoCalcSummary.deductions = 0;
+  autoCalcSummary.net = 0;
+  autoCalcSummary.tax = 0;
+};
 const handleAutoFill = async () => {
   if (!form.ngay_bat_dau || !form.ngay_ket_thuc) {
     ElMessage.warning('Vui lòng chọn khoảng thời gian trước khi lấy dữ liệu');
@@ -1051,6 +1169,73 @@ const handleAutoFill = async () => {
   }
 };
 
+
+const handleManualCalculate = () => {
+  if (!form.entries.length) {
+    ElMessage.warning('Chưa có nhân viên để tính lương');
+    return;
+  }
+  manualCalcLoading.value = true;
+  resetAutoSummary();
+  try {
+    let gross = 0;
+    let deductions = 0;
+    let tax = 0;
+    form.entries.forEach((entry) => {
+      const result = calculateEntryLocal(entry);
+      (entry as any).tong_thu_nhap = result.gross;
+      (entry as any).tong_khau_tru = result.deductions;
+      (entry as any).thue_tncn = result.tax;
+      (entry as any).luong_thuc_nhan = result.net;
+      gross += result.gross;
+      deductions += result.deductions;
+      tax += result.tax;
+    });
+    autoCalcSummary.employees = form.entries.length;
+    autoCalcSummary.gross = gross;
+    autoCalcSummary.deductions = deductions;
+    autoCalcSummary.tax = tax;
+    autoCalcSummary.net = gross - deductions - tax;
+    ElMessage.success('Đã tính lương thủ công theo thông tin hiện tại');
+  } finally {
+    manualCalcLoading.value = false;
+  }
+};
+const handleAutoCalculate = async () => {
+  if (!form.ngay_bat_dau || !form.ngay_ket_thuc) {
+    ElMessage.warning('Vui lòng chọn khoảng thời gian trước khi tính lương');
+    return;
+  }
+  autoCalcLoading.value = true;
+  resetAutoSummary();
+  try {
+    const employeeIds = form.entries
+      .map((entry) => entry.nhan_vien_id)
+      .filter(Boolean);
+    const response = await payrollService.preview({
+      ngay_bat_dau: form.ngay_bat_dau,
+      ngay_ket_thuc: form.ngay_ket_thuc,
+      employee_ids: employeeIds.length ? employeeIds : undefined,
+      settings: {...form.settings},
+    });
+    applyPreviewEntries(response.data || []);
+    if (!form.entries.length) {
+      form.entries.push(createEmptyEntry());
+    }
+    const summary = response.summary || {};
+    autoCalcSummary.employees = summary.totalEmployees || form.entries.length;
+    autoCalcSummary.gross = summary.totalGross || 0;
+    autoCalcSummary.deductions = summary.totalDeductions || 0;
+    autoCalcSummary.net = summary.totalNet || 0;
+    autoCalcSummary.tax = summary.totalTax || 0;
+    ElMessage.success('Đã tính lương tự động (ước tính)');
+  } catch (err: any) {
+    resetAutoSummary();
+    ElMessage.error(err.response?.data?.msg || 'Không thể tính lương tự động');
+  } finally {
+    autoCalcLoading.value = false;
+  }
+};
 const handleCreateRun = async () => {
   if (!formRef.value) return;
   await formRef.value.validate(async (valid) => {
@@ -1275,6 +1460,12 @@ onMounted(() => {
   gap: $spacing-sm;
   margin-top: $spacing-lg;
 }
+.auto-summary {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
 .entry-card {
   border: 1px solid $border-color;
@@ -1402,3 +1593,10 @@ onMounted(() => {
   }
 }
 </style>
+
+
+
+
+
+
+

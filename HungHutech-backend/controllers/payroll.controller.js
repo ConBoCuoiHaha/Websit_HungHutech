@@ -142,6 +142,7 @@ const Timesheet = require('../schemas/timesheet.model');
 const YeuCauNghiPhep = require('../schemas/yeuCauNghiPhep.model');
 const LoaiNgayNghi = require('../schemas/loaiNgayNghi.model');
 const OvertimeRequest = require('../schemas/overtimeRequest.model');
+const ChamCong = require('../schemas/chamCong.model');
 const { sendMail } = require('../utils/mailer');
 
 const RUN_STATUSES = ['Draft', 'Cho_duyet', 'Da_duyet', 'Da_chi'];
@@ -182,7 +183,7 @@ const formatOtLabel = (doc = {}) => {
 
 exports.previewPayrollData = async (req, res) => {
   try {
-    const { ngay_bat_dau, ngay_ket_thuc, employee_ids } = req.body || {};
+    const { ngay_bat_dau, ngay_ket_thuc, employee_ids, settings = {} } = req.body || {};
     if (!ngay_bat_dau || !ngay_ket_thuc) {
       return res.status(400).json({ msg: 'Thiếu khoảng thời gian' });
     }
@@ -201,13 +202,28 @@ exports.previewPayrollData = async (req, res) => {
       employeeFilter._id = { $in: employeeObjectIds };
     }
 
+    const normalizedSettings = normalizeSettings(settings);
+
     const employees = await NhanVien.find(employeeFilter)
       .select('ma_nhan_vien ho_dem ten luong nguoi_phu_thuoc thong_tin_cong_viec');
 
     if (!employees.length) {
-      return res.json({ data: [] });
+      return res.json({
+        data: [],
+        summary: {
+          totalEmployees: 0,
+          totalOtHours: 0,
+          totalLeaveDays: 0,
+          totalGross: 0,
+          totalDeductions: 0,
+          totalNet: 0,
+          totalTax: 0,
+        },
+        settings: normalizedSettings,
+      });
     }
 
+    const employeeMap = new Map(employees.map((emp) => [String(emp._id), emp]));
     const employeeIdList = employees.map((emp) => emp._id);
 
     const timesheetAgg = await Timesheet.aggregate([
@@ -254,6 +270,48 @@ exports.previewPayrollData = async (req, res) => {
       timesheetMap.set(String(item._id), item);
     });
 
+    // Bổ sung dữ liệu chấm công từ mobile (collection cham_cong) để có giờ công/OT khi chưa có timesheet duyệt
+    const chamCongDocs = await ChamCong.find({
+      nhan_vien_id: {$in: employeeIdList},
+      ngay: {$gte: startDate, $lte: endDate},
+    }).lean();
+
+    const chamCongMap = new Map();
+    chamCongDocs.forEach((cc) => {
+      const key = String(cc.nhan_vien_id);
+      if (!chamCongMap.has(key)) chamCongMap.set(key, []);
+      chamCongMap.get(key).push(cc);
+    });
+
+    chamCongMap.forEach((records, empId) => {
+      const days = [];
+      let total = 0;
+      records.forEach((rec) => {
+        const start = rec.thoi_gian_vao ? new Date(rec.thoi_gian_vao) : null;
+        const end = rec.thoi_gian_ra ? new Date(rec.thoi_gian_ra) : null;
+        const hours =
+          start && end
+            ? Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60))
+            : HOURS_PER_DAY; // nếu chưa check-out, tạm tính đủ ca
+        const dayKey = new Date(rec.ngay).toISOString().slice(0, 10);
+        days.push({ngay: dayKey, gio: hours});
+        total += hours;
+      });
+
+      if (days.length > 0) {
+        const existing = timesheetMap.get(empId);
+        if (existing) {
+          // Gộp thêm giờ công từ chấm công
+          const mergedDays = [...existing.days];
+          days.forEach((d) => mergedDays.push(d));
+          const mergedTotal = (existing.tong_gio || 0) + total;
+          timesheetMap.set(empId, {days: mergedDays, tong_gio: mergedTotal});
+        } else {
+          timesheetMap.set(empId, {days, tong_gio: total});
+        }
+      }
+    });
+
     const overtimeDocs = await OvertimeRequest.find({
       trang_thai: 'Da duyet',
       nhan_vien_id: {$in: employeeIdList},
@@ -297,6 +355,8 @@ exports.previewPayrollData = async (req, res) => {
       reviewMap.get(key).push(review);
     });
 
+    const totals = { gross: 0, deductions: 0, net: 0, tax: 0 };
+
     const previewEntries = employees.map((emp) => {
       const empId = String(emp._id);
       const allowanceItems = (emp.luong || [])
@@ -311,10 +371,10 @@ exports.previewPayrollData = async (req, res) => {
         }))
         .filter((item) => item.so_tien > 0);
 
-      const baseEntry = (emp.luong || []).find((item) =>
+      const baseSalaryItem = (emp.luong || []).find((item) =>
         normalizeText(item.ten_luong || '').includes('luong'),
       );
-      const luongCoBan = Math.round(decimalToNumber(baseEntry?.so_tien));
+      const luongCoBan = Math.round(decimalToNumber(baseSalaryItem?.so_tien));
       const hourlyRate = luongCoBan > 0 ? luongCoBan / WORKING_DAYS_IN_MONTH / HOURS_PER_DAY : 0;
       const dailyRate = luongCoBan > 0 ? luongCoBan / WORKING_DAYS_IN_MONTH : 0;
 
@@ -408,7 +468,7 @@ exports.previewPayrollData = async (req, res) => {
         })
         .filter(Boolean);
 
-      return {
+      const baseEntry = {
         nhan_vien_id: emp._id,
         ma_nhan_vien: emp.ma_nhan_vien,
         ho_ten: `${emp.ho_dem || ''} ${emp.ten || ''}`.trim(),
@@ -432,6 +492,30 @@ exports.previewPayrollData = async (req, res) => {
           })),
         },
       };
+
+      const calculatedPayload = {
+        nhan_vien_id: emp._id,
+        luong_co_ban: luongCoBan,
+        so_nguoi_phu_thuoc: baseEntry.so_nguoi_phu_thuoc,
+        phu_cap: allowanceItems,
+        thuong: performanceBonuses,
+        ot: otItems,
+        khoan_khau_tru: leaveItems,
+      };
+
+      const calculated = calculatePayrollEntry(calculatedPayload, normalizedSettings, {
+        employee: emp,
+        dependents: baseEntry.so_nguoi_phu_thuoc,
+        timesheet: timesheetInfo,
+        overtime: otBreakdown,
+      });
+
+      totals.gross += calculated.tong_thu_nhap || 0;
+      totals.deductions += calculated.tong_khau_tru || 0;
+      totals.net += calculated.luong_thuc_nhan || 0;
+      totals.tax += calculated.thue_tncn || 0;
+
+      return { ...baseEntry, calculated };
     });
 
     const summary = previewEntries.reduce(
@@ -444,7 +528,12 @@ exports.previewPayrollData = async (req, res) => {
       { totalEmployees: 0, totalOtHours: 0, totalLeaveDays: 0 },
     );
 
-    res.json({ data: previewEntries, summary });
+    summary.totalGross = roundVnd(totals.gross);
+    summary.totalDeductions = roundVnd(totals.deductions);
+    summary.totalNet = roundVnd(totals.net);
+    summary.totalTax = roundVnd(totals.tax);
+
+    res.json({ data: previewEntries, summary, settings: normalizedSettings });
   } catch (err) {
     console.error('Error preview payroll data:', err);
     res.status(500).json({ msg: 'Không thể tổng hợp dữ liệu', error: err.message });

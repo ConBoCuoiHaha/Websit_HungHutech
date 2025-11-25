@@ -52,9 +52,9 @@
     <el-container>
       <!-- Sidebar -->
       <el-aside
-        width="240px"
+        :width="sidebarOpen ? asideWidth : '0px'"
         class="orangehrm-aside"
-        :class="{'is-mobile': isMobile, 'is-open': sidebarOpen}"
+        :class="{'is-mobile': isMobile, 'is-open': sidebarOpen, 'is-closed': !sidebarOpen}"
       >
         <el-menu
           :default-active="activeMenu"
@@ -348,6 +348,7 @@ const user = ref<any>(null);
 const activeMenu = ref('/dashboard');
 const isMobile = ref(false);
 const sidebarOpen = ref(true);
+const asideWidth = computed(() => (isMobile.value ? '260px' : '240px'));
 
 const consentDialogVisible = ref(false);
 const consentLoading = ref(false);
@@ -454,9 +455,7 @@ const handleCommand = async (command: string) => {
 };
 
 const toggleSidebar = () => {
-  if (isMobile.value) {
-    sidebarOpen.value = !sidebarOpen.value;
-  }
+  sidebarOpen.value = !sidebarOpen.value;
 };
 
 const handleSaveConsentChoices = async () => {
@@ -563,7 +562,7 @@ const handleSaveConsentChoices = async () => {
 }
 
 .orangehrm-mobile-menu-btn {
-  display: none;
+  display: inline-flex;
   border: none;
   background-color: rgba($white, 0.18);
   color: $white;
@@ -584,7 +583,7 @@ const handleSaveConsentChoices = async () => {
   top: 60px;
   height: calc(100vh - 60px);
   flex-shrink: 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease;
 }
 
 .orangehrm-aside.is-mobile {
@@ -600,6 +599,17 @@ const handleSaveConsentChoices = async () => {
 
 .orangehrm-aside.is-mobile.is-open {
   transform: translateX(0);
+}
+
+.orangehrm-aside.is-closed {
+  width: 0 !important;
+  border-right: none;
+  overflow: hidden;
+  transform: translateX(-100%);
+}
+
+.orangehrm-aside.is-closed .orangehrm-menu {
+  display: none;
 }
 
 .orangehrm-menu {

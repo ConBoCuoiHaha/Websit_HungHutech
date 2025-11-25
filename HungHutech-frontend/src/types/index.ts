@@ -756,6 +756,7 @@ export interface PayrollPreviewEntry {
     tong_gio_ot?: number;
     so_ngay_nghi?: number;
   };
+  calculated?: PayrollEntry;
 }
 
 export interface PayrollPreviewResponse {
@@ -764,7 +765,12 @@ export interface PayrollPreviewResponse {
     totalEmployees: number;
     totalOtHours: number;
     totalLeaveDays: number;
+    totalGross?: number;
+    totalDeductions?: number;
+    totalNet?: number;
+    totalTax?: number;
   };
+  settings?: PayrollSettings;
 }
 
 // Report Types
