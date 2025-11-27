@@ -126,7 +126,7 @@
   </div>
 
   <!-- Dialog tao bang luong -->
-  <el-dialog v-model="showCreateDialog" title="Tao bang luong" width="820px" :close-on-click-modal="false">
+  <el-dialog v-model="showCreateDialog" title="Tao bang luong" width="1000px" :close-on-click-modal="false">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="150px">
       <el-row :gutter="16">
         <el-col :md="12" :sm="24">
@@ -186,29 +186,54 @@
 
       <el-divider content-position="left">Ty le khau tru</el-divider>
       <el-row :gutter="16" class="settings-row">
-        <el-col :md="6" :sm="12">
-          <el-form-item label="BHXH">
-            <el-input-number v-model="form.settings.ti_le_bhxh" :min="0" :max="1" :step="0.005" />
+        <el-col :md="12" :sm="24">
+          <el-form-item label="BHXH" label-width="100px">
+            <el-input
+              v-model.number="form.settings.ti_le_bhxh"
+              type="number"
+              :min="0"
+              :max="1"
+              :step="0.005"
+              placeholder="0.085"
+            />
           </el-form-item>
         </el-col>
-        <el-col :md="6" :sm="12">
-          <el-form-item label="BHYT">
-            <el-input-number v-model="form.settings.ti_le_bhyt" :min="0" :max="1" :step="0.005" />
+        <el-col :md="12" :sm="24">
+          <el-form-item label="BHYT" label-width="100px">
+            <el-input
+              v-model.number="form.settings.ti_le_bhyt"
+              type="number"
+              :min="0"
+              :max="1"
+              :step="0.005"
+              placeholder="0.020"
+            />
           </el-form-item>
         </el-col>
-        <el-col :md="6" :sm="12">
-          <el-form-item label="BHTN">
-            <el-input-number v-model="form.settings.ti_le_bhtn" :min="0" :max="1" :step="0.005" />
+      </el-row>
+      <el-row :gutter="16" class="settings-row">
+        <el-col :md="12" :sm="24">
+          <el-form-item label="BHTN" label-width="100px">
+            <el-input
+              v-model.number="form.settings.ti_le_bhtn"
+              type="number"
+              :min="0"
+              :max="1"
+              :step="0.005"
+              placeholder="0.015"
+            />
           </el-form-item>
         </el-col>
-        <el-col :md="6" :sm="12">
-          <el-form-item label="KPCD">
-            <el-input-number
-              v-model="form.settings.ti_le_kpcd"
+        <el-col :md="12" :sm="24">
+          <el-form-item label="KPCD" label-width="100px">
+            <el-input
+              v-model.number="form.settings.ti_le_kpcd"
+              type="number"
               :min="0"
               :max="1"
               :step="0.005"
               :disabled="!form.settings.ap_dung_kpcd"
+              placeholder="0.010"
             />
           </el-form-item>
         </el-col>
@@ -595,6 +620,12 @@ const form = reactive({
   entries: [] as PayrollEntryForm[],
 });
 
+console.log('=== form.settings khoi tao ===');
+console.log('ti_le_bhxh:', form.settings.ti_le_bhxh);
+console.log('ti_le_bhyt:', form.settings.ti_le_bhyt);
+console.log('ti_le_bhtn:', form.settings.ti_le_bhtn);
+console.log('ti_le_kpcd:', form.settings.ti_le_kpcd);
+
 const formRules: FormRules = {
   ky_luong: [{ required: true, message: 'Nhap ten ky luong', trigger: 'blur' }],
   loai_ky: [{ required: true, message: 'Chon loai ky', trigger: 'change' }],
@@ -713,7 +744,15 @@ const resetForm = () => {
   form.ngay_ket_thuc = '';
   form.currency = 'VND';
   form.ghi_chu = '';
-  form.settings = { ...defaultSettings };
+
+  // Cap nhat settings bang cach assign thay vi tao object moi
+  Object.assign(form.settings, defaultSettings);
+  console.log('=== resetForm - form.settings sau khi reset ===');
+  console.log('ti_le_bhxh:', form.settings.ti_le_bhxh);
+  console.log('ti_le_bhyt:', form.settings.ti_le_bhyt);
+  console.log('ti_le_bhtn:', form.settings.ti_le_bhtn);
+  console.log('ti_le_kpcd:', form.settings.ti_le_kpcd);
+
   form.entries.splice(0, form.entries.length, createEmptyEntry());
 };
 
@@ -820,14 +859,26 @@ const handleAutoFill = async () => {
   }
   autoFillLoading.value = true;
   try {
+    console.log('=== handleAutoFill - form.settings TRUOC khi goi API ===');
+    console.log('form.settings:', form.settings);
+
     const employeeIds = form.entries.map((entry) => entry.nhan_vien_id).filter(Boolean);
     const response: PayrollPreviewResponse = await payrollService.preview({
       ngay_bat_dau: form.ngay_bat_dau,
       ngay_ket_thuc: form.ngay_ket_thuc,
       employee_ids: employeeIds.length ? employeeIds : undefined,
     });
+
+    console.log('=== handleAutoFill - API response ===');
+    console.log('response.settings:', (response as any)?.settings);
+
     if ((response as any)?.settings) {
-      form.settings = { ...form.settings, ...(response as any).settings };
+      Object.assign(form.settings, (response as any).settings);
+      console.log('=== handleAutoFill - form.settings SAU khi update ===');
+      console.log('ti_le_bhxh:', form.settings.ti_le_bhxh);
+      console.log('ti_le_bhyt:', form.settings.ti_le_bhyt);
+      console.log('ti_le_bhtn:', form.settings.ti_le_bhtn);
+      console.log('ti_le_kpcd:', form.settings.ti_le_kpcd);
     }
     applyPreviewEntries(response.data || []);
     if (!form.entries.length) {
@@ -890,7 +941,9 @@ const handleRecalculate = async () => {
     console.log('response.data:', response.data);
 
     if ((response as any)?.settings) {
-      form.settings = { ...form.settings, ...(response as any).settings };
+      Object.assign(form.settings, (response as any).settings);
+      console.log('=== handleRecalculate - form.settings SAU khi update ===');
+      console.log('form.settings:', form.settings);
     }
 
     // Cập nhật calculated từ response
@@ -1135,6 +1188,19 @@ onMounted(() => {
 
 .settings-row .el-input-number {
   width: 100%;
+}
+
+.settings-row .el-input-number :deep(.el-input__wrapper) {
+  width: 100%;
+  padding: 1px 15px 1px 11px;
+}
+
+.settings-row .el-input-number :deep(.el-input__inner) {
+  text-align: left !important;
+  padding-left: 5px;
+  color: #606266 !important;
+  font-size: 14px;
+  width: 100% !important;
 }
 
 .entries-header {
