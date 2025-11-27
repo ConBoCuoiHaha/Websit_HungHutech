@@ -1,12 +1,12 @@
 ﻿<template>
-  <div class="my-leave" v-loading="loading">
+  <div v-loading="loading" class="my-leave">
     <div class="my-leave__actions">
       <el-select
         v-model="filters.trang_thai"
         placeholder="Tất cả trạng thái"
         clearable
-        @change="loadRequests"
         style="width: 200px"
+        @change="loadRequests"
       >
         <el-option label="Tất cả" value="" />
         <el-option label="Chờ duyệt" value="Cho duyet" />
@@ -20,25 +20,32 @@
       </el-button>
     </div>
 
-    <el-table :data="requests" border :empty-text="loading ? 'Đang tải...' : 'Chưa có yêu cầu'">
+    <el-table
+      :data="requests"
+      border
+      :empty-text="loading ? 'Đang tải...' : 'Chưa có yêu cầu'"
+    >
       <el-table-column label="Loại" min-width="200">
-        <template #default="{ row }">
+        <template #default="{row}">
           {{ row.loai_ngay_nghi_id?.ten || '---' }}
         </template>
       </el-table-column>
       <el-table-column label="Từ - Đến" min-width="220">
-        <template #default="{ row }">
-          {{ formatDate(row.ngay_bat_dau) }} - {{ formatDate(row.ngay_ket_thuc) }}
+        <template #default="{row}">
+          {{ formatDate(row.ngay_bat_dau) }} -
+          {{ formatDate(row.ngay_ket_thuc) }}
         </template>
       </el-table-column>
       <el-table-column prop="so_ngay" label="Số ngày" width="100" />
       <el-table-column label="Trạng thái" width="140">
-        <template #default="{ row }">
-          <el-tag :type="statusTag(row.trang_thai)">{{ statusLabel(row.trang_thai) }}</el-tag>
+        <template #default="{row}">
+          <el-tag :type="statusTag(row.trang_thai)">{{
+            statusLabel(row.trang_thai)
+          }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Hành động" width="160">
-        <template #default="{ row }">
+        <template #default="{row}">
           <el-button
             v-if="row.trang_thai === 'Cho duyet'"
             type="danger"
@@ -65,10 +72,18 @@
       />
     </div>
 
-    <el-dialog v-model="dialogVisible" title="Gửi yêu cầu nghỉ phép" width="520px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="150px">
+    <el-dialog
+      v-model="dialogVisible"
+      title="Gửi yêu cầu nghỉ phép"
+      width="520px"
+    >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="Loại ngày nghỉ" prop="loai_ngay_nghi_id">
-          <el-select v-model="form.loai_ngay_nghi_id" placeholder="Chọn loại" filterable>
+          <el-select
+            v-model="form.loai_ngay_nghi_id"
+            placeholder="Chọn loại"
+            filterable
+          >
             <el-option
               v-for="option in leaveTypes"
               :key="option._id"
@@ -121,7 +136,9 @@ import {YeuCauNghiPhep, LoaiNgayNghi} from '@/types';
 const loading = ref(false);
 const requests = ref<YeuCauNghiPhep[]>([]);
 const pagination = reactive({page: 1, limit: 10, total: 0});
-const filters = reactive<{trang_thai: '' | YeuCauNghiPhep['trang_thai']}>({trang_thai: ''});
+const filters = reactive<{trang_thai: '' | YeuCauNghiPhep['trang_thai']}>({
+  trang_thai: '',
+});
 const cancellingId = ref('');
 const dialogVisible = ref(false);
 const formRef = ref<FormInstance>();
@@ -135,8 +152,12 @@ const form = reactive({
 });
 
 const rules: FormRules = {
-  loai_ngay_nghi_id: [{required: true, message: 'Chọn loại ngày nghỉ', trigger: 'change'}],
-  dateRange: [{required: true, message: 'Chọn khoảng thời gian', trigger: 'change'}],
+  loai_ngay_nghi_id: [
+    {required: true, message: 'Chọn loại ngày nghỉ', trigger: 'change'},
+  ],
+  dateRange: [
+    {required: true, message: 'Chọn khoảng thời gian', trigger: 'change'},
+  ],
 };
 
 const statusTag = (status: string) => {

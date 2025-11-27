@@ -5,9 +5,52 @@ const PerformanceReview = require('../schemas/performanceReview.model');
 const { parseListParams, buildSort } = require('../utils/pagination');
 const { calculatePayrollEntry, roundVnd } = require('../utils/payrollEngine');
 const { Parser } = require('json2csv');
-const WORKING_DAYS_IN_MONTH = 26;
+const SalaryConfig = require('../schemas/salaryConfig.model');
+const WORKING_DAYS_IN_MONTH = 22;
 const HOURS_PER_DAY = 8;
 
+const FALLBACK_SALARY_CONFIG = {
+  muc_luong_bat_dau_tinh_tncn: 9000000,
+  giam_tru_phu_thuoc: 3600000,
+  lam_tron_luong_thuc_linh: -3,
+  luong_co_ban_bhxh_bhyt: 1300000,
+  luong_toi_thieu_vung_bhtn: 3980000,
+  khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi: 5,
+  ti_le_dn: { bhxh: 18, bhyt: 3, bhtn: 1, kpcd: 0, tien: 0 },
+  ti_le_nld: { bhxh: 8, bhyt: 1.5, bhtn: 1, kpcd: 0, tien: 50000 },
+  thue_tncn_bac: {
+    bac5: 5000000,
+    bac10: 10000000,
+    bac15: 18000000,
+    bac20: 32000000,
+    bac25: 52000000,
+    bac30: 80000000,
+    bac35: 1000000000,
+  },
+};
+
+// Cấu hình mặc định dùng khi chưa có cấu hình thu nhập
+const DEFAULT_SETTINGS = {
+  ti_le_bhxh: 0.08,
+  ti_le_bhyt: 0.015,
+  ti_le_bhtn: 0.01,
+  ti_le_kpcd: 0.01,
+  ap_dung_kpcd: true,
+  giam_tru_ban_than: FALLBACK_SALARY_CONFIG.muc_luong_bat_dau_tinh_tncn || 11000000,
+  giam_tru_phu_thuoc: FALLBACK_SALARY_CONFIG.giam_tru_phu_thuoc || 4400000,
+  luong_co_ban_bhxh_bhyt: FALLBACK_SALARY_CONFIG.luong_co_ban_bhxh_bhyt || 0,
+  luong_toi_thieu_vung_bhtn: FALLBACK_SALARY_CONFIG.luong_toi_thieu_vung_bhtn || 0,
+  khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi:
+    FALLBACK_SALARY_CONFIG.khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi || 0,
+  lam_tron_luong_thuc_linh: FALLBACK_SALARY_CONFIG.lam_tron_luong_thuc_linh || 0,
+  thue_tncn_bac: FALLBACK_SALARY_CONFIG.thue_tncn_bac || {},
+};
+
+const rateFromPercent = (value) => {
+  const num = Number(value);
+  if (Number.isNaN(num)) return 0;
+  return num > 1 ? num / 100 : num;
+};
 function decimalToNumber(value) {
   if (value === null || value === undefined) return 0;
   if (typeof value === 'number') return value;
@@ -36,6 +79,35 @@ function appendAuditLog(doc, action, user, notes) {
     ghi_chu: notes,
     at: new Date(),
   });
+}
+
+async function ensureSalaryConfig() {
+  let config = await SalaryConfig.findOne();
+  if (!config) {
+    config = await SalaryConfig.create(FALLBACK_SALARY_CONFIG);
+  }
+  return config.toObject();
+}
+
+function mapSalaryConfigToSettings(config = {}) {
+  const tiLeNld = config.ti_le_nld || {};
+  return {
+    ti_le_bhxh: rateFromPercent(tiLeNld.bhxh),
+    ti_le_bhyt: rateFromPercent(tiLeNld.bhyt),
+    ti_le_bhtn: rateFromPercent(tiLeNld.bhtn),
+    ti_le_kpcd: rateFromPercent(tiLeNld.kpcd),
+    ap_dung_kpcd: true,
+    giam_tru_ban_than:
+      Number(config.muc_luong_bat_dau_tinh_tncn) || DEFAULT_SETTINGS.giam_tru_ban_than,
+    giam_tru_phu_thuoc:
+      Number(config.giam_tru_phu_thuoc) || DEFAULT_SETTINGS.giam_tru_phu_thuoc,
+    luong_co_ban_bhxh_bhyt: Number(config.luong_co_ban_bhxh_bhyt) || 0,
+    luong_toi_thieu_vung_bhtn: Number(config.luong_toi_thieu_vung_bhtn) || 0,
+    khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi:
+      Number(config.khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi) || 0,
+    lam_tron_luong_thuc_linh: Number(config.lam_tron_luong_thuc_linh) || 0,
+    thue_tncn_bac: config.thue_tncn_bac || {},
+  };
 }
 
 async function sendPayslipEmails(runDoc, type) {
@@ -148,16 +220,6 @@ const { sendMail } = require('../utils/mailer');
 const RUN_STATUSES = ['Draft', 'Cho_duyet', 'Da_duyet', 'Da_chi'];
 const ENTRY_STATUSES = ['Cho_duyet', 'Da_duyet', 'Da_chi'];
 
-const DEFAULT_SETTINGS = {
-  ti_le_bhxh: 0.08,
-  ti_le_bhyt: 0.015,
-  ti_le_bhtn: 0.01,
-  ti_le_kpcd: 0.01,
-  ap_dung_kpcd: true,
-  giam_tru_ban_than: 11000000,
-  giam_tru_phu_thuoc: 4400000,
-};
-
 function normalizeSettings(settings = {}) {
   return {
     ti_le_bhxh: Number(settings.ti_le_bhxh ?? DEFAULT_SETTINGS.ti_le_bhxh),
@@ -167,6 +229,11 @@ function normalizeSettings(settings = {}) {
     ap_dung_kpcd: settings.ap_dung_kpcd ?? DEFAULT_SETTINGS.ap_dung_kpcd,
     giam_tru_ban_than: Number(settings.giam_tru_ban_than ?? DEFAULT_SETTINGS.giam_tru_ban_than),
     giam_tru_phu_thuoc: Number(settings.giam_tru_phu_thuoc ?? DEFAULT_SETTINGS.giam_tru_phu_thuoc),
+    luong_co_ban_bhxh_bhyt: Number(settings.luong_co_ban_bhxh_bhyt ?? DEFAULT_SETTINGS.luong_co_ban_bhxh_bhyt),
+    luong_toi_thieu_vung_bhtn: Number(settings.luong_toi_thieu_vung_bhtn ?? DEFAULT_SETTINGS.luong_toi_thieu_vung_bhtn),
+    khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi: Number(settings.khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi ?? DEFAULT_SETTINGS.khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi),
+    lam_tron_luong_thuc_linh: Number(settings.lam_tron_luong_thuc_linh ?? DEFAULT_SETTINGS.lam_tron_luong_thuc_linh),
+    thue_tncn_bac: settings.thue_tncn_bac || DEFAULT_SETTINGS.thue_tncn_bac,
   };
 }
 
@@ -183,9 +250,66 @@ const formatOtLabel = (doc = {}) => {
 
 exports.previewPayrollData = async (req, res) => {
   try {
-    const { ngay_bat_dau, ngay_ket_thuc, employee_ids, settings = {} } = req.body || {};
+    const { ngay_bat_dau, ngay_ket_thuc, employee_ids, entries, settings = {} } = req.body || {};
+    console.log('=== previewPayrollData called ===');
+    console.log('ngay_bat_dau:', ngay_bat_dau, 'ngay_ket_thuc:', ngay_ket_thuc);
+    console.log('entries received:', entries ? entries.length : 0);
+    console.log('entries:', entries);
+
     if (!ngay_bat_dau || !ngay_ket_thuc) {
       return res.status(400).json({ msg: 'Thiếu khoảng thời gian' });
+    }
+
+    // Nếu có entries (dữ liệu form đã sửa), tính lại theo entries
+    if (Array.isArray(entries) && entries.length > 0) {
+      console.log('Using entries mode (recalculate from form)');
+      const salaryConfig = await ensureSalaryConfig();
+      const configSettings = mapSalaryConfigToSettings(salaryConfig);
+      const normalizedSettings = normalizeSettings({ ...configSettings, ...settings });
+      console.log('normalizedSettings:', normalizedSettings);
+
+      const employeeIds = entries.map((e) => e.nhan_vien_id).filter(Boolean);
+      const employees = await NhanVien.find({ _id: { $in: employeeIds } })
+        .select('ma_nhan_vien ho_dem ten nguoi_phu_thuoc')
+        .lean();
+      const employeeMap = new Map(employees.map((emp) => [String(emp._id), emp]));
+
+      const previewEntries = entries.map((entry) => {
+        const employee = employeeMap.get(String(entry.nhan_vien_id));
+        console.log('Calculating for employee:', employee?.ma_nhan_vien);
+        console.log('Settings:', {
+          luong_toi_thieu_vung_bhtn: normalizedSettings.luong_toi_thieu_vung_bhtn,
+          ti_le_bhtn: normalizedSettings.ti_le_bhtn,
+          luong_co_ban: entry.luong_co_ban
+        });
+        const calculated = calculatePayrollEntry(entry, normalizedSettings, {
+          employee,
+          dependents: entry.so_nguoi_phu_thuoc,
+          so_ngay_cong: entry.so_ngay_cong ?? entry.metadata?.so_ngay_cong ?? 0,
+        });
+        console.log('Calculated BHTN:', calculated.bhtn);
+        return {
+          ...entry,
+          calculated,
+          metadata: entry.metadata || {},
+        };
+      });
+
+      const summary = previewEntries.reduce(
+        (acc, entry) => {
+          acc.totalEmployees += 1;
+          acc.totalGross += entry.calculated?.tong_thu_nhap || 0;
+          acc.totalDeductions += entry.calculated?.tong_khau_tru || 0;
+          acc.totalNet += entry.calculated?.luong_thuc_nhan || 0;
+          acc.totalTax += entry.calculated?.thue_tncn || 0;
+          return acc;
+        },
+        { totalEmployees: 0, totalGross: 0, totalDeductions: 0, totalNet: 0, totalTax: 0 }
+      );
+
+      console.log('Returning preview entries:', previewEntries.length);
+      console.log('Summary:', summary);
+      return res.json({ data: previewEntries, summary, settings: normalizedSettings });
     }
     const startDate = new Date(ngay_bat_dau);
     const endDate = new Date(ngay_ket_thuc);
@@ -202,8 +326,9 @@ exports.previewPayrollData = async (req, res) => {
       employeeFilter._id = { $in: employeeObjectIds };
     }
 
-    const normalizedSettings = normalizeSettings(settings);
-
+    const salaryConfig = await ensureSalaryConfig();
+    const configSettings = mapSalaryConfigToSettings(salaryConfig);
+    const normalizedSettings = normalizeSettings({ ...configSettings, ...settings });
     const employees = await NhanVien.find(employeeFilter)
       .select('ma_nhan_vien ho_dem ten luong nguoi_phu_thuoc thong_tin_cong_viec');
 
@@ -231,6 +356,7 @@ exports.previewPayrollData = async (req, res) => {
         $match: {
           trang_thai: 'Da duyet',
           nhan_vien_id: { $in: employeeIdList },
+          ngay: { $gte: startDate, $lte: endDate },
         },
       },
       {$unwind: '$entries'},
@@ -301,10 +427,17 @@ exports.previewPayrollData = async (req, res) => {
       if (days.length > 0) {
         const existing = timesheetMap.get(empId);
         if (existing) {
-          // Gộp thêm giờ công từ chấm công
-          const mergedDays = [...existing.days];
-          days.forEach((d) => mergedDays.push(d));
-          const mergedTotal = (existing.tong_gio || 0) + total;
+          // Gộp thêm giờ công từ chấm công, tránh trùng ngày
+          const dayMap = new Map(existing.days.map(d => [d.ngay, d.gio]));
+          days.forEach((d) => {
+            // Nếu ngày chưa có trong timesheet, thêm vào
+            if (!dayMap.has(d.ngay)) {
+              dayMap.set(d.ngay, d.gio);
+            }
+            // Nếu đã có, giữ nguyên giờ từ timesheet (đã duyệt)
+          });
+          const mergedDays = Array.from(dayMap.entries()).map(([ngay, gio]) => ({ngay, gio}));
+          const mergedTotal = mergedDays.reduce((sum, d) => sum + d.gio, 0);
           timesheetMap.set(empId, {days: mergedDays, tong_gio: mergedTotal});
         } else {
           timesheetMap.set(empId, {days, tong_gio: total});
@@ -423,7 +556,9 @@ exports.previewPayrollData = async (req, res) => {
             ghi_chu: 'Tu dong tinh 150% dua tren bang cong',
           });
         }
-      }      const leaveList = leavesMap.get(empId) || [];
+      }
+
+      const leaveList = leavesMap.get(empId) || [];
       const leaveItems = [];
       let totalLeaveDays = 0;
       leaveList.forEach((leave) => {
@@ -468,6 +603,8 @@ exports.previewPayrollData = async (req, res) => {
         })
         .filter(Boolean);
 
+      const uniqueWorkdays = new Set((timesheetInfo?.days || []).map((d) => d.ngay)).size || 0;
+
       const baseEntry = {
         nhan_vien_id: emp._id,
         ma_nhan_vien: emp.ma_nhan_vien,
@@ -482,6 +619,7 @@ exports.previewPayrollData = async (req, res) => {
           tong_gio_timesheet: totalHours,
           tong_gio_ot: overtimeHours,
           so_ngay_nghi: totalLeaveDays,
+          so_ngay_cong: uniqueWorkdays,
           chi_tiet_ot: otBreakdown,
           performance_reviews: performanceReviews.map((review) => ({
             review_id: review._id,
@@ -508,6 +646,7 @@ exports.previewPayrollData = async (req, res) => {
         dependents: baseEntry.so_nguoi_phu_thuoc,
         timesheet: timesheetInfo,
         overtime: otBreakdown,
+        so_ngay_cong: uniqueWorkdays,
       });
 
       totals.gross += calculated.tong_thu_nhap || 0;
@@ -577,7 +716,9 @@ exports.createPayrollRun = async (req, res) => {
       return res.status(400).json({ msg: 'Thiếu mã nhân viên trong danh sách tính lương' });
     }
 
-    const normalizedSettings = normalizeSettings(settings);
+    const salaryConfig = await ensureSalaryConfig();
+    const configSettings = mapSalaryConfigToSettings(salaryConfig);
+    const normalizedSettings = normalizeSettings({ ...configSettings, ...settings });
 
     const employeeIds = [...new Set(entries.map((e) => String(e.nhan_vien_id)))];
     const employees = await NhanVien.find({ _id: { $in: employeeIds } })
@@ -602,6 +743,7 @@ exports.createPayrollRun = async (req, res) => {
       return calculatePayrollEntry(payload, normalizedSettings, {
         employee,
         dependents: entry.so_nguoi_phu_thuoc,
+        so_ngay_cong: entry.so_ngay_cong ?? entry.metadata?.so_ngay_cong ?? 0,
       });
     });
 
@@ -680,6 +822,21 @@ exports.listPayrollRuns = async (req, res) => {
   }
 };
 
+exports.deletePayrollRun = async (req, res) => {
+  try {
+    const doc = await PayrollRun.findByIdAndDelete(req.params.id);
+    if (!doc) {
+      return res.status(404).json({ msg: 'Khong tim thay bang luong' });
+    }
+    return res.json({ msg: 'Da xoa bang luong' });
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Khong tim thay bang luong' });
+    }
+    res.status(500).json({ msg: 'Khong the xoa bang luong', error: err.message });
+  }
+};
+
 exports.getPayrollRun = async (req, res) => {
   try {
     const doc = await PayrollRun.findById(req.params.id)
@@ -699,13 +856,18 @@ exports.getPayrollRun = async (req, res) => {
 exports.updateRunStatus = async (req, res) => {
   try {
     const { trang_thai } = req.body;
+    console.log('updateRunStatus - req.body:', req.body);
+    console.log('updateRunStatus - trang_thai:', trang_thai);
+    console.log('updateRunStatus - RUN_STATUSES:', RUN_STATUSES);
     if (!RUN_STATUSES.includes(trang_thai)) {
+      console.log('ERROR: Trạng thái không hợp lệ!');
       return res.status(400).json({ msg: 'Trạng thái không hợp lệ' });
     }
     const doc = await PayrollRun.findById(req.params.id);
     if (!doc) {
       return res.status(404).json({ msg: 'Không tìm thấy bảng lương' });
     }
+    console.log('Current trang_thai:', doc.trang_thai);
     if (doc.trang_thai === 'Da_chi') {
       return res.status(400).json({ msg: 'Kỳ lương đã được khóa, không thể thay đổi' });
     }
@@ -714,12 +876,16 @@ exports.updateRunStatus = async (req, res) => {
     }
     const transitions = {
       Draft: ['Cho_duyet'],
+      Nhap: ['Cho_duyet', 'Da_duyet'],
       Cho_duyet: ['Da_duyet'],
       Da_duyet: ['Da_chi'],
       Da_chi: [],
     };
     const allowed = transitions[doc.trang_thai] || [];
+    console.log('Allowed transitions:', allowed);
+    console.log('Requested transition to:', trang_thai);
     if (!allowed.includes(trang_thai)) {
+      console.log('ERROR: Cannot transition from', doc.trang_thai, 'to', trang_thai);
       return res.status(400).json({ msg: 'Không thể chuyển sang trạng thái này' });
     }
     doc.trang_thai = trang_thai;
@@ -748,7 +914,10 @@ exports.updateRunStatus = async (req, res) => {
 exports.updateEntryStatus = async (req, res) => {
   try {
     const { trang_thai, ghi_chu } = req.body;
+    console.log('updateEntryStatus - trang_thai:', trang_thai);
+    console.log('updateEntryStatus - ENTRY_STATUSES:', ENTRY_STATUSES);
     if (!ENTRY_STATUSES.includes(trang_thai)) {
+      console.log('ERROR: Trạng thái không hợp lệ!');
       return res.status(400).json({ msg: 'Trạng thái phiếu lương không hợp lệ' });
     }
     const run = await PayrollRun.findById(req.params.id);

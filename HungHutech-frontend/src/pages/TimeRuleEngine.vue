@@ -54,7 +54,9 @@
                 <el-option
                   v-for="nv in employeeOptions"
                   :key="nv._id"
-                  :label="`${nv.ma_nhan_vien} - ${nv.ho_dem || ''} ${nv.ten || ''}`"
+                  :label="`${nv.ma_nhan_vien} - ${nv.ho_dem || ''} ${
+                    nv.ten || ''
+                  }`"
                   :value="nv._id"
                 />
               </el-select>
@@ -140,8 +142,8 @@
       </div>
 
       <el-table
-        :data="summaries"
         v-loading="loading"
+        :data="summaries"
         :empty-text="loading ? 'Đang tải...' : 'Không có dữ liệu'"
       >
         <el-table-column label="Ngày" width="130">
@@ -227,19 +229,17 @@
 <script setup lang="ts">
 import {ref, reactive, computed, onMounted} from 'vue';
 import dayjs from 'dayjs';
-import {
-  ElMessage,
-  ElMessageBox,
-} from 'element-plus';
-import {
-  Refresh,
-  DataAnalysis,
-  Search,
-} from '@element-plus/icons-vue';
+import {ElMessage, ElMessageBox} from 'element-plus';
+import {Refresh, DataAnalysis, Search} from '@element-plus/icons-vue';
 import timeRuleService from '@/services/timeRuleService';
 import nhanVienService from '@/services/nhanVienService';
 import phongBanService from '@/services/phongBanService';
-import {DailyTimeSummary, NhanVien, PhongBan, TimeRuleViolationStat} from '@/types';
+import {
+  DailyTimeSummary,
+  NhanVien,
+  PhongBan,
+  TimeRuleViolationStat,
+} from '@/types';
 
 const summaries = ref<DailyTimeSummary[]>([]);
 const employeeOptions = ref<NhanVien[]>([]);
@@ -358,7 +358,9 @@ const loadSummaries = async () => {
     pagination.total = response.pagination.total;
   } catch (err: any) {
     console.error('loadSummaries error', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải dữ liệu rule engine');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải dữ liệu rule engine',
+    );
   } finally {
     loading.value = false;
   }
@@ -445,7 +447,9 @@ const handleRecalculate = async () => {
     handleRefresh();
   } catch (err: any) {
     console.error('handleRecalculate error', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tính lại rule engine');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tính lại rule engine',
+    );
   } finally {
     recalculating.value = false;
   }

@@ -178,9 +178,7 @@ const handleToggle = async (item: ConsentView, value: boolean) => {
   } catch (err: any) {
     console.error('handleToggle error', err);
     consentValues[item.key] = !value;
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể cập nhật đồng thuận',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật đồng thuận');
   } finally {
     savingKey.value = null;
   }

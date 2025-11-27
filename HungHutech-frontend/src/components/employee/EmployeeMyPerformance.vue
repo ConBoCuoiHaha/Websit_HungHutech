@@ -1,5 +1,5 @@
 <template>
-  <div class="my-performance" v-loading="loading">
+  <div v-loading="loading" class="my-performance">
     <div class="section-header">
       <div>
         <h3>Đánh giá hiệu suất của tôi</h3>
@@ -106,7 +106,7 @@
         </el-table-column>
       </el-table>
 
-      <div class="pagination" v-if="pagination.total > pagination.limit">
+      <div v-if="pagination.total > pagination.limit" class="pagination">
         <el-pagination
           layout="total, prev, pager, next"
           :current-page="pagination.page"
@@ -179,7 +179,10 @@
           </el-table>
         </div>
 
-        <div v-if="selectedReview.payroll_history?.length" class="history-section">
+        <div
+          v-if="selectedReview.payroll_history?.length"
+          class="history-section"
+        >
           <h4>Lịch sử chuyển sang bảng lương</h4>
           <el-timeline>
             <el-timeline-item
@@ -189,7 +192,9 @@
               type="success"
             >
               <p><strong>Kỳ lương:</strong> {{ item.ky_luong || '---' }}</p>
-              <p><strong>Số tiền:</strong> {{ formatCurrency(item.so_tien) }}</p>
+              <p>
+                <strong>Số tiền:</strong> {{ formatCurrency(item.so_tien) }}
+              </p>
             </el-timeline-item>
           </el-timeline>
         </div>

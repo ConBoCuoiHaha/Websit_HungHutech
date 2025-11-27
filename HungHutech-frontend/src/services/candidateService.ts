@@ -1,9 +1,5 @@
 import api from './api';
-import {
-  Candidate,
-  CandidateQueryParams,
-  PaginatedResponse,
-} from '@/types';
+import {Candidate, CandidateQueryParams, PaginatedResponse} from '@/types';
 
 class CandidateService {
   private readonly BASE_URL = '/recruitment/candidates';
@@ -50,7 +46,11 @@ class CandidateService {
 
   async updatePipelineStage(
     id: string,
-    payload: {stage: Candidate['pipeline_stage']; note?: string; score?: number},
+    payload: {
+      stage: Candidate['pipeline_stage'];
+      note?: string;
+      score?: number;
+    },
   ): Promise<Candidate> {
     const response = await api.post<Candidate>(
       `${this.BASE_URL}/${id}/pipeline`,

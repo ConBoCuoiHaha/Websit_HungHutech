@@ -1,64 +1,42 @@
-﻿<template>
+<template>
   <div class="payroll-page">
     <div class="page-header">
       <div>
-        <h1>Quản lý bảng lương</h1>
-        <p>
-          Tạo và theo dõi các kỳ lương, đảm bảo tính đúng – đủ trước khi chi
-          trả.
-        </p>
+        <h1>Quan ly bang luong</h1>
+        <p>Tao va theo doi cac ky luong, dam bao tinh dung - du truoc khi chi tra.</p>
       </div>
       <div class="page-actions">
-        <el-button :icon="Refresh" :loading="loading" @click="loadRuns"
-          >Tải lại</el-button
-        >
-        <el-button type="primary" :icon="Plus" @click="openCreateDialog"
-          >Tạo bảng lương</el-button
-        >
+        <el-button :icon="Refresh" :loading="loading" @click="loadRuns">Tai lai</el-button>
+        <el-button type="primary" :icon="Plus" @click="openCreateDialog">Tao bang luong</el-button>
       </div>
     </div>
 
     <el-card class="filter-card" shadow="never">
       <el-form inline @submit.prevent>
-        <el-form-item label="Từ khóa">
+        <el-form-item label="Tu khoa">
           <el-input
             v-model="filters.q"
-            placeholder="Kỳ lương, ghi chú..."
+            placeholder="Ky luong, ghi chu..."
             clearable
             :prefix-icon="Search"
-            @keyup.enter.native="handleFilter"
+            @keyup.enter="handleFilter"
           />
         </el-form-item>
-        <el-form-item label="Loại kỳ">
-          <el-select
-            v-model="filters.loai_ky"
-            placeholder="Tất cả"
-            clearable
-            style="width: 160px"
-          >
-            <el-option label="Kỳ tháng" value="Thang" />
-            <el-option label="Kỳ tuần" value="Tuan" />
-            <el-option label="Tùy chỉnh" value="Tuy_chinh" />
+        <el-form-item label="Loai ky">
+          <el-select v-model="filters.loai_ky" placeholder="Tat ca" clearable style="width: 160px">
+            <el-option label="Ky thang" value="Thang" />
+            <el-option label="Ky tuan" value="Tuan" />
+            <el-option label="Tuy chinh" value="Tuy_chinh" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Trạng thái">
-          <el-select
-            v-model="filters.trang_thai"
-            placeholder="Tất cả"
-            clearable
-            style="width: 180px"
-          >
-            <el-option
-              v-for="item in runStatusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+        <el-form-item label="Trang thai">
+          <el-select v-model="filters.trang_thai" placeholder="Tat ca" clearable style="width: 180px">
+            <el-option v-for="item in runStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleFilter">Áp dụng</el-button>
-          <el-button @click="resetFilters">Xóa lọc</el-button>
+          <el-button type="primary" @click="handleFilter">Ap dung</el-button>
+          <el-button @click="resetFilters">Xoa loc</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -67,56 +45,46 @@
       <el-table
         v-loading="loading"
         :data="runs"
-        :empty-text="loading ? 'Đang tải...' : 'Chưa có bảng lương'"
+        :empty-text="loading ? 'Dang tai...' : 'Chua co bang luong'"
         stripe
       >
-        <el-table-column label="Kỳ lương" min-width="160">
-          <template #default="{row}">
+        <el-table-column label="Ky luong" min-width="160">
+          <template #default="{ row }">
             <div class="run-title">
               <strong>{{ row.ky_luong }}</strong>
-              <span>{{
-                formatDateRange(row.ngay_bat_dau, row.ngay_ket_thuc)
-              }}</span>
+              <span>{{ formatDateRange(row.ngay_bat_dau, row.ngay_ket_thuc) }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="Loại kỳ" width="120">
-          <template #default="{row}">
-            <el-tag type="info" size="small">{{
-              getRunTypeLabel(row.loai_ky)
-            }}</el-tag>
+        <el-table-column label="Loai ky" width="120">
+          <template #default="{ row }">
+            <el-tag type="info" size="small">{{ getRunTypeLabel(row.loai_ky) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Trạng thái" width="130">
-          <template #default="{row}">
+        <el-table-column label="Trang thai" width="130">
+          <template #default="{ row }">
             <el-tag :type="statusTagType(row.trang_thai)" size="small">
               {{ runStatusLabel(row.trang_thai) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Tổng thu nhập" min-width="150">
-          <template #default="{row}">{{
-            formatCurrency(row.tong_thu_nhap, row.currency)
-          }}</template>
+        <el-table-column label="Tong thu nhap" min-width="150">
+          <template #default="{ row }">
+            {{ formatCurrency(row.tong_thu_nhap, row.currency) }}
+          </template>
         </el-table-column>
-        <el-table-column label="Thực nhận" min-width="150">
-          <template #default="{row}">
+        <el-table-column label="Thuc nhan" min-width="150">
+          <template #default="{ row }">
             <strong>{{ formatCurrency(row.tong_net, row.currency) }}</strong>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="tong_so_nhan_vien"
-          label="Nhân viên"
-          width="110"
-        />
-        <el-table-column label="Hành động" width="200" fixed="right">
-          <template #default="{row}">
+        <el-table-column prop="tong_so_nhan_vien" label="Nhan vien" width="110" />
+        <el-table-column label="Hanh dong" width="200" fixed="right">
+          <template #default="{ row }">
             <el-space>
-              <el-button size="small" :icon="View" @click="openDetail(row)"
-                >Chi tiết</el-button
-              >
-              <el-dropdown @command="(cmd) => handleRunStatusAction(row, cmd)">
-                <el-button size="small">Cập nhật</el-button>
+              <el-button size="small" :icon="View" @click="openDetail(row)">Chi tiet</el-button>
+              <el-dropdown @command="(cmd: string) => handleRunStatusAction(row, cmd)">
+                <el-button size="small">Cap nhat</el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item
@@ -129,6 +97,14 @@
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
+              <el-button
+                size="small"
+                type="danger"
+                text
+                @click="() => handleDeleteRun(row)"
+              >
+                Xoa
+              </el-button>
             </el-space>
           </template>
         </el-table-column>
@@ -149,35 +125,29 @@
     </el-card>
   </div>
 
-  <el-dialog
-    v-model="showCreateDialog"
-    title="Tạo bảng lương"
-    width="820px"
-    :close-on-click-modal="false"
-  >
+  <!-- Dialog tao bang luong -->
+  <el-dialog v-model="showCreateDialog" title="Tao bang luong" width="820px" :close-on-click-modal="false">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="150px">
       <el-row :gutter="16">
         <el-col :md="12" :sm="24">
-          <el-form-item label="Tên kỳ lương" prop="ky_luong">
-            <el-input
-              v-model="form.ky_luong"
-              placeholder="VD: Lương tháng 01/2025"
-            />
+          <el-form-item label="Ten ky luong" prop="ky_luong">
+            <el-input v-model="form.ky_luong" placeholder="VD: Luong thang 01/2025" />
           </el-form-item>
         </el-col>
         <el-col :md="12" :sm="24">
-          <el-form-item label="Loại kỳ" prop="loai_ky">
+          <el-form-item label="Loai ky" prop="loai_ky">
             <el-select v-model="form.loai_ky">
-              <el-option label="Tháng" value="Thang" />
-              <el-option label="Tuần" value="Tuan" />
-              <el-option label="Tùy chỉnh" value="Tuy_chinh" />
+              <el-option label="Thang" value="Thang" />
+              <el-option label="Tuan" value="Tuan" />
+              <el-option label="Tuy chinh" value="Tuy_chinh" />
             </el-select>
           </el-form-item>
         </el-col>
       </el-row>
+
       <el-row :gutter="16">
         <el-col :md="12" :sm="24">
-          <el-form-item label="Ngày bắt đầu" prop="ngay_bat_dau">
+          <el-form-item label="Ngay bat dau" prop="ngay_bat_dau">
             <el-date-picker
               v-model="form.ngay_bat_dau"
               type="date"
@@ -187,7 +157,7 @@
           </el-form-item>
         </el-col>
         <el-col :md="12" :sm="24">
-          <el-form-item label="Ngày kết thúc" prop="ngay_ket_thuc">
+          <el-form-item label="Ngay ket thuc" prop="ngay_ket_thuc">
             <el-date-picker
               v-model="form.ngay_ket_thuc"
               type="date"
@@ -197,9 +167,10 @@
           </el-form-item>
         </el-col>
       </el-row>
+
       <el-row :gutter="16">
         <el-col :md="12" :sm="24">
-          <el-form-item label="Tiền tệ">
+          <el-form-item label="Tien te">
             <el-select v-model="form.currency">
               <el-option label="VND" value="VND" />
               <el-option label="USD" value="USD" />
@@ -207,64 +178,50 @@
           </el-form-item>
         </el-col>
         <el-col :md="12" :sm="24">
-          <el-form-item label="Ghi chú">
-            <el-input v-model="form.ghi_chu" placeholder="Ghi chú chung" />
+          <el-form-item label="Ghi chu">
+            <el-input v-model="form.ghi_chu" placeholder="Ghi chu chung" />
           </el-form-item>
         </el-col>
       </el-row>
 
-      <el-divider content-position="left">Tỷ lệ khấu trừ</el-divider>
+      <el-divider content-position="left">Ty le khau tru</el-divider>
       <el-row :gutter="16" class="settings-row">
         <el-col :md="6" :sm="12">
           <el-form-item label="BHXH">
-            <el-input-number
-              v-model="form.settings.ti_le_bhxh"
-              :min="0"
-              :max="1"
-              :step="0.005" :precision="3" controls-position="right"
-            />
+            <el-input-number v-model="form.settings.ti_le_bhxh" :min="0" :max="1" :step="0.005" />
           </el-form-item>
         </el-col>
         <el-col :md="6" :sm="12">
           <el-form-item label="BHYT">
-            <el-input-number
-              v-model="form.settings.ti_le_bhyt"
-              :min="0"
-              :max="1"
-              :step="0.005" :precision="3" controls-position="right"
-            />
+            <el-input-number v-model="form.settings.ti_le_bhyt" :min="0" :max="1" :step="0.005" />
           </el-form-item>
         </el-col>
         <el-col :md="6" :sm="12">
           <el-form-item label="BHTN">
-            <el-input-number
-              v-model="form.settings.ti_le_bhtn"
-              :min="0"
-              :max="1"
-              :step="0.005" :precision="3" controls-position="right"
-            />
+            <el-input-number v-model="form.settings.ti_le_bhtn" :min="0" :max="1" :step="0.005" />
           </el-form-item>
         </el-col>
         <el-col :md="6" :sm="12">
-          <el-form-item label="KPCĐ">
+          <el-form-item label="KPCD">
             <el-input-number
               v-model="form.settings.ti_le_kpcd"
               :min="0"
               :max="1"
-              :step="0.005" :precision="3" controls-position="right"
+              :step="0.005"
               :disabled="!form.settings.ap_dung_kpcd"
             />
           </el-form-item>
         </el-col>
       </el-row>
+
       <el-row :gutter="16">
         <el-col :md="6" :sm="12">
-          <el-form-item label="Áp dụng KPCĐ">
+          <el-form-item label="Ap dung KPCD">
             <el-switch v-model="form.settings.ap_dung_kpcd" />
           </el-form-item>
         </el-col>
         <el-col :md="9" :sm="12">
-          <el-form-item label="Giảm trừ bản thân">
+          <el-form-item label="Giam tru ban than">
             <el-input-number
               v-model="form.settings.giam_tru_ban_than"
               :min="0"
@@ -275,7 +232,7 @@
           </el-form-item>
         </el-col>
         <el-col :md="9" :sm="12">
-          <el-form-item label="Giảm trừ phụ thuộc">
+          <el-form-item label="Giam tru phu thuoc">
             <el-input-number
               v-model="form.settings.giam_tru_phu_thuoc"
               :min="0"
@@ -287,76 +244,44 @@
         </el-col>
       </el-row>
 
-            <div class="auto-fill-bar">
+      <div class="auto-fill-bar">
         <el-alert type="info" :closable="false" show-icon>
-          C� th? t? d?ng l?y d? li?u timesheet/OT v� don ngh? cho kho?ng ng�y da
-          ch?n.
+          Co the tu dong lay du lieu timesheet/OT va don nghi cho khoang ngay da chon, sau do bam "Tu dong tinh luong" de ap dung vao bang luong.
         </el-alert>
-        <el-button
-          type="primary"
-          :loading="autoFillLoading"
-          @click="handleAutoFill"
-        >
-          Tự động lấy dữ liệu
-        </el-button>
-        <el-button
-          type="success"
-          :loading="autoCalcLoading"
-          @click="handleAutoCalculate"
-        >
-          Tính lương tự động (theo quy định)
-        </el-button>
-        <div v-if="autoCalcSummary.employees > 0" class="auto-summary">
-          <el-tag type="info">NV: {{ autoCalcSummary.employees }}</el-tag>
-          <el-tag type="success"
-            >Tổng thu nhập: {{ formatCurrency(autoCalcSummary.gross) }}</el-tag
-          >
-          <el-tag type="warning"
-            >Khấu trừ: {{ formatCurrency(autoCalcSummary.deductions) }}</el-tag
-          >
-          <el-tag type="danger"
-            >Thuế TNCN: {{ formatCurrency(autoCalcSummary.tax) }}</el-tag
-          >
-          <el-tag type="success" effect="dark"
-            >Thực nhận: {{ formatCurrency(autoCalcSummary.net) }}</el-tag
-          >
+        <div class="auto-fill-actions">
+          <el-button type="primary" plain :loading="autoFillLoading" @click="handleAutoFill">
+            Tu dong lay du lieu
+          </el-button>
+          <el-button type="success" plain :loading="autoFillLoading" @click="handleRecalculate">
+            Tinh lai luong
+          </el-button>
         </div>
-      </div><div class="entries-header">
-        <el-divider content-position="left">Nhân viên trong kỳ</el-divider>
-        <el-button type="primary" plain size="small" @click="addEntry"
-          >Thêm dòng</el-button
-        >
       </div>
-      <div
-        v-for="(entry, index) in form.entries"
-        :key="entry.uid"
-        class="entry-card"
-      >
+
+      <div class="entries-header">
+        <el-divider content-position="left">Nhan vien trong ky</el-divider>
+        <el-button type="primary" plain size="small" @click="addEntry">Them dong</el-button>
+      </div>
+
+      <div v-for="(entry, index) in form.entries" :key="entry.uid" class="entry-card">
         <div class="entry-card__header">
           <div>
-            <span class="entry-card__index">Nhân viên #{{ index + 1 }}</span>
-            <p v-if="entryEmployeeLabel(entry.nhan_vien_id)">
-              {{ entryEmployeeLabel(entry.nhan_vien_id) }}
-            </p>
+            <span class="entry-card__index">Nhan vien #{{ index + 1 }}</span>
+            <p v-if="entryEmployeeLabel(entry.nhan_vien_id)">{{ entryEmployeeLabel(entry.nhan_vien_id) }}</p>
           </div>
           <div class="entry-card__actions">
-            <el-button
-              v-if="form.entries.length > 1"
-              type="danger"
-              text
-              @click="removeEntry(index)"
-            >
-              Xóa
+            <el-button v-if="form.entries.length > 1" type="danger" text @click="removeEntry(index)">
+              Xoa
             </el-button>
           </div>
         </div>
 
         <el-row :gutter="16">
           <el-col :md="12" :sm="24">
-            <el-form-item :label="`Nhân viên #${index + 1}`">
+            <el-form-item :label="`Nhan vien #${index + 1}`">
               <el-select
                 v-model="entry.nhan_vien_id"
-                placeholder="Chọn nhân viên"
+                placeholder="Chon nhan vien"
                 filterable
                 style="width: 100%"
                 @change="() => handleEntryEmployeeChange(entry)"
@@ -371,7 +296,7 @@
             </el-form-item>
           </el-col>
           <el-col :md="12" :sm="24">
-            <el-form-item label="Lương cơ bản (VND)">
+            <el-form-item label="Luong co ban (VND)">
               <el-input-number
                 v-model="entry.luong_co_ban"
                 :min="0"
@@ -385,7 +310,7 @@
 
         <el-row :gutter="16">
           <el-col :md="12" :sm="24">
-            <el-form-item label="Số người phụ thuộc">
+            <el-form-item label="So nguoi phu thuoc">
               <el-input-number
                 v-model="entry.so_nguoi_phu_thuoc"
                 :min="0"
@@ -398,165 +323,89 @@
         </el-row>
 
         <div v-if="entry.metadata" class="entry-card__meta">
-          <el-tag size="small"
-            >Giờ chấm công: {{ entry.metadata.tong_gio_timesheet || 0 }}</el-tag
-          >
-          <el-tag size="small" type="warning"
-            >OT: {{ entry.metadata.tong_gio_ot || 0 }}h</el-tag
-          >
-          <el-tag size="small" type="info"
-            >Nghỉ: {{ entry.metadata.so_ngay_nghi || 0 }} ngày</el-tag
-          >
+          <el-tag size="small">Gio cham cong: {{ entry.metadata.tong_gio_timesheet || 0 }}</el-tag>
+          <el-tag size="small" type="warning">OT: {{ entry.metadata.tong_gio_ot || 0 }}h</el-tag>
+          <el-tag size="small" type="info">Nghi: {{ entry.metadata.so_ngay_nghi || 0 }} ngay</el-tag>
+          <el-tag size="small" type="success">Ngay cong: {{ entry.metadata.so_ngay_cong || 0 }}</el-tag>
+          <el-tag v-if="entry.calculated" size="small" type="primary">
+            Thu nhap: {{ formatCurrency(entry.calculated?.tong_thu_nhap, form.currency) }}
+          </el-tag>
+          <el-tag v-if="entry.calculated" size="small" type="danger">
+            Khau tru: {{ formatCurrency(entry.calculated?.tong_khau_tru, form.currency) }}
+          </el-tag>
+          <el-tag v-if="entry.calculated" size="small" type="warning">
+            Thue TNCN: {{ formatCurrency(entry.calculated?.thue_tncn, form.currency) }}
+          </el-tag>
+          <el-tag v-if="entry.calculated" size="small" type="success">
+            Thuc nhan: {{ formatCurrency(entry.calculated?.luong_thuc_nhan, form.currency) }}
+          </el-tag>
         </div>
 
         <div class="money-grid">
           <div class="money-section">
             <div class="money-section__header">
-              <span>Phụ cấp</span>
-              <el-button
-                text
-                type="primary"
-                size="small"
-                @click="addMoneyItem(index, 'phu_cap')"
-              >
-                Thêm
-              </el-button>
+              <span>Phu cap</span>
+              <el-button text type="primary" size="small" @click="addMoneyItem(index, 'phu_cap')">Them</el-button>
             </div>
-            <div v-if="entry.phu_cap.length === 0" class="money-section__empty">
-              Chưa có phụ cấp
-            </div>
+            <div v-if="entry.phu_cap.length === 0" class="money-section__empty">Chua co phu cap</div>
             <div
               v-for="(item, itemIndex) in entry.phu_cap"
               :key="`phucap-${entry.uid}-${itemIndex}`"
               class="money-section__row"
             >
-              <el-input v-model="item.ten" placeholder="Tên khoản" />
-              <el-input-number
-                v-model="item.so_tien"
-                :min="0"
-                :step="100000"
-                :controls="false"
-              />
-              <el-button
-                text
-                type="danger"
-                @click="removeMoneyItem(index, 'phu_cap', itemIndex)"
-              >
-                Xóa
-              </el-button>
+              <el-input v-model="item.ten" placeholder="Ten khoan" />
+              <el-input-number v-model="item.so_tien" :min="0" :step="100000" :controls="false" />
+              <el-button text type="danger" @click="removeMoneyItem(index, 'phu_cap', itemIndex)">Xoa</el-button>
             </div>
           </div>
 
           <div class="money-section">
             <div class="money-section__header">
-              <span>Thưởng</span>
-              <el-button
-                text
-                type="primary"
-                size="small"
-                @click="addMoneyItem(index, 'thuong')"
-              >
-                Thêm
-              </el-button>
+              <span>Thuong</span>
+              <el-button text type="primary" size="small" @click="addMoneyItem(index, 'thuong')">Them</el-button>
             </div>
-            <div v-if="entry.thuong.length === 0" class="money-section__empty">
-              Chưa có thưởng
-            </div>
+            <div v-if="entry.thuong.length === 0" class="money-section__empty">Chua co thuong</div>
             <div
               v-for="(item, itemIndex) in entry.thuong"
               :key="`thuong-${entry.uid}-${itemIndex}`"
               class="money-section__row"
             >
-              <el-input v-model="item.ten" placeholder="Tên khoản" />
-              <el-input-number
-                v-model="item.so_tien"
-                :min="0"
-                :step="100000"
-                :controls="false"
-              />
-              <el-button
-                text
-                type="danger"
-                @click="removeMoneyItem(index, 'thuong', itemIndex)"
-              >
-                Xóa
-              </el-button>
+              <el-input v-model="item.ten" placeholder="Ten khoan" />
+              <el-input-number v-model="item.so_tien" :min="0" :step="100000" :controls="false" />
+              <el-button text type="danger" @click="removeMoneyItem(index, 'thuong', itemIndex)">Xoa</el-button>
             </div>
           </div>
 
           <div class="money-section">
             <div class="money-section__header">
-              <span>OT / Làm thêm</span>
-              <el-button
-                text
-                type="primary"
-                size="small"
-                @click="addMoneyItem(index, 'ot')"
-              >
-                Thêm
-              </el-button>
+              <span>OT / Lam them</span>
+              <el-button text type="primary" size="small" @click="addMoneyItem(index, 'ot')">Them</el-button>
             </div>
-            <div v-if="entry.ot.length === 0" class="money-section__empty">
-              Chưa có OT
-            </div>
-            <div
-              v-for="(item, itemIndex) in entry.ot"
-              :key="`ot-${entry.uid}-${itemIndex}`"
-              class="money-section__row"
-            >
-              <el-input v-model="item.ten" placeholder="Mô tả" />
-              <el-input-number
-                v-model="item.so_tien"
-                :min="0"
-                :step="100000"
-                :controls="false"
-              />
-              <el-button
-                text
-                type="danger"
-                @click="removeMoneyItem(index, 'ot', itemIndex)"
-              >
-                Xóa
-              </el-button>
+            <div v-if="entry.ot.length === 0" class="money-section__empty">Chua co OT</div>
+            <div v-for="(item, itemIndex) in entry.ot" :key="`ot-${entry.uid}-${itemIndex}`" class="money-section__row">
+              <el-input v-model="item.ten" placeholder="Mo ta" />
+              <el-input-number v-model="item.so_tien" :min="0" :step="100000" :controls="false" />
+              <el-button text type="danger" @click="removeMoneyItem(index, 'ot', itemIndex)">Xoa</el-button>
             </div>
           </div>
 
           <div class="money-section">
             <div class="money-section__header">
-              <span>Khấu trừ</span>
-              <el-button
-                text
-                type="primary"
-                size="small"
-                @click="addMoneyItem(index, 'khoan_khau_tru')"
-              >
-                Thêm
+              <span>Khau tru</span>
+              <el-button text type="primary" size="small" @click="addMoneyItem(index, 'khoan_khau_tru')">
+                Them
               </el-button>
             </div>
-            <div
-              v-if="entry.khoan_khau_tru.length === 0"
-              class="money-section__empty"
-            >
-              Chưa có khấu trừ
-            </div>
+            <div v-if="entry.khoan_khau_tru.length === 0" class="money-section__empty">Chua co khau tru</div>
             <div
               v-for="(item, itemIndex) in entry.khoan_khau_tru"
               :key="`khau-${entry.uid}-${itemIndex}`"
               class="money-section__row"
             >
-              <el-input v-model="item.ten" placeholder="Tên khoản" />
-              <el-input-number
-                v-model="item.so_tien"
-                :min="0"
-                :step="100000"
-                :controls="false"
-              />
-              <el-button
-                text
-                type="danger"
-                @click="removeMoneyItem(index, 'khoan_khau_tru', itemIndex)"
-              >
-                Xóa
+              <el-input v-model="item.ten" placeholder="Ten khoan" />
+              <el-input-number v-model="item.so_tien" :min="0" :step="100000" :controls="false" />
+              <el-button text type="danger" @click="removeMoneyItem(index, 'khoan_khau_tru', itemIndex)">
+                Xoa
               </el-button>
             </div>
           </div>
@@ -564,70 +413,26 @@
       </div>
     </el-form>
 
-        <template #footer>
-      <el-button :loading="manualCalcLoading" @click="handleManualCalculate">
-        Tính lương
-      </el-button>
-      <el-button @click="closeCreateDialog">Hủy</el-button>
-      <el-button type="primary" :loading="saving" @click="handleCreateRun">
-        Tạo bảng lương
-      </el-button>
+    <template #footer>
+      <el-button @click="closeCreateDialog">Huy</el-button>
+      <el-button type="primary" :loading="saving" @click="handleCreateRun">Tao bang luong</el-button>
     </template>
   </el-dialog>
 
-  <el-drawer
-    v-model="showDetailDrawer"
-    title="Chi tiết bảng lương"
-    size="65%"
-    :destroy-on-close="false"
-  >
+  <!-- Drawer chi tiet -->
+  <el-drawer v-model="showDetailDrawer" title="Chi tiet bang luong" size="65%" :destroy-on-close="false">
     <el-skeleton :loading="detailLoading" animated>
       <template #default>
         <div v-if="selectedRun" class="drawer-body">
           <div class="drawer-header">
             <div>
               <h2>{{ selectedRun.ky_luong }}</h2>
-              <p>
-                {{
-                  formatDateRange(
-                    selectedRun.ngay_bat_dau,
-                    selectedRun.ngay_ket_thuc,
-                  )
-                }}
-              </p>
+              <p>{{ formatDateRange(selectedRun.ngay_bat_dau, selectedRun.ngay_ket_thuc) }}</p>
             </div>
             <div class="drawer-actions">
-              <el-button-group>
-                <el-button
-                  type="primary"
-                  plain
-                  size="small"
-                  :loading="exporting"
-                  @click="handleExport"
-                >
-                  Xuất CSV tổng
-                </el-button>
-                <el-dropdown trigger="click" @command="handleExportTemplate">
-                  <el-button
-                    type="primary"
-                    plain
-                    size="small"
-                    :loading="exporting"
-                  >
-                    Xuất theo mẫu
-                  </el-button>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item command="bhxh"
-                        >Mẫu báo cáo BHXH</el-dropdown-item
-                      >
-                      <el-dropdown-item command="thue"
-                        >Mẫu quyết toán thuế</el-dropdown-item
-                      >
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-              </el-button-group>
+              <el-button type="primary" plain size="small" :loading="exporting" @click="handleExportExcel">
+                Xuat Excel
+              </el-button>
               <el-tag :type="statusTagType(selectedRun.trang_thai)">
                 {{ runStatusLabel(selectedRun.trang_thai) }}
               </el-tag>
@@ -635,78 +440,59 @@
           </div>
 
           <el-descriptions :column="3" border size="small">
-            <el-descriptions-item label="Loại kỳ">
+            <el-descriptions-item label="Loai ky">
               {{ getRunTypeLabel(selectedRun.loai_ky) }}
             </el-descriptions-item>
-            <el-descriptions-item label="Nhân viên">
+            <el-descriptions-item label="Nhan vien">
               {{ selectedRun.tong_so_nhan_vien }}
             </el-descriptions-item>
-            <el-descriptions-item label="Tổng thu nhập">
-              {{
-                formatCurrency(selectedRun.tong_thu_nhap, selectedRun.currency)
-              }}
+            <el-descriptions-item label="Tong thu nhap">
+              {{ formatCurrency(selectedRun.tong_thu_nhap, selectedRun.currency) }}
             </el-descriptions-item>
-            <el-descriptions-item label="Khấu trừ">
-              {{
-                formatCurrency(selectedRun.tong_khau_tru, selectedRun.currency)
-              }}
+            <el-descriptions-item label="Khau tru">
+              {{ formatCurrency(selectedRun.tong_khau_tru, selectedRun.currency) }}
             </el-descriptions-item>
-            <el-descriptions-item label="Thuế TNCN">
-              {{
-                formatCurrency(selectedRun.tong_thue_tncn, selectedRun.currency)
-              }}
+            <el-descriptions-item label="Thue TNCN">
+              {{ formatCurrency(selectedRun.tong_thue_tncn, selectedRun.currency) }}
             </el-descriptions-item>
-            <el-descriptions-item label="Thực nhận">
-              <strong>{{
-                formatCurrency(selectedRun.tong_net, selectedRun.currency)
-              }}</strong>
+            <el-descriptions-item label="Thuc nhan">
+              <strong>{{ formatCurrency(selectedRun.tong_net, selectedRun.currency) }}</strong>
             </el-descriptions-item>
           </el-descriptions>
 
           <el-table :data="selectedRun.entries" size="small" border>
-            <el-table-column label="Nhân viên" min-width="220">
-              <template #default="{row}">
+            <el-table-column label="Nhan vien" min-width="220">
+              <template #default="{ row }">
                 <div class="employee-cell">
                   <strong>{{ row.ho_ten }}</strong>
                   <span>{{ row.ma_nhan_vien }}</span>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="Lương cơ bản" min-width="140">
-              <template #default="{row}">
+            <el-table-column label="Luong co ban" min-width="140">
+              <template #default="{ row }">
                 {{ formatCurrency(row.luong_co_ban, selectedRun.currency) }}
               </template>
             </el-table-column>
-            <el-table-column label="Thu nhập" min-width="140">
-              <template #default="{row}">
+            <el-table-column label="Thu nhap" min-width="140">
+              <template #default="{ row }">
                 {{ formatCurrency(row.tong_thu_nhap, selectedRun.currency) }}
               </template>
             </el-table-column>
-            <el-table-column label="Khấu trừ" min-width="140">
-              <template #default="{row}">
+            <el-table-column label="Khau tru" min-width="140">
+              <template #default="{ row }">
                 {{ formatCurrency(row.tong_khau_tru, selectedRun.currency) }}
               </template>
             </el-table-column>
-            <el-table-column label="Thực nhận" min-width="140">
-              <template #default="{row}">
-                <strong>{{
-                  formatCurrency(row.luong_thuc_nhan, selectedRun.currency)
-                }}</strong>
+            <el-table-column label="Thuc nhan" min-width="140">
+              <template #default="{ row }">
+                <strong>{{ formatCurrency(row.luong_thuc_nhan, selectedRun.currency) }}</strong>
               </template>
             </el-table-column>
-            <el-table-column label="Trạng thái" min-width="160">
-              <template #default="{row}">
-                <el-select
-                  v-model="row.trang_thai"
-                  size="small"
-                  @change="(val) => updateEntryStatus(row, val)"
-                >
-                  <el-option
-                    v-for="opt in entryStatusOptions"
-                    :key="opt.value"
-                    :label="opt.label"
-                    :value="opt.value"
-                  />
+            <el-table-column label="Trang thai" min-width="160">
+              <template #default="{ row }">
+                <el-select v-model="row.trang_thai" size="small" @change="(val: string) => updateEntryStatus(row, val)">
+                  <el-option v-for="opt in entryStatusOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
                 </el-select>
               </template>
             </el-table-column>
@@ -718,12 +504,10 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, onMounted} from 'vue';
-import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
-import {Refresh, Plus, Search, View} from '@element-plus/icons-vue';
-import payrollService, {
-  CreatePayrollRunPayload,
-} from '@/services/payrollService';
+import { ref, reactive, onMounted } from 'vue';
+import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus';
+import { Refresh, Plus, Search, View } from '@element-plus/icons-vue';
+import payrollService, { CreatePayrollRunPayload } from '@/services/payrollService';
 import nhanVienService from '@/services/nhanVienService';
 import type {
   PayrollRun,
@@ -731,6 +515,7 @@ import type {
   PayrollRunStatus,
   NhanVien,
   PayrollPreviewEntry,
+  PayrollPreviewResponse,
 } from '@/types';
 
 interface MoneyItemForm {
@@ -752,25 +537,36 @@ interface PayrollEntryForm {
     tong_gio_timesheet?: number;
     tong_gio_ot?: number;
     so_ngay_nghi?: number;
+    so_ngay_cong?: number;
+  };
+  calculated?: {
+    tong_thu_nhap?: number;
+    tong_khau_tru?: number;
+    thue_tncn?: number;
+    luong_thuc_nhan?: number;
   };
 }
 
 const runs = ref<PayrollRun[]>([]);
 const loading = ref(false);
-const pagination = reactive({page: 1, limit: 10, total: 0});
-const filters = reactive({q: '', loai_ky: '', trang_thai: ''});
+const pagination = reactive({ page: 1, limit: 10, total: 0 });
+const filters = reactive({
+  q: '',
+  loai_ky: '' as PayrollRun['loai_ky'] | '',
+  trang_thai: '' as PayrollRunStatus | '',
+});
 
 const runStatusOptions = [
-  {label: 'Nháp', value: 'Draft'},
-  {label: 'Chờ duyệt', value: 'Cho_duyet'},
-  {label: 'Đã duyệt', value: 'Da_duyet'},
-  {label: 'Đã chi', value: 'Da_chi'},
+  { label: 'Nhap', value: 'Draft' },
+  { label: 'Cho duyet', value: 'Cho_duyet' },
+  { label: 'Da duyet', value: 'Da_duyet' },
+  { label: 'Da chi', value: 'Da_chi' },
 ];
 
 const entryStatusOptions = [
-  {label: 'Chờ duyệt', value: 'Cho_duyet'},
-  {label: 'Đã duyệt', value: 'Da_duyet'},
-  {label: 'Đã chi', value: 'Da_chi'},
+  { label: 'Cho duyet', value: 'Cho_duyet' },
+  { label: 'Da duyet', value: 'Da_duyet' },
+  { label: 'Da chi', value: 'Da_chi' },
 ];
 
 const defaultSettings = {
@@ -787,37 +583,23 @@ const formRef = ref<FormInstance>();
 const showCreateDialog = ref(false);
 const saving = ref(false);
 const autoFillLoading = ref(false);
-const autoCalcLoading = ref(false);
-const autoCalcSummary = reactive({
-  employees: 0,
-  gross: 0,
-  deductions: 0,
-  net: 0,
-  tax: 0,
-});
-const manualCalcLoading = ref(false);
 const employees = ref<NhanVien[]>([]);
 const form = reactive({
-
   ky_luong: '',
-  loai_ky: 'Thang',
+  loai_ky: 'Thang' as PayrollRun['loai_ky'],
   ngay_bat_dau: '',
   ngay_ket_thuc: '',
   currency: 'VND',
   ghi_chu: '',
-  settings: {...defaultSettings},
+  settings: { ...defaultSettings },
   entries: [] as PayrollEntryForm[],
 });
 
 const formRules: FormRules = {
-  ky_luong: [{required: true, message: 'Nhập tên kỳ lương', trigger: 'blur'}],
-  loai_ky: [{required: true, message: 'Chọn loại kỳ', trigger: 'change'}],
-  ngay_bat_dau: [
-    {required: true, message: 'Chọn ngày bắt đầu', trigger: 'change'},
-  ],
-  ngay_ket_thuc: [
-    {required: true, message: 'Chọn ngày kết thúc', trigger: 'change'},
-  ],
+  ky_luong: [{ required: true, message: 'Nhap ten ky luong', trigger: 'blur' }],
+  loai_ky: [{ required: true, message: 'Chon loai ky', trigger: 'change' }],
+  ngay_bat_dau: [{ required: true, message: 'Chon ngay bat dau', trigger: 'change' }],
+  ngay_ket_thuc: [{ required: true, message: 'Chon ngay ket thuc', trigger: 'change' }],
 };
 
 const showDetailDrawer = ref(false);
@@ -839,9 +621,7 @@ const formatCurrency = (value?: number, currency = 'VND') => {
 
 const formatDateRange = (start?: string, end?: string) => {
   if (!start || !end) return '---';
-  return `${new Date(start).toLocaleDateString('vi-VN')} - ${new Date(
-    end,
-  ).toLocaleDateString('vi-VN')}`;
+  return `${new Date(start).toLocaleDateString('vi-VN')} - ${new Date(end).toLocaleDateString('vi-VN')}`;
 };
 
 const runStatusLabel = (status: PayrollRunStatus) => {
@@ -856,88 +636,9 @@ const statusTagType = (status: PayrollRunStatus) => {
 };
 
 const getRunTypeLabel = (type: PayrollRun['loai_ky']) => {
-  if (type === 'Thang') return 'Kỳ tháng';
-  if (type === 'Tuan') return 'Kỳ tuần';
-  return 'Tùy chỉnh';
-};
-// Helpers for tính lương thủ công
-const TAX_BRACKETS = [
-  {threshold: 5000000, rate: 0.05},
-  {threshold: 10000000, rate: 0.1},
-  {threshold: 18000000, rate: 0.15},
-  {threshold: 32000000, rate: 0.2},
-  {threshold: 52000000, rate: 0.25},
-  {threshold: 80000000, rate: 0.3},
-  {threshold: 1000000000, rate: 0.35},
-];
-
-const toNumber = (val: unknown) => Number(val || 0) || 0;
-const roundVnd = (val: number) => Math.round(val);
-const sumMoneyItems = (items: MoneyItemForm[]) =>
-  roundVnd(items.reduce((acc, cur) => acc + toNumber(cur.so_tien), 0));
-
-const calcProgressiveTax = (taxable: number) => {
-  let remaining = taxable;
-  let tax = 0;
-  let prevThreshold = 0;
-  for (const bracket of TAX_BRACKETS) {
-    const slab = Math.min(remaining, bracket.threshold - prevThreshold);
-    if (slab > 0) {
-      tax += slab * bracket.rate;
-      remaining -= slab;
-    }
-    prevThreshold = bracket.threshold;
-    if (remaining <= 0) break;
-  }
-  return roundVnd(tax);
-};
-
-const calculateEntryLocal = (
-  entry: PayrollEntryForm,
-  settings = form.settings || defaultSettings,
-) => {
-  const gross =
-    toNumber(entry.luong_co_ban) +
-    sumMoneyItems(entry.phu_cap) +
-    sumMoneyItems(entry.thuong) +
-    sumMoneyItems(entry.ot);
-
-  const bhxh = roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_bhxh));
-  const bhyt = roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_bhyt));
-  const bhtn = roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_bhtn));
-  const kpcd = settings.ap_dung_kpcd
-    ? roundVnd(toNumber(entry.luong_co_ban) * toNumber(settings.ti_le_kpcd))
-    : 0;
-
-  const extraDeductions = sumMoneyItems(entry.khoan_khau_tru);
-  const totalSocial = bhxh + bhyt + bhtn + kpcd;
-
-  const giamTruBanThan = toNumber(settings.giam_tru_ban_than);
-  const giamTruPhuThuoc =
-    toNumber(settings.giam_tru_phu_thuoc) * toNumber(entry.so_nguoi_phu_thuoc);
-
-  const taxable = Math.max(
-    gross - totalSocial - extraDeductions - giamTruBanThan - giamTruPhuThuoc,
-    0,
-  );
-  const tax = calcProgressiveTax(taxable);
-  const net = gross - totalSocial - extraDeductions - tax;
-
-  return {
-    gross: roundVnd(gross),
-    deductions: roundVnd(totalSocial + extraDeductions),
-    tax,
-    net: roundVnd(net),
-    details: {
-      bhxh,
-      bhyt,
-      bhtn,
-      kpcd,
-      extraDeductions,
-      giamTruBanThan,
-      giamTruPhuThuoc,
-    },
-  };
+  if (type === 'Thang') return 'Ky thang';
+  if (type === 'Tuan') return 'Ky tuan';
+  return 'Tuy chinh';
 };
 
 const loadRuns = async () => {
@@ -947,13 +648,16 @@ const loadRuns = async () => {
       page: pagination.page,
       limit: pagination.limit,
       q: filters.q || undefined,
-      loai_ky: (filters.loai_ky as PayrollRun['loai_ky']) || undefined,
-      trang_thai: (filters.trang_thai as PayrollRunStatus) || undefined,
+      loai_ky: filters.loai_ky || undefined,
+      trang_thai: filters.trang_thai || undefined,
     });
-    runs.value = response.data || [];
-    pagination.total = response.pagination?.total || 0;
+    runs.value = (response as any)?.data ?? (response as any) ?? [];
+    const paginationRes = (response as any)?.pagination;
+    pagination.total = paginationRes?.total ?? runs.value.length ?? 0;
+    pagination.limit = paginationRes?.limit ?? pagination.limit;
+    pagination.page = paginationRes?.page ?? pagination.page;
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải bảng lương');
+    ElMessage.error(err?.response?.data?.msg || 'Khong the tai bang luong');
   } finally {
     loading.value = false;
   }
@@ -961,12 +665,10 @@ const loadRuns = async () => {
 
 const loadEmployees = async () => {
   try {
-    const res = await nhanVienService.getAll({page: 1, limit: 200});
-    employees.value = res.data || [];
+    const res = await nhanVienService.getAll({ page: 1, limit: 200 });
+    employees.value = (res as any)?.data ?? [];
   } catch (err: any) {
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể tải danh sách nhân viên',
-    );
+    ElMessage.error(err?.response?.data?.msg || 'Khong the tai danh sach nhan vien');
   }
 };
 
@@ -977,8 +679,8 @@ const handleFilter = () => {
 
 const resetFilters = () => {
   filters.q = '';
-  filters.loai_ky = '';
-  filters.trang_thai = '';
+  filters.loai_ky = '' as any;
+  filters.trang_thai = '' as any;
   handleFilter();
 };
 
@@ -1011,14 +713,14 @@ const resetForm = () => {
   form.ngay_ket_thuc = '';
   form.currency = 'VND';
   form.ghi_chu = '';
-  form.settings = {...defaultSettings};
+  form.settings = { ...defaultSettings };
   form.entries.splice(0, form.entries.length, createEmptyEntry());
 };
 
 const openCreateDialog = async () => {
   resetForm();
   showCreateDialog.value = true;
-  if (employees.value.length === 0) await loadEmployees();
+  if (!employees.value.length) await loadEmployees();
 };
 
 const closeCreateDialog = () => {
@@ -1031,25 +733,20 @@ const addEntry = () => {
 
 const removeEntry = (index: number) => {
   if (form.entries.length === 1) {
-    ElMessage.warning('Phải có ít nhất một nhân viên');
+    ElMessage.warning('Phai co it nhat mot nhan vien');
     return;
   }
   form.entries.splice(index, 1);
 };
 
 const handleEntryEmployeeChange = (entry: PayrollEntryForm) => {
-  const employee = employees.value.find(
-    (emp) => emp._id === entry.nhan_vien_id,
-  );
+  const employee = employees.value.find((emp) => emp._id === entry.nhan_vien_id);
   if (!employee) return;
-  if (!entry.so_nguoi_phu_thuoc && employee.nguoi_phu_thuoc) {
-    entry.so_nguoi_phu_thuoc = employee.nguoi_phu_thuoc.length;
+  if (!entry.so_nguoi_phu_thuoc && (employee as any).nguoi_phu_thuoc) {
+    entry.so_nguoi_phu_thuoc = (employee as any).nguoi_phu_thuoc.length;
   }
-  if (
-    (!entry.luong_co_ban || entry.luong_co_ban === 0) &&
-    employee.luong?.length
-  ) {
-    const firstSalary = employee.luong[0];
+  if ((!entry.luong_co_ban || entry.luong_co_ban === 0) && (employee as any).luong?.length) {
+    const firstSalary = (employee as any).luong[0];
     const value =
       typeof firstSalary.so_tien === 'object'
         ? Number(firstSalary.so_tien.$numberDecimal)
@@ -1061,59 +758,38 @@ const handleEntryEmployeeChange = (entry: PayrollEntryForm) => {
 const entryEmployeeLabel = (employeeId: string) => {
   const employee = employees.value.find((emp) => emp._id === employeeId);
   if (!employee) return '';
-  return `${employee.ho_dem || ''} ${employee.ten || ''} (${
-    employee.ma_nhan_vien
-  })`.trim();
+  return `${employee.ho_dem || ''} ${employee.ten || ''} (${employee.ma_nhan_vien})`.trim();
 };
 
-const addMoneyItem = (
-  entryIndex: number,
-  key: keyof Pick<
-    PayrollEntryForm,
-    'phu_cap' | 'thuong' | 'ot' | 'khoan_khau_tru'
-  >,
-) => {
+const addMoneyItem = (entryIndex: number, key: 'phu_cap' | 'thuong' | 'ot' | 'khoan_khau_tru') => {
   const target = form.entries[entryIndex][key];
-  target.push({ten: '', so_tien: null});
+  target.push({ ten: '', so_tien: null });
 };
 
-const removeMoneyItem = (
-  entryIndex: number,
-  key: keyof Pick<
-    PayrollEntryForm,
-    'phu_cap' | 'thuong' | 'ot' | 'khoan_khau_tru'
-  >,
-  itemIndex: number,
-) => {
+const removeMoneyItem = (entryIndex: number, key: 'phu_cap' | 'thuong' | 'ot' | 'khoan_khau_tru', itemIndex: number) => {
   const target = form.entries[entryIndex][key];
   target.splice(itemIndex, 1);
 };
 
-const cloneMoneyItems = (
-  items: Array<{ten?: string; so_tien?: number; ghi_chu?: string}> = [],
-) =>
+const cloneMoneyItems = (items: Array<{ ten?: string; so_tien?: number; ghi_chu?: string }> = []) =>
   items.map((item) => ({
     ten: item.ten || '',
     so_tien: Number(item.so_tien ?? 0),
     ghi_chu: item.ghi_chu,
   }));
 
-const sanitizeMoneyItems = (items: MoneyItemForm[]) =>
+const sanitizeMoneyItems = (items: MoneyItemForm[], defaultName: string = 'Khoan') =>
   items
-    .filter(
-      (item) => item.ten && item.so_tien !== null && Number(item.so_tien) > 0,
-    )
-    .map((item) => ({
-      ten: item.ten,
+    .filter((item) => item.so_tien !== null && Number(item.so_tien) > 0)
+    .map((item, index) => ({
+      ten: item.ten || `${defaultName} ${index + 1}`,
       so_tien: Number(item.so_tien),
       ghi_chu: item.ghi_chu,
     }));
 
 const applyPreviewEntries = (previewEntries: PayrollPreviewEntry[] = []) => {
   previewEntries.forEach((preview) => {
-    let entry = form.entries.find(
-      (item) => item.nhan_vien_id === preview.nhan_vien_id,
-    );
+    let entry = form.entries.find((item) => item.nhan_vien_id === preview.nhan_vien_id);
     if (!entry) {
       entry = createEmptyEntry();
       entry.nhan_vien_id = preview.nhan_vien_id;
@@ -1127,157 +803,184 @@ const applyPreviewEntries = (previewEntries: PayrollPreviewEntry[] = []) => {
     entry.thuong = cloneMoneyItems(preview.thuong || []);
     entry.ot = cloneMoneyItems(preview.ot || []);
     entry.khoan_khau_tru = cloneMoneyItems(preview.khoan_khau_tru || []);
-    entry.metadata = preview.metadata;
+    entry.metadata = {
+      tong_gio_timesheet: (preview as any).metadata?.tong_gio_timesheet,
+      tong_gio_ot: (preview as any).metadata?.tong_gio_ot,
+      so_ngay_nghi: (preview as any).metadata?.so_ngay_nghi,
+      so_ngay_cong: (preview as any).metadata?.so_ngay_cong,
+    };
+    entry.calculated = (preview as any).calculated || entry.calculated;
   });
 };
 
-const resetAutoSummary = () => {
-  autoCalcSummary.employees = 0;
-  autoCalcSummary.gross = 0;
-  autoCalcSummary.deductions = 0;
-  autoCalcSummary.net = 0;
-  autoCalcSummary.tax = 0;
-};
 const handleAutoFill = async () => {
   if (!form.ngay_bat_dau || !form.ngay_ket_thuc) {
-    ElMessage.warning('Vui lòng chọn khoảng thời gian trước khi lấy dữ liệu');
+    ElMessage.warning('Vui long chon khoang thoi gian truoc khi lay du lieu');
     return;
   }
   autoFillLoading.value = true;
   try {
-    const employeeIds = form.entries
-      .map((entry) => entry.nhan_vien_id)
-      .filter(Boolean);
-    const response = await payrollService.preview({
+    const employeeIds = form.entries.map((entry) => entry.nhan_vien_id).filter(Boolean);
+    const response: PayrollPreviewResponse = await payrollService.preview({
       ngay_bat_dau: form.ngay_bat_dau,
       ngay_ket_thuc: form.ngay_ket_thuc,
       employee_ids: employeeIds.length ? employeeIds : undefined,
     });
+    if ((response as any)?.settings) {
+      form.settings = { ...form.settings, ...(response as any).settings };
+    }
     applyPreviewEntries(response.data || []);
     if (!form.entries.length) {
       form.entries.push(createEmptyEntry());
     }
     if (response.summary?.totalEmployees) {
-      ElMessage.success(
-        `Đã tải dữ liệu cho ${response.summary.totalEmployees} nhân viên`,
-      );
+      ElMessage.success(`Da tai du lieu cho ${response.summary.totalEmployees} nhan vien`);
     }
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể lấy dữ liệu tự động');
+    ElMessage.error(err?.response?.data?.msg || 'Khong the lay du lieu tu dong');
   } finally {
     autoFillLoading.value = false;
   }
 };
 
+const handleRecalculate = async () => {
+  console.log('=== handleRecalculate called ===');
+  console.log('form.entries:', form.entries);
 
-const handleManualCalculate = () => {
   if (!form.entries.length) {
-    ElMessage.warning('Chưa có nhân viên để tính lương');
+    ElMessage.warning('Chua co nhan vien nao de tinh luong');
     return;
   }
-  manualCalcLoading.value = true;
-  resetAutoSummary();
-  try {
-    let gross = 0;
-    let deductions = 0;
-    let tax = 0;
-    form.entries.forEach((entry) => {
-      const result = calculateEntryLocal(entry);
-      (entry as any).tong_thu_nhap = result.gross;
-      (entry as any).tong_khau_tru = result.deductions;
-      (entry as any).thue_tncn = result.tax;
-      (entry as any).luong_thuc_nhan = result.net;
-      gross += result.gross;
-      deductions += result.deductions;
-      tax += result.tax;
-    });
-    autoCalcSummary.employees = form.entries.length;
-    autoCalcSummary.gross = gross;
-    autoCalcSummary.deductions = deductions;
-    autoCalcSummary.tax = tax;
-    autoCalcSummary.net = gross - deductions - tax;
-    ElMessage.success('Đã tính lương thủ công theo thông tin hiện tại');
-  } finally {
-    manualCalcLoading.value = false;
+  const invalidEntries = form.entries.filter(
+    (entry) => !entry.nhan_vien_id || !entry.luong_co_ban || entry.luong_co_ban <= 0
+  );
+  if (invalidEntries.length > 0) {
+    ElMessage.warning('Tat ca nhan vien can co thong tin va luong co ban hop le');
+    return;
   }
-};
-const handleAutoCalculate = async () => {
   if (!form.ngay_bat_dau || !form.ngay_ket_thuc) {
-    ElMessage.warning('Vui lòng chọn khoảng thời gian trước khi tính lương');
+    ElMessage.warning('Vui long chon khoang thoi gian truoc khi tinh luong');
     return;
   }
-  autoCalcLoading.value = true;
-  resetAutoSummary();
+  autoFillLoading.value = true;
   try {
-    const employeeIds = form.entries
-      .map((entry) => entry.nhan_vien_id)
-      .filter(Boolean);
-    const response = await payrollService.preview({
+    // Gửi entries đã sửa từ form để backend tính lại
+    const entries = form.entries.map((entry) => ({
+      nhan_vien_id: entry.nhan_vien_id,
+      luong_co_ban: Number(entry.luong_co_ban),
+      so_nguoi_phu_thuoc: entry.so_nguoi_phu_thuoc || 0,
+      so_ngay_cong: entry.metadata?.so_ngay_cong || entry.calculated?.so_ngay_cong || 0,
+      phu_cap: sanitizeMoneyItems(entry.phu_cap, 'Phu cap'),
+      thuong: sanitizeMoneyItems(entry.thuong, 'Thuong'),
+      ot: sanitizeMoneyItems(entry.ot, 'OT'),
+      khoan_khau_tru: sanitizeMoneyItems(entry.khoan_khau_tru, 'Khau tru'),
+      metadata: entry.metadata,
+    }));
+
+    console.log('Sending entries to API:', entries);
+
+    const response: PayrollPreviewResponse = await payrollService.preview({
       ngay_bat_dau: form.ngay_bat_dau,
       ngay_ket_thuc: form.ngay_ket_thuc,
-      employee_ids: employeeIds.length ? employeeIds : undefined,
-      settings: {...form.settings},
+      entries,
+      settings: form.settings,
     });
-    applyPreviewEntries(response.data || []);
-    if (!form.entries.length) {
-      form.entries.push(createEmptyEntry());
+
+    console.log('API response:', response);
+    console.log('response.data:', response.data);
+
+    if ((response as any)?.settings) {
+      form.settings = { ...form.settings, ...(response as any).settings };
     }
-    const summary = response.summary || {};
-    autoCalcSummary.employees = summary.totalEmployees || form.entries.length;
-    autoCalcSummary.gross = summary.totalGross || 0;
-    autoCalcSummary.deductions = summary.totalDeductions || 0;
-    autoCalcSummary.net = summary.totalNet || 0;
-    autoCalcSummary.tax = summary.totalTax || 0;
-    ElMessage.success('Đã tính lương tự động (ước tính)');
+
+    // Cập nhật calculated từ response
+    form.entries.forEach((entry) => {
+      const preview = (response.data || []).find(
+        (p: PayrollPreviewEntry) => p.nhan_vien_id === entry.nhan_vien_id
+      );
+      console.log('Processing entry:', entry.nhan_vien_id, 'preview:', preview);
+      if (preview && (preview as any).calculated) {
+        console.log('Updating calculated:', (preview as any).calculated);
+        console.log('Chi tiet tinh luong:');
+        console.log('- Luong co ban:', (preview as any).calculated.luong_co_ban);
+        console.log('- Phu cap:', (preview as any).calculated.tong_phu_cap);
+        console.log('- Thuong:', (preview as any).calculated.tong_thuong);
+        console.log('- OT:', (preview as any).calculated.tong_ot);
+        console.log('- Tong thu nhap:', (preview as any).calculated.tong_thu_nhap);
+        console.log('- BHXH:', (preview as any).calculated.bhxh);
+        console.log('- BHYT:', (preview as any).calculated.bhyt);
+        console.log('- BHTN:', (preview as any).calculated.bhtn);
+        console.log('- KPCD:', (preview as any).calculated.kpcd);
+        console.log('- Thue TNCN:', (preview as any).calculated.thue_tncn);
+        console.log('- Tong khau tru:', (preview as any).calculated.tong_khau_tru);
+        console.log('- LUONG THUC NHAN:', (preview as any).calculated.luong_thuc_nhan);
+        entry.calculated = (preview as any).calculated;
+        // Giữ nguyên metadata nếu có
+        if ((preview as any).metadata) {
+          entry.metadata = {
+            ...entry.metadata,
+            ...(preview as any).metadata,
+          };
+        }
+      } else {
+        console.warn('No preview or calculated for entry:', entry.nhan_vien_id);
+      }
+    });
+
+    console.log('Updated form.entries:', form.entries);
+    ElMessage.success(`Da tinh lai luong cho ${form.entries.length} nhan vien`);
   } catch (err: any) {
-    resetAutoSummary();
-    ElMessage.error(err.response?.data?.msg || 'Không thể tính lương tự động');
+    console.error('handleRecalculate error:', err);
+    console.error('Error response:', err?.response?.data);
+    ElMessage.error(err?.response?.data?.msg || 'Khong the tinh luong');
   } finally {
-    autoCalcLoading.value = false;
+    autoFillLoading.value = false;
   }
 };
+
 const handleCreateRun = async () => {
   if (!formRef.value) return;
-  await formRef.value.validate(async (valid) => {
+  await formRef.value.validate(async (valid: boolean) => {
     if (!valid) return;
     if (new Date(form.ngay_ket_thuc) < new Date(form.ngay_bat_dau)) {
-      ElMessage.warning('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu');
+      ElMessage.warning('Ngay ket thuc phai lon hon hoac bang ngay bat dau');
       return;
     }
     const invalidRow = form.entries.find(
-      (entry) =>
-        !entry.nhan_vien_id || !entry.luong_co_ban || entry.luong_co_ban <= 0,
+      (entry) => !entry.nhan_vien_id || !entry.luong_co_ban || entry.luong_co_ban <= 0,
     );
     if (invalidRow) {
-      ElMessage.warning('Mỗi nhân viên cần thông tin và lương cơ bản hợp lệ');
+      ElMessage.warning('Moi nhan vien can thong tin va luong co ban hop le');
       return;
     }
     const payload: CreatePayrollRunPayload = {
       ky_luong: form.ky_luong,
-      loai_ky: form.loai_ky as PayrollRun['loai_ky'],
+      loai_ky: form.loai_ky,
       ngay_bat_dau: form.ngay_bat_dau,
       ngay_ket_thuc: form.ngay_ket_thuc,
       currency: form.currency,
       ghi_chu: form.ghi_chu,
-      settings: {...form.settings},
+      settings: { ...form.settings },
       entries: form.entries.map((entry) => ({
         nhan_vien_id: entry.nhan_vien_id,
         luong_co_ban: Number(entry.luong_co_ban),
         so_nguoi_phu_thuoc: entry.so_nguoi_phu_thuoc,
-        phu_cap: sanitizeMoneyItems(entry.phu_cap),
-        thuong: sanitizeMoneyItems(entry.thuong),
-        ot: sanitizeMoneyItems(entry.ot),
-        khoan_khau_tru: sanitizeMoneyItems(entry.khoan_khau_tru),
+        so_ngay_cong: entry.metadata?.so_ngay_cong || entry.calculated?.so_ngay_cong || 0,
+        phu_cap: sanitizeMoneyItems(entry.phu_cap, 'Phu cap'),
+        thuong: sanitizeMoneyItems(entry.thuong, 'Thuong'),
+        ot: sanitizeMoneyItems(entry.ot, 'OT'),
+        khoan_khau_tru: sanitizeMoneyItems(entry.khoan_khau_tru, 'Khau tru'),
+        metadata: entry.metadata,
       })),
     };
     saving.value = true;
     try {
       await payrollService.createRun(payload);
-      ElMessage.success('Tạo bảng lương thành công');
+      ElMessage.success('Tao bang luong thanh cong');
       closeCreateDialog();
       loadRuns();
     } catch (err: any) {
-      ElMessage.error(err.response?.data?.msg || 'Không thể tạo bảng lương');
+      ElMessage.error(err?.response?.data?.msg || 'Khong the tao bang luong');
     } finally {
       saving.value = false;
     }
@@ -1290,9 +993,7 @@ const openDetail = async (run: PayrollRun) => {
   try {
     selectedRun.value = await payrollService.getRun(run._id);
   } catch (err: any) {
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể tải chi tiết bảng lương',
-    );
+    ElMessage.error(err?.response?.data?.msg || 'Khong the tai chi tiet bang luong');
     showDetailDrawer.value = false;
   } finally {
     detailLoading.value = false;
@@ -1304,21 +1005,40 @@ const handleRunStatusAction = async (run: PayrollRun, status: string) => {
   const statusValue = status as PayrollRunStatus;
   try {
     await ElMessageBox.confirm(
-      `Chuyển trạng thái "${run.ky_luong}" sang ${runStatusLabel(
-        statusValue,
-      )}?`,
-      'Xác nhận',
-      {type: 'warning'},
+      `Chuyen trang thai \"${run.ky_luong}\" sang ${runStatusLabel(statusValue)}?`,
+      'Xac nhan',
+      { type: 'warning' },
     );
     await payrollService.updateRunStatus(run._id, statusValue);
-    ElMessage.success('Cập nhật trạng thái thành công');
+    ElMessage.success('Cap nhat trang thai thanh cong');
     loadRuns();
     if (selectedRun.value && selectedRun.value._id === run._id) {
       selectedRun.value.trang_thai = statusValue;
     }
   } catch (err: any) {
     if (err === 'cancel') return;
-    ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật trạng thái');
+    ElMessage.error(err?.response?.data?.msg || 'Khong the cap nhat trang thai');
+  }
+};
+
+const handleDeleteRun = async (run: PayrollRun) => {
+  if (!run._id) return;
+  try {
+    await ElMessageBox.confirm(
+      `Ban chac chan muon xoa bang luong "${run.ky_luong}"?`,
+      'Xac nhan',
+      { type: 'warning' },
+    );
+    await payrollService.deleteRun(run._id);
+    ElMessage.success('Da xoa bang luong');
+    if (selectedRun.value?._id === run._id) {
+      showDetailDrawer.value = false;
+      selectedRun.value = null;
+    }
+    loadRuns();
+  } catch (err: any) {
+    if (err === 'cancel') return;
+    ElMessage.error(err?.response?.data?.msg || 'Khong the xoa bang luong');
   }
 };
 
@@ -1330,55 +1050,27 @@ const updateEntryStatus = async (entry: PayrollEntry, status: string) => {
     await payrollService.updateEntryStatus(selectedRun.value._id, entry._id, {
       trang_thai: status as 'Cho_duyet' | 'Da_duyet' | 'Da_chi',
     });
-    ElMessage.success('Đã cập nhật trạng thái phiếu lương');
+    ElMessage.success('Da cap nhat trang thai phieu luong');
   } catch (err: any) {
     entry.trang_thai = prev;
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể cập nhật phiếu lương',
-    );
+    ElMessage.error(err?.response?.data?.msg || 'Khong the cap nhat phieu luong');
   }
 };
 
-const handleExport = async () => {
+const handleExportExcel = async () => {
   if (!selectedRun.value) return;
   exporting.value = true;
   try {
     const blob = await payrollService.exportRun(selectedRun.value._id);
     const url = window.URL.createObjectURL(new Blob([blob]));
     const link = document.createElement('a');
-    const safeName =
-      selectedRun.value.ky_luong?.replace(/[\\/:*?"<>|]/g, '_') ||
-      selectedRun.value._id;
+    const safeName = selectedRun.value.ky_luong?.replace(/[\\/:*?"<>|]/g, '_') || selectedRun.value._id;
     link.href = url;
     link.download = `payroll-${safeName}.csv`;
     link.click();
     window.URL.revokeObjectURL(url);
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể xuất bảng lương');
-  } finally {
-    exporting.value = false;
-  }
-};
-
-const handleExportTemplate = async (template: string) => {
-  if (!selectedRun.value) return;
-  exporting.value = true;
-  try {
-    const blob = await payrollService.exportTemplate(
-      selectedRun.value._id,
-      template,
-    );
-    const url = window.URL.createObjectURL(new Blob([blob]));
-    const link = document.createElement('a');
-    const safeName =
-      selectedRun.value.ky_luong?.replace(/[\\/:*?"<>|]/g, '_') ||
-      selectedRun.value._id;
-    link.href = url;
-    link.download = `payroll-${template}-${safeName}.csv`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không thể xuất biểu mẫu');
+    ElMessage.error(err?.response?.data?.msg || 'Khong the xuat bang luong');
   } finally {
     exporting.value = false;
   }
@@ -1390,7 +1082,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .payroll-page {
   width: 100%;
 }
@@ -1400,47 +1092,45 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: $spacing-md;
-  margin-bottom: $spacing-xl;
+  gap: 16px;
+  margin-bottom: 24px;
+}
 
-  h1 {
-    margin: 0;
-    font-size: $font-size-xl;
-    font-weight: $font-weight-bold;
-  }
+.page-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
 
-  p {
-    margin: $spacing-xs 0 0;
-    color: $text-secondary;
-  }
+.page-header p {
+  margin: 4px 0 0;
+  color: #666;
 }
 
 .page-actions {
   display: flex;
-  gap: $spacing-sm;
+  gap: 8px;
 }
 
 .filter-card {
-  margin-bottom: $spacing-lg;
+  margin-bottom: 20px;
 }
 
-.table-card {
-  .run-title {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.table-card .run-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
-    span {
-      color: $text-secondary;
-      font-size: $font-size-sm;
-    }
-  }
+.table-card .run-title span {
+  color: #666;
+  font-size: 13px;
 }
 
 .pagination {
   display: flex;
   justify-content: flex-end;
-  padding-top: $spacing-md;
+  padding-top: 12px;
 }
 
 .settings-row .el-input-number {
@@ -1451,99 +1141,93 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-lg;
+  margin-top: 16px;
 }
 
 .auto-fill-bar {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
-  margin-top: $spacing-lg;
-}
-.auto-summary {
-  display: flex;
-  gap: $spacing-sm;
-  flex-wrap: wrap;
-  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .entry-card {
-  border: 1px solid $border-color;
-  border-radius: $border-radius-lg;
-  padding: $spacing-lg;
-  margin-bottom: $spacing-lg;
-  box-shadow: $box-shadow-sm;
-  background: $white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  background: #fff;
 }
 
 .entry-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-md;
+  margin-bottom: 12px;
+}
 
-  .entry-card__index {
-    font-weight: $font-weight-medium;
-    color: $text-secondary;
-  }
+.entry-card__index {
+  font-weight: 600;
+  color: #666;
+}
 
-  p {
-    margin: 4px 0 0;
-    color: $text-primary;
-  }
+.entry-card__header p {
+  margin: 4px 0 0;
+  color: #111;
 }
 
 .entry-card__meta {
   display: flex;
-  gap: $spacing-sm;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: $spacing-md;
+  margin-bottom: 12px;
 }
 
 .money-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: $spacing-md;
+  gap: 12px;
 }
 
 .money-section {
-  border: 1px solid $border-color;
-  border-radius: $border-radius-md;
-  padding: $spacing-md;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+}
 
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-sm;
-    font-weight: $font-weight-medium;
-  }
+.money-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
 
-  &__empty {
-    color: $text-secondary;
-    font-size: $font-size-sm;
-  }
+.money-section__empty {
+  color: #666;
+  font-size: 13px;
+}
 
-  &__row {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-sm;
+.money-section__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
 
-    .el-input {
-      flex: 1;
-    }
+.money-section__row .el-input {
+  flex: 1;
+}
 
-    .el-input-number {
-      width: 140px;
-    }
-  }
+.money-section__row .el-input-number {
+  width: 140px;
 }
 
 .drawer-body {
   display: flex;
   flex-direction: column;
-  gap: $spacing-lg;
+  gap: 16px;
 }
 
 .drawer-header {
@@ -1551,32 +1235,33 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 8px;
+}
 
-  h2 {
-    margin: 0;
-  }
+.drawer-header h2 {
+  margin: 0;
+}
 
-  p {
-    margin: 4px 0 0;
-    color: $text-secondary;
-  }
+.drawer-header p {
+  margin: 4px 0 0;
+  color: #666;
 }
 
 .drawer-actions {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: 8px;
 }
 
 .employee-cell {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
 
-  span {
-    color: $text-secondary;
-    font-size: $font-size-sm;
-  }
+.employee-cell span {
+  color: #666;
+  font-size: 13px;
 }
 
 @media (max-width: 768px) {
@@ -1586,17 +1271,10 @@ onMounted(() => {
 
   .money-section__row {
     flex-direction: column;
+  }
 
-    .el-input-number {
-      width: 100%;
-    }
+  .money-section__row .el-input-number {
+    width: 100%;
   }
 }
 </style>
-
-
-
-
-
-
-

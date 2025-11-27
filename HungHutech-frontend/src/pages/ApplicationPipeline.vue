@@ -92,7 +92,10 @@
                 </el-select>
               </div>
               <small class="candidate-date">
-                Cập nhật: {{ formatDate(application.ngay_cap_nhat || application.ngay_tao) }}
+                Cập nhật:
+                {{
+                  formatDate(application.ngay_cap_nhat || application.ngay_tao)
+                }}
               </small>
             </el-card>
           </div>
@@ -168,7 +171,10 @@ const filteredApplications = (status: string) => {
   });
 };
 
-const updateStatus = async (application: Application, status: Application['trang_thai']) => {
+const updateStatus = async (
+  application: Application,
+  status: Application['trang_thai'],
+) => {
   try {
     await applicationService.updateStatus(application._id, status);
     ElMessage.success('Đã cập nhật trạng thái ứng viên');
@@ -190,7 +196,9 @@ const candidateName = (candidate: string | Candidate | undefined) => {
 const vacancyTitle = (vacancy: string | Vacancy | undefined) => {
   if (!vacancy) return '---';
   if (typeof vacancy === 'string') {
-    return vacancies.value.find((item) => item._id === vacancy)?.tieu_de || '---';
+    return (
+      vacancies.value.find((item) => item._id === vacancy)?.tieu_de || '---'
+    );
   }
   return vacancy.tieu_de || '---';
 };

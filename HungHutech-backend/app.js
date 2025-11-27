@@ -59,10 +59,18 @@ const offboardingRoutes = require('./routes/offboarding.routes.js');
 const overtimeRoutes = require('./routes/overtimeRequest.routes.js');
 const shiftAssignmentRoutes = require('./routes/shiftAssignment.routes.js');
 const timeRuleEngineRoutes = require('./routes/timeRuleEngine.routes.js');
+const salaryConfigRoutes = require('./routes/salaryConfig.routes.js');
 
 // CORS must be configured BEFORE helmet
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:5000'],
+  origin: [
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://localhost:5000',
+    'http://192.168.88.50:8080',
+    'http://192.168.88.50:8081',
+    'http://192.168.88.50:5000'
+  ],
   credentials: true,
   exposedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -146,6 +154,7 @@ app.use('/api/offboarding', offboardingRoutes);
 app.use('/api/overtime-requests', overtimeRoutes);
 app.use('/api/shift-assignments', shiftAssignmentRoutes);
 app.use('/api/time-rules', timeRuleEngineRoutes);
+app.use('/api/salary-config', salaryConfigRoutes);
 const mobileDeviceRoutes = require('./routes/mobile/device.routes.js');
 const mobileAttendanceRoutes = require('./routes/mobile/attendance.routes.js');
 app.use('/api/mobile/devices', mobileDeviceRoutes);

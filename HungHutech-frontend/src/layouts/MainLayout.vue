@@ -9,18 +9,17 @@
             circle
             plain
             size="small"
+            :aria-label="sidebarOpen ? 'Đóng menu' : 'Mở menu'"
             @click="toggleSidebar"
-            :aria-label="sidebarOpen ? 'Dong menu' : 'Mo menu'"
           >
             <el-icon><Menu /></el-icon>
           </el-button>
 
-        <!-- Brand Logo -->
-        <div class="orangehrm-topbar-header-logo">
-          <span class="orangehrm-logo-emoji">🎓</span>
-          <span class="orangehrm-brand">Hung Hutech</span>
-        </div>
-
+          <!-- Brand Logo -->
+          <div class="orangehrm-topbar-header-logo">
+            <span class="orangehrm-logo-emoji">🎓</span>
+            <span class="orangehrm-brand">Hung Hutech</span>
+          </div>
         </div>
 
         <!-- User Info & Actions -->
@@ -54,7 +53,11 @@
       <el-aside
         :width="sidebarOpen ? asideWidth : '0px'"
         class="orangehrm-aside"
-        :class="{'is-mobile': isMobile, 'is-open': sidebarOpen, 'is-closed': !sidebarOpen}"
+        :class="{
+          'is-mobile': isMobile,
+          'is-open': sidebarOpen,
+          'is-closed': !sidebarOpen,
+        }"
       >
         <el-menu
           :default-active="activeMenu"
@@ -87,10 +90,12 @@
             <el-menu-item index="/chuc-danh">Chức danh</el-menu-item>
             <el-menu-item index="/ho-so-nhan-su">Hồ sơ nhân sự</el-menu-item>
             <el-menu-item index="/hop-dong">Hợp đồng lao động</el-menu-item>
-            <el-menu-item index="/offboarding">Checklist nghỉ việc</el-menu-item>
-            <el-menu-item index="/pim/yeu-cau-cap-nhat"
-              >Yêu cầu cập nhật hồ sơ</el-menu-item
+            <el-menu-item index="/offboarding"
+              >Checklist nghỉ việc</el-menu-item
             >
+            <el-menu-item index="/pim/yeu-cau-cap-nhat">
+              Yêu cầu cập nhật hồ sơ
+            </el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="leave">
@@ -124,7 +129,7 @@
             <el-menu-item index="/timesheet/phe-duyet"
               >Phê duyệt timesheet</el-menu-item
             >
-            <el-menu-item index="/cham-cong">Chấm công hàng ngày</el-menu-item>
+            <el-menu-item index="/cham-cong">Chấm công hằng ngày</el-menu-item>
             <el-menu-item index="/cham-cong/bang-cong"
               >Bảng chấm công</el-menu-item
             >
@@ -133,11 +138,15 @@
             <el-menu-item index="/hoat-dong">Quản lý Hoạt động</el-menu-item>
             <el-menu-item index="/tang-ca/duyet">Duyệt tăng ca</el-menu-item>
             <el-menu-item index="/luong/bang-luong">Bảng lương</el-menu-item>
-            <el-menu-item index="/thoi-gian/rule-engine">Bộ quy tắc Time/OT</el-menu-item>
-            <el-menu-item index="/thoi-gian/phan-ca">Phân ca linh hoạt</el-menu-item>
-        </el-sub-menu>
+            <el-menu-item index="/thoi-gian/rule-engine"
+              >Bộ quy tắc Time/OT</el-menu-item
+            >
+            <el-menu-item index="/thoi-gian/phan-ca"
+              >Phân ca linh hoạt</el-menu-item
+            >
+          </el-sub-menu>
 
-        <el-sub-menu index="claims">
+          <el-sub-menu index="claims">
             <template #title>
               <el-icon><Tickets /></el-icon>
               <span>Bồi hoàn</span>
@@ -157,8 +166,12 @@
             </template>
             <el-menu-item index="/tuyen-dung">Vị trí tuyển dụng</el-menu-item>
             <el-menu-item index="/tuyen-dung/ung-vien">Ứng viên</el-menu-item>
-            <el-menu-item index="/tuyen-dung/pipeline">Quy trình ứng viên</el-menu-item>
-            <el-menu-item index="/tuyen-dung/candidate-pool">Ngân hàng ứng viên</el-menu-item>
+            <el-menu-item index="/tuyen-dung/pipeline"
+              >Quy trình ứng viên</el-menu-item
+            >
+            <el-menu-item index="/tuyen-dung/candidate-pool"
+              >Ngân hàng ứng viên</el-menu-item
+            >
           </el-sub-menu>
 
           <el-sub-menu index="performance">
@@ -177,12 +190,12 @@
               <el-icon><Document /></el-icon>
               <span>Báo cáo</span>
             </template>
-            <el-menu-item index="/bao-cao">Báo cáo tuỳ chỉnh</el-menu-item>
+            <el-menu-item index="/bao-cao">Báo cáo tùy chỉnh</el-menu-item>
             <el-menu-item index="/bao-cao/phap-ly"
               >Báo cáo pháp lý</el-menu-item
             >
           </el-sub-menu>
-          <!-- Admin menu -->
+
           <el-sub-menu index="admin">
             <template #title>
               <el-icon><Setting /></el-icon>
@@ -192,16 +205,18 @@
             <el-menu-item index="/admin/dia-diem">Địa điểm</el-menu-item>
             <el-menu-item index="/admin/bac-luong">Bậc lương</el-menu-item>
             <el-menu-item index="/admin/sites"
-              >📍 Địa điểm Chấm công</el-menu-item
+              >Điểm danh chấm công</el-menu-item
             >
             <el-menu-item index="/admin/audit-logs"
-              >📊 Lịch sử Truy cập</el-menu-item
+              >Lịch sử truy cập</el-menu-item
             >
-            <el-menu-item index="/phong-ban">Phòng ban</el-menu-item>
-            <el-menu-item index="/chuc-danh">Chức danh</el-menu-item>
+            <el-menu-item index="/admin/cau-hinh-thu-nhap"
+              >Cấu hình thu nhập</el-menu-item
+            >
           </el-sub-menu>
         </el-menu>
       </el-aside>
+
       <div
         v-if="isMobile"
         class="orangehrm-aside-backdrop"
@@ -216,6 +231,7 @@
         </div>
       </el-main>
     </el-container>
+
     <el-dialog
       v-model="consentDialogVisible"
       width="720px"
@@ -230,7 +246,7 @@
           type="info"
           show-icon
           title="Minh bạch sử dụng dữ liệu"
-          description="Công ty cần sự đồng ý của bạn theo Nghị định 13/2023/NĐ-CP để xử lý dữ liệu cá nhân phục vụ quản lý nhân sự và tính lương."
+          description="Công ty cần sự đồng ý của bạn theo Nghị định 13/2023/ND-CP để xử lý dữ liệu cá nhân phục vụ quản lý nhân sự và tính lương."
         />
         <el-skeleton
           v-if="consentLoading && consentItems.length === 0"
@@ -317,8 +333,8 @@
         >
           Lưu lựa chọn
         </el-button>
-      </template> </el-dialog
-    >\r\n
+      </template>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -778,5 +794,3 @@ const handleSaveConsentChoices = async () => {
   }
 }
 </style>
-
-

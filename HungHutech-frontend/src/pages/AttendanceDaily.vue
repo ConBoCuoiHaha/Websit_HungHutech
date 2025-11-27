@@ -54,7 +54,15 @@
         </el-table-column>
         <el-table-column label="Ti le" width="120" align="center">
           <template #default="{row}">
-            <el-tag :type="row.percent >= 100 ? 'danger' : row.percent >= 80 ? 'warning' : 'success'">
+            <el-tag
+              :type="
+                row.percent >= 100
+                  ? 'danger'
+                  : row.percent >= 80
+                  ? 'warning'
+                  : 'success'
+              "
+            >
               {{ row.percent.toFixed(1) }}%
             </el-tag>
           </template>
@@ -744,4 +752,3 @@ onUnmounted(() => {
   }
 }
 </style>
-

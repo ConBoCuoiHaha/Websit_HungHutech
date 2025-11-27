@@ -68,10 +68,16 @@ class ContractService {
     await api.delete(`${this.BASE_URL}/${id}`);
   }
 
-  async getExpiring(params?: {days?: number; limit?: number}): Promise<Contract[]> {
-    const response = await api.get<{data: Contract[]}>(`${this.BASE_URL}/expiring`, {
-      params,
-    });
+  async getExpiring(params?: {
+    days?: number;
+    limit?: number;
+  }): Promise<Contract[]> {
+    const response = await api.get<{data: Contract[]}>(
+      `${this.BASE_URL}/expiring`,
+      {
+        params,
+      },
+    );
     return response.data.data || [];
   }
 }

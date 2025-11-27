@@ -3,7 +3,9 @@
     <div class="page-header">
       <div>
         <h2>Offboarding - Quản lý nghỉ việc</h2>
-        <p>Theo dõi quy trình bàn giao và checklist khi nhân viên rời công ty.</p>
+        <p>
+          Theo dõi quy trình bàn giao và checklist khi nhân viên rời công ty.
+        </p>
       </div>
       <el-button type="primary" :icon="Plus" @click="openCreateDialog">
         Tạo yêu cầu
@@ -13,7 +15,11 @@
     <el-card shadow="never" class="mb-lg">
       <el-form :inline="true" :model="filters">
         <el-form-item label="Trạng thái">
-          <el-select v-model="filters.status" placeholder="Tất cả" @change="loadData">
+          <el-select
+            v-model="filters.status"
+            placeholder="Tất cả"
+            @change="loadData"
+          >
             <el-option label="Tất cả" value="" />
             <el-option label="Chờ xử lý" value="Pending" />
             <el-option label="Đang thực hiện" value="InProgress" />
@@ -24,25 +30,39 @@
     </el-card>
 
     <el-card shadow="never">
-      <el-table :data="offboardingItems" v-loading="loading" border @row-click="handleRowClick">
+      <el-table
+        v-loading="loading"
+        :data="offboardingItems"
+        border
+        @row-click="handleRowClick"
+      >
         <el-table-column type="index" label="#" width="60" />
         <el-table-column label="Nhân viên" min-width="200">
-          <template #default="{ row }">
+          <template #default="{row}">
             <div>
               <strong>{{ getEmployeeName(row.nhan_vien_id) }}</strong>
-              <div class="sub">Mã NV: {{ getEmployeeCode(row.nhan_vien_id) }}</div>
+              <div class="sub">
+                Mã NV: {{ getEmployeeCode(row.nhan_vien_id) }}
+              </div>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="Ngày làm việc cuối" width="160">
-          <template #default="{ row }">
+          <template #default="{row}">
             {{ formatDate(row.last_working_day) }}
           </template>
         </el-table-column>
-        <el-table-column prop="reason" label="Lý do" min-width="200" show-overflow-tooltip />
+        <el-table-column
+          prop="reason"
+          label="Lý do"
+          min-width="200"
+          show-overflow-tooltip
+        />
         <el-table-column label="Trạng thái" width="140">
-          <template #default="{ row }">
-            <el-tag :type="statusTag(row.status)">{{ statusLabel(row.status) }}</el-tag>
+          <template #default="{row}">
+            <el-tag :type="statusTag(row.status)">{{
+              statusLabel(row.status)
+            }}</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -81,12 +101,21 @@
         </el-descriptions>
 
         <div class="task-actions">
-          <el-select v-model="selectedStatus" placeholder="Cập nhật trạng thái" size="small">
+          <el-select
+            v-model="selectedStatus"
+            placeholder="Cập nhật trạng thái"
+            size="small"
+          >
             <el-option label="Chờ xử lý" value="Pending" />
             <el-option label="Đang thực hiện" value="InProgress" />
             <el-option label="Hoàn thành" value="Completed" />
           </el-select>
-          <el-button type="primary" size="small" @click="handleUpdateStatus" :disabled="!selectedStatus">
+          <el-button
+            type="primary"
+            size="small"
+            :disabled="!selectedStatus"
+            @click="handleUpdateStatus"
+          >
             Cập nhật
           </el-button>
         </div>
@@ -96,17 +125,19 @@
           <el-table-column label="Tác vụ" min-width="220" prop="name" />
           <el-table-column label="Bộ phận" min-width="160" prop="department" />
           <el-table-column label="Hạn hoàn thành" width="150">
-            <template #default="{ row }">
+            <template #default="{row}">
               {{ formatDate(row.due_date) }}
             </template>
           </el-table-column>
           <el-table-column label="Trạng thái" width="150">
-            <template #default="{ row }">
-              <el-tag :type="statusTag(row.status)">{{ statusLabel(row.status) }}</el-tag>
+            <template #default="{row}">
+              <el-tag :type="statusTag(row.status)">{{
+                statusLabel(row.status)
+              }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="Ghi chú" min-width="200">
-            <template #default="{ row }">
+            <template #default="{row}">
               <el-input
                 v-model="row.tempNote"
                 type="textarea"
@@ -117,21 +148,24 @@
               <div class="task-buttons">
                 <el-button
                   size="small"
-                  @click="updateTask(row, 'Pending')"
                   :disabled="taskSaving"
-                >Pending</el-button>
+                  @click="updateTask(row, 'Pending')"
+                  >Pending</el-button
+                >
                 <el-button
                   size="small"
                   type="warning"
-                  @click="updateTask(row, 'InProgress')"
                   :disabled="taskSaving"
-                >Đang thực hiện</el-button>
+                  @click="updateTask(row, 'InProgress')"
+                  >Đang thực hiện</el-button
+                >
                 <el-button
                   size="small"
                   type="success"
-                  @click="updateTask(row, 'Completed')"
                   :disabled="taskSaving"
-                >Hoàn thành</el-button>
+                  @click="updateTask(row, 'Completed')"
+                  >Hoàn thành</el-button
+                >
               </div>
             </template>
           </el-table-column>
@@ -139,7 +173,11 @@
       </div>
     </el-drawer>
 
-    <el-dialog v-model="createDialogVisible" title="Tạo yêu cầu nghỉ việc" width="500px">
+    <el-dialog
+      v-model="createDialogVisible"
+      title="Tạo yêu cầu nghỉ việc"
+      width="500px"
+    >
       <el-form :model="createForm" label-width="160px">
         <el-form-item label="Nhân viên">
           <el-select
@@ -188,7 +226,10 @@
 import {ref, reactive, computed} from 'vue';
 import {ElMessage} from 'element-plus';
 import {Plus} from '@element-plus/icons-vue';
-import offboardingService, {OffboardingRequest, OffboardingTask} from '@/services/offboardingService';
+import offboardingService, {
+  OffboardingRequest,
+  OffboardingTask,
+} from '@/services/offboardingService';
 import nhanVienService from '@/services/nhanVienService';
 import {NhanVien} from '@/types';
 
@@ -203,7 +244,11 @@ const selectedStatus = ref('');
 const taskSaving = ref(false);
 
 const createDialogVisible = ref(false);
-const createForm = reactive({nhan_vien_id: '', last_working_day: '', reason: ''});
+const createForm = reactive({
+  nhan_vien_id: '',
+  last_working_day: '',
+  reason: '',
+});
 const creating = ref(false);
 const employeeOptions = ref<NhanVien[]>([]);
 const employeesLoading = ref(false);
@@ -269,7 +314,10 @@ const statusLabel = (status: string) => {
 };
 
 const handleRowClick = (row: OffboardingRequest) => {
-  selectedRequest.value = {...row, tasks: row.tasks.map((task) => ({...task, tempNote: task.note}))} as any;
+  selectedRequest.value = {
+    ...row,
+    tasks: row.tasks.map((task) => ({...task, tempNote: task.note})),
+  } as any;
   drawerVisible.value = true;
   selectedStatus.value = '';
 };
@@ -282,12 +330,20 @@ const drawerTitle = computed(() => {
 const handleUpdateStatus = async () => {
   if (!selectedRequest.value || !selectedStatus.value) return;
   try {
-    const updated = await offboardingService.updateStatus(selectedRequest.value._id, selectedStatus.value as any);
-    selectedRequest.value = {...updated, tasks: updated.tasks.map((task) => ({...task, tempNote: task.note}))} as any;
+    const updated = await offboardingService.updateStatus(
+      selectedRequest.value._id,
+      selectedStatus.value as any,
+    );
+    selectedRequest.value = {
+      ...updated,
+      tasks: updated.tasks.map((task) => ({...task, tempNote: task.note})),
+    } as any;
     loadData();
     ElMessage.success('Đã cập nhật trạng thái');
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.msg || 'Không cập nhật được trạng thái');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không cập nhật được trạng thái',
+    );
   }
 };
 
@@ -295,11 +351,18 @@ const updateTask = async (task: any, status: OffboardingTask['status']) => {
   if (!selectedRequest.value) return;
   taskSaving.value = true;
   try {
-    const updated = await offboardingService.updateTask(selectedRequest.value._id, task._id, {
-      status,
-      note: task.tempNote,
-    });
-    selectedRequest.value = {...updated, tasks: updated.tasks.map((item) => ({...item, tempNote: item.note}))} as any;
+    const updated = await offboardingService.updateTask(
+      selectedRequest.value._id,
+      task._id,
+      {
+        status,
+        note: task.tempNote,
+      },
+    );
+    selectedRequest.value = {
+      ...updated,
+      tasks: updated.tasks.map((item) => ({...item, tempNote: item.note})),
+    } as any;
     loadData();
     ElMessage.success('Đã cập nhật tác vụ');
   } catch (err: any) {
@@ -314,7 +377,7 @@ const openCreateDialog = async () => {
   if (employeeOptions.value.length === 0) {
     employeesLoading.value = true;
     try {
-      const response = await nhanVienService.getAll({ page: 1, limit: 200 });
+      const response = await nhanVienService.getAll({page: 1, limit: 200});
       employeeOptions.value = response.items;
     } catch (err: any) {
       ElMessage.error('Không thể tải danh sách nhân viên');

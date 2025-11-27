@@ -10,7 +10,9 @@ const runtimeBase =
   (window as any)?.appGlobal?.baseUrl &&
   `${(window as any).appGlobal.baseUrl}/api`;
 const API_BASE_URL =
-  runtimeBase || process.env.VUE_APP_API_BASE_URL || 'http://localhost:5000/api';
+  runtimeBase ||
+  process.env.VUE_APP_API_BASE_URL ||
+  'http://localhost:5000/api';
 
 // Create axios instance
 const apiClient = axios.create({

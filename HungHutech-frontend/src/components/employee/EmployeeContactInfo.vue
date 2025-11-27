@@ -168,8 +168,6 @@
 import {ref, reactive, watch} from 'vue';
 import {Edit} from '@element-plus/icons-vue';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
-import profileRequestService from '@/services/profileRequestService';
-import authService from '@/services/authService';
 import nhanVienService from '@/services/nhanVienService';
 import {NhanVien} from '@/types';
 
@@ -253,32 +251,15 @@ const handleSave = async () => {
 
   saving.value = true;
   try {
-    const user = authService.getUser();
-    const canDirectUpdate = user && ['admin', 'manager'].includes(user.role);
-
-    if (canDirectUpdate) {
-      await nhanVienService.update(props.employee._id, {
-        dia_chi: {...form.dia_chi},
-        lien_he: {...form.lien_he},
-      });
-      ElMessage.success('Cap nhat lien he thanh cong');
-      isEditing.value = false;
-      emit('reload');
-    } else {
-      const request = await profileRequestService.create({
-        type: 'contact',
-        payload: {
-          dia_chi: {...form.dia_chi},
-          lien_he: {...form.lien_he},
-        },
-      });
-      ElMessage.success('Da gui yeu cau cap nhat thong tin lien he, vui long cho phe duyet');
-      isEditing.value = false;
-      emit('request-submitted', {type: 'contact', requestId: request?._id});
-      emit('reload');
-    }
+    await nhanVienService.update(props.employee._id, {
+      dia_chi: {...form.dia_chi},
+      lien_he: {...form.lien_he},
+    });
+    ElMessage.success('Cập nhật liên hệ thành công');
+    isEditing.value = false;
+    emit('reload');
   } catch (err) {
-    ElMessage.error(err.response?.data?.msg || 'Khong the gui yeu cau cap nhat');
+    ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật thông tin');
   } finally {
     saving.value = false;
   }
@@ -300,4 +281,3 @@ const handleCancel = () => {
 <style lang="scss" scoped>
 @import './employee-form-styles.scss';
 </style>
-

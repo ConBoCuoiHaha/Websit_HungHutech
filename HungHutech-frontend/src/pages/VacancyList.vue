@@ -48,7 +48,8 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </el-card>    <!-- Vacancy Table -->
+    </el-card>
+    <!-- Vacancy Table -->
     <el-card class="orangehrm-table-card" shadow="never">
       <el-table
         v-loading="loading"
@@ -123,7 +124,9 @@
                 :type="channelStatusTag(channel.trang_thai)"
                 size="small"
               >
-                {{ channel.channel_name }} ({{ channelStatusText(channel.trang_thai) }})
+                {{ channel.channel_name }} ({{
+                  channelStatusText(channel.trang_thai)
+                }})
               </el-tag>
               <span v-if="!row.channels || !row.channels.length">-</span>
             </el-space>
@@ -264,7 +267,7 @@
         </el-button>
       </template>
     </el-dialog>
-  
+
     <el-dialog
       v-model="publishDialogVisible"
       title="Đăng tin đa kênh"
@@ -289,7 +292,9 @@
             :type="channelStatusTag(channel.trang_thai)"
             size="small"
           >
-            {{ channel.channel_name }} ({{ channelStatusText(channel.trang_thai) }})
+            {{ channel.channel_name }} ({{
+              channelStatusText(channel.trang_thai)
+            }})
           </el-tag>
         </div>
       </div>
@@ -300,7 +305,7 @@
         </el-button>
       </template>
     </el-dialog>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -318,9 +323,7 @@ import {ElMessage, ElMessageBox, FormInstance, FormRules} from 'element-plus';
 import vacancyService from '@/services/vacancyService';
 import nhanVienService from '@/services/nhanVienService';
 import diaDiemService from '@/services/diaDiemService';
-import jobBoardService, {
-  JobBoardChannel,
-} from '@/services/jobBoardService';
+import jobBoardService, {JobBoardChannel} from '@/services/jobBoardService';
 import {Vacancy, NhanVien, DiaDiem} from '@/types';
 
 const vacancyList = ref<Vacancy[]>([]);
@@ -608,14 +611,11 @@ const submitPublish = async () => {
     loadData();
   } catch (err: any) {
     console.error('submitPublish error', err);
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể đăng tin đa kênh',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể đăng tin đa kênh');
   } finally {
     publishing.value = false;
   }
 };
-
 
 onMounted(() => {
   loadData();
@@ -743,7 +743,3 @@ onMounted(() => {
   }
 }
 </style>
-
-
-
-

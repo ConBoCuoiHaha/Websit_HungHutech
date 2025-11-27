@@ -81,8 +81,8 @@
       </template>
 
       <el-table
-        :data="rows"
         v-loading="loading"
+        :data="rows"
         :empty-text="loading ? 'Đang tải...' : 'Chưa có dữ liệu'"
       >
         <el-table-column label="Nhân viên" min-width="200">
@@ -105,10 +105,7 @@
           min-width="160"
         >
           <template #default="{row}">
-            <el-tag
-              size="small"
-              :type="statusTag(getStatus(row, purpose.key))"
-            >
+            <el-tag size="small" :type="statusTag(getStatus(row, purpose.key))">
               {{ statusLabel(getStatus(row, purpose.key)) }}
             </el-tag>
           </template>
@@ -160,8 +157,10 @@ const pagination = reactive({
 const overviewTotal = computed(() => {
   if (!overview.value.length) return 0;
   return (
-    overview.value.reduce((sum, item) => sum + item.accepted + item.pending + item.withdrawn, 0) /
-    overview.value.length
+    overview.value.reduce(
+      (sum, item) => sum + item.accepted + item.pending + item.withdrawn,
+      0,
+    ) / overview.value.length
   );
 });
 
@@ -201,7 +200,9 @@ const loadOverview = async () => {
     overview.value = await consentService.getOverview();
   } catch (err: any) {
     console.error('loadOverview error', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải tổng quan consent');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải tổng quan consent',
+    );
   }
 };
 
@@ -227,7 +228,9 @@ const loadTracking = async () => {
     pagination.total = response.pagination.total;
   } catch (err: any) {
     console.error('loadTracking error', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải danh sách consent');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải danh sách consent',
+    );
   } finally {
     loading.value = false;
   }

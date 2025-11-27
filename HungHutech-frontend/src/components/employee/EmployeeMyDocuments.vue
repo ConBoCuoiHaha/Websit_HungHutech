@@ -1,7 +1,12 @@
 ﻿<template>
-  <div class="my-documents" v-loading="loading">
+  <div v-loading="loading" class="my-documents">
     <div class="my-documents__filters">
-      <el-select v-model="filters.folder" placeholder="Tất cả thư mục" clearable @change="loadDocuments">
+      <el-select
+        v-model="filters.folder"
+        placeholder="Tất cả thư mục"
+        clearable
+        @change="loadDocuments"
+      >
         <el-option
           v-for="option in folderOptions"
           :key="option.value"
@@ -19,15 +24,19 @@
       />
     </div>
 
-    <el-table :data="documents" border :empty-text="loading ? 'Đang tải...' : 'Chưa có tài liệu'">
+    <el-table
+      :data="documents"
+      border
+      :empty-text="loading ? 'Đang tải...' : 'Chưa có tài liệu'"
+    >
       <el-table-column prop="tieu_de" label="Tên tài liệu" min-width="220" />
       <el-table-column label="Thư mục" width="160">
-        <template #default="{ row }">
+        <template #default="{row}">
           <el-tag type="info">{{ folderLabel(row.folder) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Hiệu lực" min-width="200">
-        <template #default="{ row }">
+        <template #default="{row}">
           <span v-if="row.ngay_hieu_luc">
             {{ formatDate(row.ngay_hieu_luc) }} -
             {{ row.ngay_het_han ? formatDate(row.ngay_het_han) : 'Không rõ' }}
@@ -36,8 +45,13 @@
         </template>
       </el-table-column>
       <el-table-column label="Hành động" width="140">
-        <template #default="{ row }">
-          <el-button type="primary" link :icon="Download" @click="download(row)">
+        <template #default="{row}">
+          <el-button
+            type="primary"
+            link
+            :icon="Download"
+            @click="download(row)"
+          >
             Tải xuống
           </el-button>
         </template>
@@ -60,13 +74,19 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted} from 'vue';
 import {Download, Search} from '@element-plus/icons-vue';
-import employeeDocumentService, {DocumentFolder, EmployeeDocument} from '@/services/employeeDocumentService';
+import employeeDocumentService, {
+  DocumentFolder,
+  EmployeeDocument,
+} from '@/services/employeeDocumentService';
 import uploadService from '@/services/uploadService';
 
 const loading = ref(false);
 const documents = ref<EmployeeDocument[]>([]);
 const pagination = reactive({page: 1, limit: 10, total: 0});
-const filters = reactive<{folder: '' | DocumentFolder; q: string}>({folder: '', q: ''});
+const filters = reactive<{folder: '' | DocumentFolder; q: string}>({
+  folder: '',
+  q: '',
+});
 
 const folderOptions = [
   {label: 'Hồ sơ lao động', value: 'ho_so_lao_dong'},
@@ -75,7 +95,8 @@ const folderOptions = [
   {label: 'Hồ sơ pháp lý', value: 'ho_so_phap_ly'},
 ];
 
-const folderLabel = (value: string) => folderOptions.find((o) => o.value === value)?.label || value;
+const folderLabel = (value: string) =>
+  folderOptions.find((o) => o.value === value)?.label || value;
 
 const formatDate = (value?: string) => {
   if (!value) return '---';

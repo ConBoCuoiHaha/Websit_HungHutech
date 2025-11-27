@@ -127,18 +127,19 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="kinh_nghiem_nam"
-          label="Kinh nghiệm"
-          width="140"
-        >
+        <el-table-column prop="kinh_nghiem_nam" label="Kinh nghiệm" width="140">
           <template #default="{row}">
             {{ row.kinh_nghiem_nam ?? 0 }} năm
           </template>
         </el-table-column>
         <el-table-column label="Tóm tắt" min-width="200">
           <template #default="{row}">
-            <el-button type="primary" text size="small" @click="viewCandidate(row)">
+            <el-button
+              type="primary"
+              text
+              size="small"
+              @click="viewCandidate(row)"
+            >
               Xem chi tiết
             </el-button>
           </template>
@@ -159,8 +160,13 @@
     <el-dialog v-model="detailVisible" title="Thông tin ứng viên" width="520px">
       <template v-if="selectedCandidate">
         <p><strong>Email:</strong> {{ selectedCandidate.email }}</p>
-        <p><strong>Điện thoại:</strong> {{ selectedCandidate.dien_thoai || '-' }}</p>
-        <p><strong>Kỹ năng:</strong> {{ (selectedCandidate.ky_nang || []).join(', ') || '-' }}</p>
+        <p>
+          <strong>Điện thoại:</strong> {{ selectedCandidate.dien_thoai || '-' }}
+        </p>
+        <p>
+          <strong>Kỹ năng:</strong>
+          {{ (selectedCandidate.ky_nang || []).join(', ') || '-' }}
+        </p>
         <p><strong>Tóm tắt:</strong></p>
         <p class="candidate-summary">
           {{
@@ -236,7 +242,9 @@
           class="import-preview"
         >
           <template #title>
-            Đã tạo ứng viên: {{ importPreview.ho_ten }} ({{ importPreview.email }})
+            Đã tạo ứng viên: {{ importPreview.ho_ten }} ({{
+              importPreview.email
+            }})
           </template>
           <p>Score: {{ importPreview.score ?? 0 }}</p>
           <p>
@@ -266,16 +274,18 @@ import {Search, Refresh, Upload} from '@element-plus/icons-vue';
 import candidateService from '@/services/candidateService';
 import type {Candidate} from '@/types';
 
-const pipelineStageOptions: Array<{value: Candidate['pipeline_stage']; label: string}> =
-  [
-    {value: 'CV_moi', label: 'CV mới'},
-    {value: 'Screening', label: 'Sàng lọc'},
-    {value: 'Phong_van_v1', label: 'Phỏng vấn vòng 1'},
-    {value: 'Phong_van_v2', label: 'Phỏng vấn vòng 2'},
-    {value: 'Offer', label: 'Offer'},
-    {value: 'Hired', label: 'Đã nhận việc'},
-    {value: 'Rejected', label: 'Không phù hợp'},
-  ];
+const pipelineStageOptions: Array<{
+  value: Candidate['pipeline_stage'];
+  label: string;
+}> = [
+  {value: 'CV_moi', label: 'CV mới'},
+  {value: 'Screening', label: 'Sàng lọc'},
+  {value: 'Phong_van_v1', label: 'Phỏng vấn vòng 1'},
+  {value: 'Phong_van_v2', label: 'Phỏng vấn vòng 2'},
+  {value: 'Offer', label: 'Offer'},
+  {value: 'Hired', label: 'Đã nhận việc'},
+  {value: 'Rejected', label: 'Không phù hợp'},
+];
 
 const skillPresets = [
   'JavaScript',
@@ -362,7 +372,9 @@ const handlePipelineChange = async (
 ) => {
   stageUpdatingId.value = row._id;
   try {
-    const updated = await candidateService.updatePipelineStage(row._id, {stage});
+    const updated = await candidateService.updatePipelineStage(row._id, {
+      stage,
+    });
     Object.assign(row, updated);
     ElMessage.success('Đã cập nhật pipeline');
   } catch (err: any) {

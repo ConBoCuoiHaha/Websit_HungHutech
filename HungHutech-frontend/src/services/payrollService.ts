@@ -125,6 +125,10 @@ class PayrollService {
     );
     return response.data;
   }
+
+  async deleteRun(id: string): Promise<void> {
+    await api.delete(`${this.BASE_URL}/runs/${id}`);
+  }
 }
 
 export default new PayrollService();

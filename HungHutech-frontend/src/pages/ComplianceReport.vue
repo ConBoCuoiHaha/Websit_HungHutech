@@ -17,8 +17,11 @@
         <div>
           <h3>Báo cáo sắp đến hạn</h3>
           <p>
-            Tổng cộng {{ reminderSummary.total }} báo cáo trong {{ reminders.length ? reminders[0].lead_days : 10 }} ngày tới.
-            <span v-if="reminderSummary.urgent">({{ reminderSummary.urgent }} cần xử lý gấp)</span>
+            Tổng cộng {{ reminderSummary.total }} báo cáo trong
+            {{ reminders.length ? reminders[0].lead_days : 10 }} ngày tới.
+            <span v-if="reminderSummary.urgent"
+              >({{ reminderSummary.urgent }} cần xử lý gấp)</span
+            >
           </p>
         </div>
         <el-button
@@ -37,8 +40,8 @@
       />
       <el-table
         v-else
-        :data="reminders"
         v-loading="remindersLoading"
+        :data="reminders"
         size="small"
         :border="false"
       >
@@ -272,8 +275,8 @@
       </template>
 
       <el-table
-        :data="reportHistory"
         v-loading="historyLoading"
+        :data="reportHistory"
         :empty-text="historyLoading ? 'Đang tải...' : 'Chưa có dữ liệu'"
       >
         <el-table-column label="Thời gian" width="180">
@@ -295,7 +298,9 @@
         <el-table-column prop="total_rows" label="Số dòng" width="120" />
         <el-table-column label="Định dạng" width="120">
           <template #default="{row}">
-            <el-tag size="small">{{ row.format?.toUpperCase() || 'CSV' }}</el-tag>
+            <el-tag size="small">{{
+              row.format?.toUpperCase() || 'CSV'
+            }}</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -479,9 +484,7 @@ const loadHistory = async () => {
     historyPagination.total = response.pagination.total;
   } catch (err: any) {
     console.error('loadHistory', err);
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể tải lịch sử báo cáo',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể tải lịch sử báo cáo');
   } finally {
     historyLoading.value = false;
   }

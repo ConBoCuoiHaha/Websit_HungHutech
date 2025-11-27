@@ -158,8 +158,8 @@
         </el-row>
       </div>
 
-      <div class="orangehrm-form-actions" v-if="!isReadonly">
-        <el-button @click="handleReset" :icon="Refresh">Dat lai</el-button>
+      <div v-if="!isReadonly" class="orangehrm-form-actions">
+        <el-button :icon="Refresh" @click="handleReset">Dat lai</el-button>
         <el-button type="primary" :loading="saving" @click="handleSave">
           Luu thong tin
         </el-button>

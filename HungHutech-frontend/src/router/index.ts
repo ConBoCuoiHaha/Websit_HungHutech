@@ -271,6 +271,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: {requiresRole: ['admin']},
       },
       {
+        path: 'admin/cau-hinh-thu-nhap',
+        name: 'SalaryConfig',
+        component: () => import('@/pages/SalaryConfig.vue'),
+        meta: {requiresRole: ['admin']},
+      },
+      {
         path: 'offboarding',
         name: 'OffboardingList',
         component: () => import('@/pages/OffboardingList.vue'),

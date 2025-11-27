@@ -175,9 +175,9 @@
       <!-- Overtime Alerts -->
       <el-card
         v-if="hasOtAlerts"
+        v-loading="otLoading"
         class="orangehrm-ot-card"
         shadow="never"
-        v-loading="otLoading"
       >
         <template #header>
           <div class="orangehrm-card-header">
@@ -185,7 +185,7 @@
               <el-icon style="vertical-align: middle; margin-right: 8px">
                 <Warning />
               </el-icon>
-               Cảnh báo tăng ca
+              Cảnh báo tăng ca
             </span>
             <el-tag type="warning" effect="dark">
               Giới hạn {{ currentOtLimit }}h
@@ -239,9 +239,9 @@
       </el-card>
 
       <el-card
+        v-loading="offboardingLoading"
         class="orangehrm-offboarding-card"
         shadow="never"
-        v-loading="offboardingLoading"
       >
         <template #header>
           <div class="orangehrm-card-header">
@@ -249,7 +249,7 @@
               <el-icon style="vertical-align: middle; margin-right: 8px">
                 <Briefcase />
               </el-icon>
-               Nhân viên sắp nghỉ việc
+              Nhân viên sắp nghỉ việc
             </span>
           </div>
         </template>
@@ -257,12 +257,7 @@
           v-if="!hasUpcomingOffboarding"
           description="Chưa có lịch nghỉ việc"
         />
-        <el-table
-          v-else
-          :data="upcomingOffboardings"
-          size="small"
-          border
-        >
+        <el-table v-else :data="upcomingOffboardings" size="small" border>
           <el-table-column label="Nhân viên" min-width="220">
             <template #default="{row}">
               <div class="orangehrm-employee-cell">
@@ -286,8 +281,8 @@
                   row.status === 'Completed'
                     ? 'success'
                     : row.status === 'InProgress'
-                      ? 'warning'
-                      : 'info'
+                    ? 'warning'
+                    : 'info'
                 "
               >
                 {{ row.status }}
@@ -298,9 +293,9 @@
       </el-card>
 
       <el-card
+        v-loading="complianceLoading"
         class="orangehrm-compliance-card"
         shadow="never"
-        v-loading="complianceLoading"
       >
         <template #header>
           <div class="orangehrm-card-header">
@@ -308,7 +303,7 @@
               <el-icon style="vertical-align: middle; margin-right: 8px">
                 <PieChart />
               </el-icon>
-               Báo cáo pháp lý sắp đến hạn
+              Báo cáo pháp lý sắp đến hạn
             </span>
           </div>
         </template>
@@ -316,12 +311,7 @@
           v-if="!hasComplianceReminders"
           description="Không có báo cáo sắp đến hạn"
         />
-        <el-table
-          v-else
-          :data="topComplianceReminders"
-          size="small"
-          border
-        >
+        <el-table v-else :data="topComplianceReminders" size="small" border>
           <el-table-column label="Báo cáo" min-width="220" prop="report_name" />
           <el-table-column label="Hạn nộp" width="160">
             <template #default="{row}">
@@ -346,9 +336,9 @@
       </el-card>
 
       <el-card
+        v-loading="contractsLoading"
         class="orangehrm-contract-card"
         shadow="never"
-        v-loading="contractsLoading"
       >
         <template #header>
           <div class="orangehrm-card-header">
@@ -356,7 +346,7 @@
               <el-icon style="vertical-align: middle; margin-right: 8px">
                 <Document />
               </el-icon>
-               Hợp đồng sắp hết hạn
+              Hợp đồng sắp hết hạn
             </span>
           </div>
         </template>
@@ -474,7 +464,9 @@
                   </el-icon>
                 </div>
                 <h3 class="orangehrm-action-title">Hợp đồng lao động</h3>
-                <p class="orangehrm-action-desc">Theo dõi trạng thái, gia hạn và cập nhật mức lương đóng BHXH.</p>
+                <p class="orangehrm-action-desc">
+                  Theo dõi trạng thái, gia hạn và cập nhật mức lương đóng BHXH.
+                </p>
               </el-card>
             </router-link>
           </el-col>
@@ -487,7 +479,10 @@
                   </el-icon>
                 </div>
                 <h3 class="orangehrm-action-title">Checklist nghỉ việc</h3>
-                <p class="orangehrm-action-desc">Quản lý bàn giao tài sản, tính lương cuối kỳ và thông báo các bộ phận.</p>
+                <p class="orangehrm-action-desc">
+                  Quản lý bàn giao tài sản, tính lương cuối kỳ và thông báo các
+                  bộ phận.
+                </p>
               </el-card>
             </router-link>
           </el-col>
@@ -500,7 +495,9 @@
                   </el-icon>
                 </div>
                 <h3 class="orangehrm-action-title">Báo cáo pháp lý</h3>
-                <p class="orangehrm-action-desc">Xuất các mẫu 01/PLI, D02-TS, LDNU, ATLD, YTLD...</p>
+                <p class="orangehrm-action-desc">
+                  Xuất các mẫu 01/PLI, D02-TS, LDNU, ATLD, YTLD...
+                </p>
               </el-card>
             </router-link>
           </el-col>
@@ -513,7 +510,9 @@
                   </el-icon>
                 </div>
                 <h3 class="orangehrm-action-title">Bảng lương</h3>
-                <p class="orangehrm-action-desc">Tổng hợp bảng công, tính thuế và cập nhật phiếu lương.</p>
+                <p class="orangehrm-action-desc">
+                  Tổng hợp bảng công, tính thuế và cập nhật phiếu lương.
+                </p>
               </el-card>
             </router-link>
           </el-col>
@@ -796,9 +795,7 @@ const formatDateShort = (value?: string | Date | null) => {
   if (!value) return '---';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '---';
-  return `${date.getDate().toString().padStart(2, '0')}/${(
-    date.getMonth() + 1
-  )
+  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
     .toString()
     .padStart(2, '0')}/${date.getFullYear()}`;
 };
@@ -819,9 +816,10 @@ const formatOffboardingCode = (row: OffboardingRequest) => {
   return '';
 };
 
-const topComplianceReminders = computed(() => complianceReminders.value.slice(0, 5));
+const topComplianceReminders = computed(() =>
+  complianceReminders.value.slice(0, 5),
+);
 const hasExpiringContracts = computed(() => expiringContracts.value.length > 0);
-
 
 watch(
   overtimeAlerts,
@@ -1096,50 +1094,10 @@ onMounted(() => {
 }
 </style>
 
-
-.orangehrm-ot-card {
-  margin-top: -xl;
-}
-
-.orangehrm-ot-tabs {
-  margin-bottom: -md;
-}
-
-.orangehrm-employee-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  small {
-    color: -secondary;
-  }
-}
-
-.orangehrm-ot-gauge {
-  display: flex;
-  flex-direction: column;
-  gap: -xxs;
-
-  div {
-    display: flex;
-    gap: -xxs;
-    align-items: baseline;
-  }
-}
-
-.orangehrm-offboarding-card {
-  margin-top: $spacing-xl;
-
-  :deep(.el-table) {
-    font-size: $font-size-sm;
-  }
-}
-
-.orangehrm-compliance-card {
-  margin-top: $spacing-xl;
-}
-
-.orangehrm-contract-card {
-  margin-top: $spacing-xl;
-}
-
+.orangehrm-ot-card { margin-top: -xl; } .orangehrm-ot-tabs { margin-bottom: -md;
+} .orangehrm-employee-cell { display: flex; flex-direction: column; gap: 2px;
+small { color: -secondary; } } .orangehrm-ot-gauge { display: flex;
+flex-direction: column; gap: -xxs; div { display: flex; gap: -xxs; align-items:
+baseline; } } .orangehrm-offboarding-card { margin-top: $spacing-xl;
+:deep(.el-table) { font-size: $font-size-sm; } } .orangehrm-compliance-card {
+margin-top: $spacing-xl; } .orangehrm-contract-card { margin-top: $spacing-xl; }

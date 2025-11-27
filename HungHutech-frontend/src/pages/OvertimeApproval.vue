@@ -5,7 +5,12 @@
         <h2>Duyệt yêu cầu tăng ca</h2>
         <p>Theo dõi hạn mức và phê duyệt các đề nghị OT</p>
       </div>
-      <el-button :icon="Refresh" type="primary" :loading="loading" @click="loadData(true)">
+      <el-button
+        :icon="Refresh"
+        type="primary"
+        :loading="loading"
+        @click="loadData(true)"
+      >
         Làm mới
       </el-button>
     </div>
@@ -15,7 +20,11 @@
         <el-row :gutter="16">
           <el-col :xs="24" :sm="12" :md="6">
             <el-form-item label="Trạng thái">
-              <el-select v-model="filters.trang_thai" placeholder="Tất cả" @change="handleFilter">
+              <el-select
+                v-model="filters.trang_thai"
+                placeholder="Tất cả"
+                @change="handleFilter"
+              >
                 <el-option label="Tất cả" value="" />
                 <el-option label="Chờ duyệt" value="Cho duyet" />
                 <el-option label="Đã duyệt" value="Da duyet" />
@@ -56,9 +65,9 @@
 
     <el-card shadow="never">
       <el-table
+        v-loading="loading"
         :data="requests"
         border
-        v-loading="loading"
         empty-text="Chưa có yêu cầu"
       >
         <el-table-column label="Nhân viên" min-width="220">
@@ -80,9 +89,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="so_gio" label="Số giờ" width="100">
-          <template #default="{row}">
-            {{ row.so_gio?.toFixed(2) }}h
-          </template>
+          <template #default="{row}"> {{ row.so_gio?.toFixed(2) }}h </template>
         </el-table-column>
         <el-table-column label="Loại" width="150">
           <template #default="{row}">
@@ -172,9 +179,7 @@ const loadData = async (reset = false) => {
     requests.value = response.data;
     pagination.total = response.pagination.total;
   } catch (err: any) {
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể tải yêu cầu tăng ca',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể tải yêu cầu tăng ca');
   } finally {
     loading.value = false;
   }
@@ -291,9 +296,7 @@ const handleStatus = async (
     loadData();
   } catch (err: any) {
     if (err === 'cancel') return;
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể cập nhật trạng thái',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể cập nhật trạng thái');
   } finally {
     updatingId.value = '';
   }

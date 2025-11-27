@@ -1,5 +1,5 @@
 <template>
-  <div class="my-overtime" v-loading="loading">
+  <div v-loading="loading" class="my-overtime">
     <div class="header">
       <div class="filters">
         <el-select
@@ -36,9 +36,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="so_gio" label="Số giờ" width="100">
-        <template #default="{row}">
-          {{ row.so_gio?.toFixed(2) }}h
-        </template>
+        <template #default="{row}"> {{ row.so_gio?.toFixed(2) }}h </template>
       </el-table-column>
       <el-table-column label="Loại" min-width="160">
         <template #default="{row}">
@@ -81,7 +79,7 @@
     </div>
 
     <el-dialog v-model="dialogVisible" title="Đăng ký tăng ca" width="520px">
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="160px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="160px">
         <el-form-item label="Ngày tăng ca" prop="ngay">
           <el-date-picker
             v-model="form.ngay"
@@ -212,13 +210,18 @@ const formatTime = (value?: string) => {
   if (!value) return '--:--';
   const date = new Date(value);
   if (!Number.isNaN(date.getTime())) {
-    return date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+    return date.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
   return value;
 };
 
 const formatTimeRange = (row: OvertimeRequest) => {
-  return `${formatTime(row.thoi_gian_bat_dau)} - ${formatTime(row.thoi_gian_ket_thuc)}`;
+  return `${formatTime(row.thoi_gian_bat_dau)} - ${formatTime(
+    row.thoi_gian_ket_thuc,
+  )}`;
 };
 
 const loadRequests = async () => {
@@ -277,9 +280,7 @@ const handleSubmit = async () => {
     dialogVisible.value = false;
     loadRequests();
   } catch (err: any) {
-    ElMessage.error(
-      err.response?.data?.msg || 'Không thể gửi yêu cầu',
-    );
+    ElMessage.error(err.response?.data?.msg || 'Không thể gửi yêu cầu');
   } finally {
     saving.value = false;
   }

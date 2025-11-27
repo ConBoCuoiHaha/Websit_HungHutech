@@ -106,7 +106,13 @@
 import {ref, reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
-import {User, Lock, Position, ChatDotRound, VideoPlay} from '@element-plus/icons-vue';
+import {
+  User,
+  Lock,
+  Position,
+  ChatDotRound,
+  VideoPlay,
+} from '@element-plus/icons-vue';
 import LoginLayout from '../components/LoginLayout.vue';
 import {login} from '../services/auth.service';
 
@@ -127,7 +133,9 @@ const loginForm = reactive({
 
 const loginRules: FormRules = {
   email: [{required: true, message: 'Vui long nhap email', trigger: 'blur'}],
-  password: [{required: true, message: 'Vui long nhap mat khau', trigger: 'blur'}],
+  password: [
+    {required: true, message: 'Vui long nhap mat khau', trigger: 'blur'},
+  ],
 };
 
 const loading = ref(false);
@@ -302,4 +310,3 @@ const navigateToForgotPassword = () => {
   }
 }
 </style>
-

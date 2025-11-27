@@ -12,6 +12,7 @@ router.post('/runs', canManagePayroll, controller.createPayrollRun);
 router.get('/runs/:id', canManagePayroll, controller.getPayrollRun);
 router.patch('/runs/:id/status', canManagePayroll, controller.updateRunStatus);
 router.patch('/runs/:id/entries/:entryId/status', canManagePayroll, controller.updateEntryStatus);
+router.delete('/runs/:id', canManagePayroll, controller.deletePayrollRun);
 router.get('/runs/:id/export', canManagePayroll, controller.exportPayrollRun);
 router.get('/runs/:id/export-template/:template', canManagePayroll, controller.exportPayrollTemplate);
 router.get('/my/payslips', controller.listMyPayslips);

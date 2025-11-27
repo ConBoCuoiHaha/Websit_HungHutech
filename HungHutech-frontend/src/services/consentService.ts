@@ -48,9 +48,10 @@ class ConsentService {
   }
 
   async getOverview(): Promise<ConsentOverviewItem[]> {
-    const response = await api.get<{data: ConsentOverviewItem[]; total_employees: number}>(
-      `${this.BASE_URL}/overview`,
-    );
+    const response = await api.get<{
+      data: ConsentOverviewItem[];
+      total_employees: number;
+    }>(`${this.BASE_URL}/overview`);
     return response.data.data || [];
   }
 

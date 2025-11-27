@@ -307,13 +307,21 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="vi_tri_mong_muon" label="Vị trí mong muốn" min-width="180">
+        <el-table-column
+          prop="vi_tri_mong_muon"
+          label="Vị trí mong muốn"
+          min-width="180"
+        >
           <template #default="{row}">
             {{ row.vi_tri_mong_muon || '-' }}
           </template>
         </el-table-column>
 
-        <el-table-column prop="ngay_lien_he_cuoi" label="Liên hệ cuối" width="150">
+        <el-table-column
+          prop="ngay_lien_he_cuoi"
+          label="Liên hệ cuối"
+          width="150"
+        >
           <template #default="{row}">
             {{ formatDate(row.ngay_lien_he_cuoi) }}
           </template>
@@ -657,13 +665,12 @@ const skillPresets = [
   'Communication',
 ];
 
-const candidateSourceMap = candidateSourceOptions.reduce<Record<string, string>>(
-  (acc, option) => {
-    acc[option.value] = option.label;
-    return acc;
-  },
-  {},
-);
+const candidateSourceMap = candidateSourceOptions.reduce<
+  Record<string, string>
+>((acc, option) => {
+  acc[option.value] = option.label;
+  return acc;
+}, {});
 
 const candidateStatusTypeMap = candidateStatusOptions.reduce<
   Record<string, string>
@@ -806,7 +813,8 @@ const handleEdit = (item: Candidate) => {
   form.email = item.email;
   form.dien_thoai = item.dien_thoai || '';
   form.nguon = item.nguon || DEFAULT_CANDIDATE_SOURCE;
-  form.trang_thai = (item.trang_thai as Candidate['trang_thai']) || DEFAULT_CANDIDATE_STATUS;
+  form.trang_thai =
+    (item.trang_thai as Candidate['trang_thai']) || DEFAULT_CANDIDATE_STATUS;
   form.vi_tri_mong_muon = item.vi_tri_mong_muon || '';
   form.kinh_nghiem_nam = item.kinh_nghiem_nam ?? 0;
   form.tags = [...(item.tags || [])];

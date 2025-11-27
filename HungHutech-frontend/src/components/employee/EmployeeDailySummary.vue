@@ -1,5 +1,5 @@
 <template>
-  <div class="employee-daily-summary" v-loading="loading">
+  <div v-loading="loading" class="employee-daily-summary">
     <div class="summary-toolbar">
       <div class="summary-toolbar__info">
         <h3>Chấm công & cảnh báo</h3>
@@ -29,13 +29,21 @@
             :value="item.value"
           />
         </el-select>
-        <el-button size="small" type="primary" :icon="Refresh" @click="handleSearch">
+        <el-button
+          size="small"
+          type="primary"
+          :icon="Refresh"
+          @click="handleSearch"
+        >
           Lọc
         </el-button>
       </div>
     </div>
 
-    <el-table :data="summaries" :empty-text="loading ? 'Đang tải...' : 'Chưa có dữ liệu'">
+    <el-table
+      :data="summaries"
+      :empty-text="loading ? 'Đang tải...' : 'Chưa có dữ liệu'"
+    >
       <el-table-column label="Ngày" width="130">
         <template #default="{row}">
           {{ formatDate(row.ngay) }}
@@ -77,7 +85,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="notes" label="Ghi chú" min-width="220" show-overflow-tooltip />
+      <el-table-column
+        prop="notes"
+        label="Ghi chú"
+        min-width="220"
+        show-overflow-tooltip
+      />
     </el-table>
 
     <div class="summary-pagination">
@@ -199,7 +212,9 @@ const loadSummaries = async () => {
     pagination.total = response.pagination.total;
   } catch (err: any) {
     console.error('loadSummaries error', err);
-    ElMessage.error(err.response?.data?.msg || 'Không thể tải dữ liệu chấm công');
+    ElMessage.error(
+      err.response?.data?.msg || 'Không thể tải dữ liệu chấm công',
+    );
   } finally {
     loading.value = false;
   }

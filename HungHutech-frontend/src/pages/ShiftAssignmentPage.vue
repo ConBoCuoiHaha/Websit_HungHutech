@@ -34,7 +34,9 @@
                 <el-option
                   v-for="nv in employeeOptions"
                   :key="nv._id"
-                  :label="`${nv.ma_nhan_vien} - ${nv.ho_dem || ''} ${nv.ten || ''}`"
+                  :label="`${nv.ma_nhan_vien} - ${nv.ho_dem || ''} ${
+                    nv.ten || ''
+                  }`"
                   :value="nv._id"
                 />
               </el-select>
@@ -105,7 +107,9 @@
               <el-option
                 v-for="nv in employeeOptions"
                 :key="nv._id"
-                :label="`${nv.ma_nhan_vien} - ${nv.ho_dem || ''} ${nv.ten || ''}`"
+                :label="`${nv.ma_nhan_vien} - ${nv.ho_dem || ''} ${
+                  nv.ten || ''
+                }`"
                 :value="nv._id"
               />
             </el-select>
@@ -127,8 +131,8 @@
       </template>
 
       <el-table
-        :data="assignments"
         v-loading="listLoading"
+        :data="assignments"
         :empty-text="listLoading ? 'Đang tải...' : 'Chưa có dữ liệu'"
       >
         <el-table-column label="Ngày" width="140">
@@ -167,12 +171,7 @@
               @confirm="handleDelete(row._id)"
             >
               <template #reference>
-                <el-button
-                  size="small"
-                  type="danger"
-                  :icon="Delete"
-                  link
-                >
+                <el-button size="small" type="danger" :icon="Delete" link>
                   Xóa
                 </el-button>
               </template>
@@ -199,12 +198,7 @@
 import {ref, reactive, onMounted} from 'vue';
 import {ElMessage, FormInstance, FormRules} from 'element-plus';
 import dayjs from 'dayjs';
-import {
-  Refresh,
-  Opportunity,
-  Search,
-  Delete,
-} from '@element-plus/icons-vue';
+import {Refresh, Opportunity, Search, Delete} from '@element-plus/icons-vue';
 import shiftAssignmentService from '@/services/shiftAssignmentService';
 import nhanVienService from '@/services/nhanVienService';
 import caLamViecService from '@/services/caLamViecService';
@@ -230,9 +224,20 @@ const form = reactive<{
 });
 
 const formRules: FormRules = {
-  nhan_vien_ids: [{required: true, message: 'Chọn ít nhất 1 nhân viên', trigger: 'change'}],
-  ca_lam_viec_id: [{required: true, message: 'Chọn ca làm việc', trigger: 'change'}],
-  dateRange: [{type: 'array', required: true, message: 'Chọn khoảng ngày', trigger: 'change'}],
+  nhan_vien_ids: [
+    {required: true, message: 'Chọn ít nhất 1 nhân viên', trigger: 'change'},
+  ],
+  ca_lam_viec_id: [
+    {required: true, message: 'Chọn ca làm việc', trigger: 'change'},
+  ],
+  dateRange: [
+    {
+      type: 'array',
+      required: true,
+      message: 'Chọn khoảng ngày',
+      trigger: 'change',
+    },
+  ],
 };
 
 const filters = reactive<{

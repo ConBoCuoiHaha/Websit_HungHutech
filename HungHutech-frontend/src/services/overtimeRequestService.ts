@@ -30,10 +30,15 @@ interface ListParams {
 class OvertimeRequestService {
   private readonly BASE_URL = '/overtime-requests';
 
-  async getAll(params?: ListParams): Promise<PaginatedResponse<OvertimeRequest>> {
-    const response = await api.get<PaginatedResponse<OvertimeRequest>>(this.BASE_URL, {
-      params,
-    });
+  async getAll(
+    params?: ListParams,
+  ): Promise<PaginatedResponse<OvertimeRequest>> {
+    const response = await api.get<PaginatedResponse<OvertimeRequest>>(
+      this.BASE_URL,
+      {
+        params,
+      },
+    );
     return response.data;
   }
 
@@ -77,7 +82,9 @@ class OvertimeRequestService {
   }
 
   async getAlerts(): Promise<OvertimeAlertGroups> {
-    const response = await api.get<OvertimeAlertGroups>(`${this.BASE_URL}/alerts`);
+    const response = await api.get<OvertimeAlertGroups>(
+      `${this.BASE_URL}/alerts`,
+    );
     return response.data;
   }
 }

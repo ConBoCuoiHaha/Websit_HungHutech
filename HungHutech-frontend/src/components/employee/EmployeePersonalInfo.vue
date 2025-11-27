@@ -276,14 +276,18 @@ const handleSave = async () => {
           },
         },
       });
-      ElMessage.success('Da gui yeu cau cap nhat thong tin ca nhan, vui long cho phe duyet');
+      ElMessage.success(
+        'Da gui yeu cau cap nhat thong tin ca nhan, vui long cho phe duyet',
+      );
       isEditing.value = false;
       emit('request-submitted', {type: 'personal', requestId: request?._id});
       emit('reload');
     }
   } catch (err) {
     console.error('Error creating personal info request:', err);
-    ElMessage.error(err.response?.data?.msg || 'Khong the cap nhat thong tin ca nhan');
+    ElMessage.error(
+      err.response?.data?.msg || 'Khong the cap nhat thong tin ca nhan',
+    );
   } finally {
     saving.value = false;
   }
@@ -347,5 +351,3 @@ const handleCancel = () => {
   color: $text-secondary;
 }
 </style>
-
-

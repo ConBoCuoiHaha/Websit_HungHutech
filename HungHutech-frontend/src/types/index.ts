@@ -432,7 +432,12 @@ export interface Candidate {
   dien_thoai?: string;
   ghi_chu?: string;
   nguon?: string;
-  trang_thai?: 'Moi' | 'Dang_lien_he' | 'Phong_van' | 'Duoc_tuyen' | 'Khong_phu_hop';
+  trang_thai?:
+    | 'Moi'
+    | 'Dang_lien_he'
+    | 'Phong_van'
+    | 'Duoc_tuyen'
+    | 'Khong_phu_hop';
   pipeline_stage?:
     | 'CV_moi'
     | 'Screening'
@@ -689,6 +694,42 @@ export interface PayrollEntry {
   ghi_chu?: string;
 }
 
+export interface SalaryTaxBrackets {
+  bac5: number;
+  bac10: number;
+  bac15: number;
+  bac20: number;
+  bac25: number;
+  bac30: number;
+  bac35: number;
+}
+
+export interface SalaryConfig {
+  _id?: string;
+  muc_luong_bat_dau_tinh_tncn: number;
+  giam_tru_phu_thuoc: number;
+  lam_tron_luong_thuc_linh: number;
+  luong_co_ban_bhxh_bhyt: number;
+  luong_toi_thieu_vung_bhtn: number;
+  khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi: number;
+  ti_le_dn: {
+    bhxh: number;
+    bhyt: number;
+    bhtn: number;
+    kpcd: number;
+    tien: number;
+  };
+  ti_le_nld: {
+    bhxh: number;
+    bhyt: number;
+    bhtn: number;
+    kpcd: number;
+    tien: number;
+  };
+  thue_tncn_bac: SalaryTaxBrackets;
+  updatedAt?: string;
+}
+
 export interface PayrollSettings {
   ti_le_bhxh: number;
   ti_le_bhyt: number;
@@ -697,6 +738,11 @@ export interface PayrollSettings {
   ap_dung_kpcd: boolean;
   giam_tru_ban_than: number;
   giam_tru_phu_thuoc: number;
+  luong_co_ban_bhxh_bhyt?: number;
+  luong_toi_thieu_vung_bhtn?: number;
+  khong_tinh_bhxh_bhyt_neu_ngay_cong_duoi?: number;
+  lam_tron_luong_thuc_linh?: number;
+  thue_tncn_bac?: SalaryTaxBrackets;
 }
 
 export interface PayrollRun {
