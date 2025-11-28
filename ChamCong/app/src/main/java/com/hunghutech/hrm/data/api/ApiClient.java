@@ -23,6 +23,11 @@ public class ApiClient {
 
     public static synchronized void reset() { retrofit = null; }
 
+    // Alias method for compatibility with PayrollListActivity and PayrollDetailActivity
+    public static Retrofit getInstance(Context context) {
+        return get(context);
+    }
+
     public static Retrofit get(Context context) {
         if (retrofit != null) return retrofit;
 

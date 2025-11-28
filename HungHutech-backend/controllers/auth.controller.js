@@ -54,13 +54,24 @@ async function register(req, res) {
 async function login(req, res) {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email, active: true });
+    const user = await User.findOne({ email, active: true }).select('+password_hash +nhan_vien_id');
+
+    console.log('=== LOGIN DEBUG ===');
+    console.log('Email:', email);
+    console.log('User found:', user ? 'YES' : 'NO');
+    console.log('User ID:', user ? user._id : 'N/A');
+    console.log('nhan_vien_id:', user ? user.nhan_vien_id : 'N/A');
+
     if (!user) return res.status(401).json({ msg: 'Sai thông tin đăng nhập' });
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ msg: 'Sai thông tin đăng nhập' });
     const token = signToken(user);
+
+    console.log('Token generated, nhan_vien_id in token:', user.nhan_vien_id);
+
     res.json({ token, user: { id: user._id, email: user.email, role: user.role, nhan_vien_id: user.nhan_vien_id || null } });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ msg: 'Lỗi máy chủ', error: err.message });
   }
 }

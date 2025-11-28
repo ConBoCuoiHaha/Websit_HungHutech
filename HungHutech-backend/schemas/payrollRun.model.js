@@ -50,6 +50,56 @@ const PayrollEntrySchema = new Schema({
     default: 'Cho_duyet',
   },
   ghi_chu: String,
+
+  // Trang thai xac nhan cua nhan vien
+  trang_thai_xac_nhan: {
+    type: String,
+    enum: ['Chua_gui', 'Cho_xac_nhan', 'Da_xac_nhan', 'Tu_choi'],
+    default: 'Chua_gui',
+  },
+
+  // Thong tin gui xac nhan
+  gui_xac_nhan: {
+    ngay_gui: Date,
+    nguoi_gui_id: { type: Schema.Types.ObjectId, ref: 'NhanVien' },
+    nguoi_gui_ten: String,
+    deadline: Date, // Deadline = ngay_gui + 3 ngay
+  },
+
+  // Thong tin xac nhan
+  xac_nhan: {
+    da_xac_nhan: { type: Boolean, default: false },
+    ngay_xac_nhan: Date,
+    biometric_signature: String, // Hash cua van tay
+    device_info: String, // Thong tin thiet bi xac nhan
+    ip_address: String,
+  },
+
+  // Thong tin tu choi
+  tu_choi: {
+    ly_do: String,
+    ngay_tu_choi: Date,
+    ghi_chu: String,
+    da_xu_ly: { type: Boolean, default: false }, // HR da xu ly chua
+    nguoi_xu_ly_id: { type: Schema.Types.ObjectId, ref: 'NhanVien' },
+    ngay_xu_ly: Date,
+    ket_qua_xu_ly: String,
+  },
+
+  // Lich su xac nhan
+  lich_su_xac_nhan: {
+    type: [{
+      hanh_dong: {
+        type: String,
+        enum: ['gui_xac_nhan', 'xac_nhan', 'tu_choi', 'gui_lai', 'xu_ly_tu_choi'],
+      },
+      ngay: { type: Date, default: Date.now },
+      nguoi_thuc_hien_id: { type: Schema.Types.ObjectId, ref: 'NhanVien' },
+      nguoi_thuc_hien_ten: String,
+      ghi_chu: String,
+    }],
+    default: [],
+  },
 }, { _id: true });
 
 const PayrollRunSchema = new Schema({

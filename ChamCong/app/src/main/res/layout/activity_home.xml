@@ -32,6 +32,13 @@
         android:text="@string/history"
         android:layout_marginTop="12dp"/>
 
+    <Button
+        android:id="@+id/btnPayroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bảng lương"
+        android:layout_marginTop="12dp"/>
+
     <!-- Manager-only section -->
     <View
         android:id="@+id/dividerManager"

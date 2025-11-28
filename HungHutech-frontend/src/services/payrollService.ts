@@ -129,6 +129,61 @@ class PayrollService {
   async deleteRun(id: string): Promise<void> {
     await api.delete(`${this.BASE_URL}/runs/${id}`);
   }
+
+  // Payroll Confirmation APIs
+  async sendConfirmations(
+    runId: string,
+    data: {entry_ids: string[]; ghi_chu?: string},
+  ): Promise<{
+    success: boolean;
+    msg: string;
+    data: {sent_count: number; failed_count: number; deadline: string};
+  }> {
+    const response = await api.post(
+      `${this.BASE_URL}/runs/${runId}/send-confirmations`,
+      data,
+    );
+    return response.data;
+  }
+
+  async getConfirmations(
+    runId: string,
+    params?: {trang_thai?: string},
+  ): Promise<{
+    success: boolean;
+    data: {
+      run: PayrollRun;
+      entries: PayrollEntry[];
+      thong_ke: {
+        da_xac_nhan: number;
+        tu_choi: number;
+        cho_xac_nhan: number;
+        chua_gui: number;
+      };
+    };
+  }> {
+    const response = await api.get(
+      `${this.BASE_URL}/runs/${runId}/confirmations`,
+      {params},
+    );
+    return response.data;
+  }
+
+  async resolveRejection(
+    entryId: string,
+    data: {
+      ket_qua_xu_ly: string;
+      updated_entry?: Partial<PayrollEntryPayload>;
+      gui_lai?: boolean;
+      ghi_chu?: string;
+    },
+  ): Promise<{success: boolean; msg: string; data: PayrollEntry}> {
+    const response = await api.put(
+      `${this.BASE_URL}/entries/${entryId}/resolve-rejection`,
+      data,
+    );
+    return response.data;
+  }
 }
 
 export default new PayrollService();

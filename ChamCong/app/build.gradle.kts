@@ -61,6 +61,9 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.recyclerview)
 
+    // SwipeRefreshLayout for pull-to-refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

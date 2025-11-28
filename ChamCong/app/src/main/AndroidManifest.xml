@@ -42,6 +42,12 @@
             android:name="com.hunghutech.hrm.ui.attendance.HistoryActivity"
             android:exported="false" />
         <activity
+            android:name="com.hunghutech.hrm.ui.payroll.PayrollListActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.hunghutech.hrm.ui.payroll.PayrollDetailActivity"
+            android:exported="false" />
+        <activity
             android:name="com.hunghutech.hrm.ui.settings.SettingsActivity"
             android:exported="false" />
         <activity

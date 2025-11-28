@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:id="@+id/layoutContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Header Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvKyLuong"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tháng 11/2025"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <TextView
+                        android:id="@+id/tvPeriod"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="01/11/2025 - 30/11/2025"
+                        android:textSize="14sp"
+                        android:textColor="#757575" />
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="⏱ Chờ xác nhận"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#FF9800" />
+
+                    <TextView
+                        android:id="@+id/tvDeadline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Hạn xác nhận: 30/11/2025"
+                        android:textSize="14sp"
+                        android:textColor="#666666"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Confirmation Info (only show if confirmed) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardConfirmInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#E8F5E9"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvConfirmInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="Đã xác nhận vào: 25/11/2025"
+                    android:textSize="14sp"
+                    android:textColor="#2E7D32" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Rejection Info (only show if rejected) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRejectInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFEBEE"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvRejectReason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Lý do: Sai số giờ làm việc"
+                        android:textSize="14sp"
+                        android:textColor="#C62828" />
+
+                    <TextView
+                        android:id="@+id/tvRejectNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Ghi chú: ..."
+                        android:textSize="14sp"
+                        android:textColor="#C62828"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvRejectStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="⏱ Chờ xử lý"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#FF9800" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Income Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="📊 THU NHẬP"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#E0E0E0" />
+
+                    <!-- Luong co ban -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Lương cơ bản:"
+                            android:textSize="14sp"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvLuongCoBan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10,000,000 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Phu cap -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phụ cấp:"
+                        android:textSize="14sp"
+                        android:textColor="#424242"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutPhuCapList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tổng phụ cấp:"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvTongPhuCap"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2,000,000 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Thuong -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thưởng:"
+                        android:textSize="14sp"
+                        android:textColor="#424242"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutThuongList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tổng thưởng:"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvTongThuong"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1,000,000 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- OT -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Làm thêm giờ (OT):"
+                        android:textSize="14sp"
+                        android:textColor="#424242"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutOtList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tổng OT:"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvTongOt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="500,000 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Total income -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#4CAF50" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TỔNG THU NHẬP:"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#4CAF50" />
+
+                        <TextView
+                            android:id="@+id/tvTongThuNhap"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="13,500,000 đ"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#4CAF50" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Deduction Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💸 KHẤU TRỪ"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#E0E0E0" />
+
+                    <!-- Insurance -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bảo hiểm bắt buộc:"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#424242"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="BHXH (8%):"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvBHXH"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="800,000 đ"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="BHYT (1.5%):"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvBHYT"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="150,000 đ"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="BHTN (1%):"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvBHTN"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="100,000 đ"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="KPCD (0%):"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvKPCD"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 đ"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tổng BH:"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvTongKhauTruBatBuoc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1,050,000 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Tax -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thuế thu nhập cá nhân:"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#424242"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Giảm trừ bản thân:"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvGiamTruBanThan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="11,000,000 đ"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Giảm trừ phụ thuộc:"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvGiamTruPhuThuoc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4,400,000 đ (1 người)"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Thu nhập tính thuế:"
+                            android:textSize="14sp"
+                            android:textColor="#757575" />
+
+                        <TextView
+                            android:id="@+id/tvThuNhapTinhThue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 đ"
+                            android:textSize="14sp"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Tax breakdown -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chi tiết thuế:"
+                        android:textSize="14sp"
+                        android:textColor="#757575"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutChiTietThueList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="32dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Thuế TNCN:"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvThueTNCN"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Other deductions -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khấu trừ khác:"
+                        android:textSize="14sp"
+                        android:textColor="#424242"
+                        android:layout_marginTop="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutKhauTruKhacList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="4dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Tổng khấu trừ khác:"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#424242" />
+
+                        <TextView
+                            android:id="@+id/tvTongKhauTruKhac"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 đ"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#212121" />
+
+                    </LinearLayout>
+
+                    <!-- Total deduction -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#F44336" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TỔNG KHẤU TRỪ:"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#F44336" />
+
+                        <TextView
+                            android:id="@+id/tvTongKhauTru"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1,050,000 đ"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#F44336" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Final Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#E3F2FD">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💰 LƯƠNG THỰC NHẬN"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#1976D2" />
+
+                    <TextView
+                        android:id="@+id/tvLuongThucNhan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="12,450,000 đ"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#1976D2" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action Buttons -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bạn có đồng ý với bảng lương này?"
+                        android:textSize="14sp"
+                        android:textColor="#424242"
+                        android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnConfirm"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            android:text="✓ Xác nhận đúng"
+                            android:textColor="@android:color/white"
+                            android:backgroundTint="#4CAF50" />
+
+                        <Button
+                            android:id="@+id/btnReject"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            android:text="✗ Không đồng ý"
+                            android:textColor="@android:color/white"
+                            android:backgroundTint="#F44336" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <!-- Empty State -->
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Không tìm thấy dữ liệu"
+        android:textSize="16sp"
+        android:textColor="#757575"
+        android:visibility="gone" />
+
+</FrameLayout>

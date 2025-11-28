@@ -32,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
         Button btnCheck = findViewById(R.id.btnCheck);
         Button btnHistory = findViewById(R.id.btnHistory);
         Button btnProfile = findViewById(R.id.btnProfile);
+        Button btnPayroll = findViewById(R.id.btnPayroll);
         Button btnLogout = findViewById(R.id.btnLogout);
         View dividerManager = findViewById(R.id.dividerManager);
         Button btnAttendanceList = findViewById(R.id.btnAttendanceList);
@@ -41,6 +42,7 @@ public class HomeActivity extends AppCompatActivity {
         btnCheck.setOnClickListener(v -> startActivity(new Intent(this, CheckInActivity.class)));
         btnHistory.setOnClickListener(v -> startActivity(new Intent(this, HistoryActivity.class)));
         btnProfile.setOnClickListener(v -> startActivity(new Intent(this, com.hunghutech.hrm.ui.profile.ProfileActivity.class)));
+        btnPayroll.setOnClickListener(v -> startActivity(new Intent(this, com.hunghutech.hrm.ui.payroll.PayrollListActivity.class)));
         btnLogout.setOnClickListener(v -> {
             TokenStore.getInstance(this).clear();
             com.hunghutech.hrm.utils.SessionStore.get(this).saveUser(null);

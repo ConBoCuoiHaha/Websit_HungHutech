@@ -79,10 +79,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="tong_so_nhan_vien" label="Nhan vien" width="110" />
-        <el-table-column label="Hanh dong" width="200" fixed="right">
+        <el-table-column label="Hanh dong" width="280" fixed="right">
           <template #default="{ row }">
             <el-space>
               <el-button size="small" :icon="View" @click="openDetail(row)">Chi tiet</el-button>
+              <el-button size="small" type="success" @click="openConfirmation(row)">Xac nhan</el-button>
               <el-dropdown @command="(cmd: string) => handleRunStatusAction(row, cmd)">
                 <el-button size="small">Cap nhat</el-button>
                 <template #dropdown>
@@ -530,6 +531,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus';
 import { Refresh, Plus, Search, View } from '@element-plus/icons-vue';
 import payrollService, { CreatePayrollRunPayload } from '@/services/payrollService';
@@ -542,6 +544,8 @@ import type {
   PayrollPreviewEntry,
   PayrollPreviewResponse,
 } from '@/types';
+
+const router = useRouter();
 
 interface MoneyItemForm {
   ten: string;
@@ -1051,6 +1055,10 @@ const openDetail = async (run: PayrollRun) => {
   } finally {
     detailLoading.value = false;
   }
+};
+
+const openConfirmation = (run: PayrollRun) => {
+  router.push(`/payroll/confirmation/${run._id}`);
 };
 
 const handleRunStatusAction = async (run: PayrollRun, status: string) => {

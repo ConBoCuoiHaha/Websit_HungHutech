@@ -169,6 +169,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: {requiresRole: ['admin', 'manager']},
       },
       {
+        path: 'payroll/confirmation/:id',
+        name: 'PayrollConfirmation',
+        component: () => import('@/pages/PayrollConfirmation.vue'),
+        meta: {requiresRole: ['admin', 'manager']},
+      },
+      {
         path: 'ca-lam-viec',
         name: 'WorkShiftList',
         component: () => import('@/pages/WorkShiftList.vue'),
