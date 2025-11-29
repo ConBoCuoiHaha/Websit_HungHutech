@@ -25,8 +25,12 @@ import com.hunghutech.hrm.data.model.PayrollEntry;
 import com.hunghutech.hrm.data.model.PayrollListResponse;
 import com.hunghutech.hrm.data.model.PayrollResponse;
 import com.hunghutech.hrm.data.model.RejectRequest;
+import com.hunghutech.hrm.data.model.BiometricRegisterRequest;
+import com.hunghutech.hrm.data.model.BiometricRegisterResponse;
+import com.hunghutech.hrm.data.model.BiometricStatusResponse;
 import com.hunghutech.hrm.utils.BiometricHelper;
 import com.hunghutech.hrm.utils.CurrencyHelper;
+import com.hunghutech.hrm.utils.DeviceHelper;
 
 import java.security.MessageDigest;
 import java.text.ParseException;
@@ -46,6 +50,7 @@ public class PayrollDetailActivity extends AppCompatActivity {
     private String runId;
     private PayrollEntry currentEntry;
     private PayrollService payrollService;
+    private boolean isBiometricRegistered = false; // NEW: Track biometric registration status
 
     // Views
     private ProgressBar progressBar;
@@ -113,6 +118,9 @@ public class PayrollDetailActivity extends AppCompatActivity {
 
         // Setup biometric
         setupBiometric();
+
+        // Check biometric registration status
+        checkBiometricStatus();
 
         // Load payroll detail
         loadPayrollDetail();
@@ -466,10 +474,11 @@ public class PayrollDetailActivity extends AppCompatActivity {
     }
 
     private void sendConfirmation(String signature) {
+        String deviceId = DeviceHelper.getDeviceId(this); // NEW: Get device ID
         String deviceInfo = android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL;
         String osVersion = "Android " + android.os.Build.VERSION.RELEASE;
         String appVersion = "1.0"; // App version
-        ConfirmRequest request = new ConfirmRequest(signature, deviceInfo, osVersion, appVersion);
+        ConfirmRequest request = new ConfirmRequest(signature, deviceInfo, osVersion, appVersion, deviceId); // 5 params
 
         Call<PayrollResponse> call = payrollService.confirmPayroll(entryId, request);
         call.enqueue(new Callback<PayrollResponse>() {
@@ -584,6 +593,124 @@ public class PayrollDetailActivity extends AppCompatActivity {
         } catch (ParseException e) {
             return false;
         }
+    }
+
+    /**
+     * Check biometric registration status from backend
+     */
+    private void checkBiometricStatus() {
+        Call<BiometricStatusResponse> call = payrollService.getBiometricStatus();
+        call.enqueue(new Callback<BiometricStatusResponse>() {
+            @Override
+            public void onResponse(Call<BiometricStatusResponse> call, Response<BiometricStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BiometricStatusResponse result = response.body();
+                    if (result.success && result.data != null) {
+                        isBiometricRegistered = result.data.is_registered;
+                        if (!isBiometricRegistered) {
+                            // Show registration dialog if not registered
+                            showBiometricRegistrationDialog();
+                        }
+                    }
+                }
+                // Silently fail - don't block user if status check fails
+            }
+
+            @Override
+            public void onFailure(Call<BiometricStatusResponse> call, Throwable t) {
+                // Silently fail - don't block user if network fails
+            }
+        });
+    }
+
+    /**
+     * Show dialog asking user to register biometric
+     */
+    private void showBiometricRegistrationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Đăng ký vân tay")
+                .setMessage("Bạn chưa đăng ký vân tay cho tài khoản này. Vui lòng đăng ký vân tay để có thể xác nhận bảng lương.\n\nMỗi vân tay chỉ có thể liên kết với 1 tài khoản duy nhất.")
+                .setPositiveButton("Đăng ký ngay", (dialog, which) -> {
+                    registerBiometric();
+                })
+                .setNegativeButton("Để sau", null)
+                .setCancelable(true)
+                .show();
+    }
+
+    /**
+     * Register biometric with backend
+     */
+    private void registerBiometric() {
+        // Use BiometricHelper to authenticate and get signature
+        byte[] nonce = ("register_" + System.currentTimeMillis()).getBytes();
+
+        BiometricHelper.authenticateAndSign(
+                this,
+                "Đăng ký vân tay",
+                "Đặt ngón tay lên cảm biến vân tay để đăng ký",
+                nonce,
+                new BiometricHelper.Callback() {
+                    @Override
+                    public void onSuccess(String signatureBase64, String publicKeyPem) {
+                        // Use the signature as fingerprint signature
+                        sendBiometricRegistration(signatureBase64);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        Toast.makeText(PayrollDetailActivity.this,
+                                "Lỗi xác thực: " + message, Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
+    /**
+     * Send biometric registration to backend
+     */
+    private void sendBiometricRegistration(String signature) {
+        String deviceId = DeviceHelper.getDeviceId(this);
+        String deviceName = DeviceHelper.getDeviceName();
+
+        BiometricRegisterRequest request = new BiometricRegisterRequest(deviceId, deviceName, signature);
+        Call<BiometricRegisterResponse> call = payrollService.registerBiometric(request);
+        call.enqueue(new Callback<BiometricRegisterResponse>() {
+            @Override
+            public void onResponse(Call<BiometricRegisterResponse> call, Response<BiometricRegisterResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BiometricRegisterResponse result = response.body();
+                    if (result.success) {
+                        isBiometricRegistered = true;
+                        Toast.makeText(PayrollDetailActivity.this,
+                                "Đăng ký vân tay thành công!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(PayrollDetailActivity.this,
+                                "Lỗi: " + result.msg, Toast.LENGTH_LONG).show();
+                    }
+                } else if (response.code() == 409) {
+                    // Fingerprint already registered to another account
+                    try {
+                        BiometricRegisterResponse errorBody = response.body();
+                        String message = errorBody != null ? errorBody.msg : "Vân tay này đã được đăng ký cho tài khoản khác";
+                        Toast.makeText(PayrollDetailActivity.this,
+                                message, Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(PayrollDetailActivity.this,
+                                "Vân tay này đã được đăng ký cho tài khoản khác", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(PayrollDetailActivity.this,
+                            "Lỗi kết nối: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BiometricRegisterResponse> call, Throwable t) {
+                Toast.makeText(PayrollDetailActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

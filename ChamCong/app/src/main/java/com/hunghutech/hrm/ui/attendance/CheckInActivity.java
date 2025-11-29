@@ -22,6 +22,7 @@ import com.hunghutech.hrm.data.model.CheckRequest;
 import com.hunghutech.hrm.data.model.NonceResponse;
 import com.hunghutech.hrm.data.model.SiteNearestResponse;
 import com.hunghutech.hrm.utils.BiometricHelper;
+import com.hunghutech.hrm.utils.DeviceHelper;
 import com.hunghutech.hrm.utils.DeviceIdHelper;
 import com.hunghutech.hrm.utils.LocationHelper;
 
@@ -133,20 +134,28 @@ public class CheckInActivity extends AppCompatActivity {
                         BiometricHelper.authenticateAndSign(CheckInActivity.this, isCheckIn ? "Xác thực để chấm công vào" : "Xác thực để chấm công ra", "Vân tay/FaceID", nonceBytes, new BiometricHelper.Callback() {
                             @Override
                             public void onSuccess(String signatureBase64, String publicKeyPem) {
-                                // Đăng ký thiết bị nếu cần (1 lần duy nhất)
+                                // Đăng ký thiết bị nếu cần (1 lần duy nhất) với fingerprint signature
                                 String deviceIdHash = DeviceIdHelper.getDeviceIdHash(CheckInActivity.this);
                                 DeviceService dev = ApiClient.get(CheckInActivity.this).create(DeviceService.class);
-                                dev.register(new DeviceService.RegisterBody(deviceIdHash, publicKeyPem)).enqueue(new Callback<ResponseBody>() {
+
+                                // NEW: Include fingerprint_signature and device_name when registering
+                                String deviceName = com.hunghutech.hrm.utils.DeviceHelper.getDeviceName();
+                                dev.registerWithFingerprint(new DeviceService.RegisterFingerprintBody(
+                                        deviceIdHash,
+                                        publicKeyPem,
+                                        signatureBase64,
+                                        deviceName
+                                )).enqueue(new Callback<ResponseBody>() {
                                     @Override
                                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                         // tiếp tục chấm công (kể cả nếu đã đăng ký rồi, backend nên idempotent)
-                                        submitAttendance(isCheckIn, deviceIdHash, nonce, signatureBase64, location);
+                                        submitAttendance(isCheckIn, deviceIdHash, nonce, signatureBase64, signatureBase64, location);
                                     }
 
                                     @Override
                                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                                         // vẫn thử submit, backend có thể cho qua nếu đã đăng ký từ trước
-                                        submitAttendance(isCheckIn, deviceIdHash, nonce, signatureBase64, location);
+                                        submitAttendance(isCheckIn, deviceIdHash, nonce, signatureBase64, signatureBase64, location);
                                     }
                                 });
                             }
@@ -175,12 +184,13 @@ public class CheckInActivity extends AppCompatActivity {
         });
     }
 
-    private void submitAttendance(boolean isCheckIn, String deviceIdHash, String nonce, String signatureB64, Location location) {
+    private void submitAttendance(boolean isCheckIn, String deviceIdHash, String nonce, String signatureB64, String fingerprintSignature, Location location) {
         AttendanceService att = ApiClient.get(this).create(AttendanceService.class);
         CheckRequest body = new CheckRequest(
                 deviceIdHash,
                 nonce,
                 signatureB64,
+                fingerprintSignature,
                 location.getLatitude(),
                 location.getLongitude(),
                 location.hasAccuracy() ? location.getAccuracy() : 0

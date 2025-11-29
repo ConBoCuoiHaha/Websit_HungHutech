@@ -232,18 +232,57 @@ exports.getMyPendingPayrolls = async (req, res) => {
 exports.confirmPayroll = async (req, res) => {
   try {
     const { entryId } = req.params;
-    const { biometric_signature, device_info, os_version, app_version } = req.body;
+    const { biometric_signature, device_info, os_version, app_version, device_id } = req.body;
     const userId = req.user.id || req.user._id;
 
     console.log('=== confirmPayroll ===');
     console.log('entryId:', entryId);
     console.log('userId:', userId);
+    console.log('device_id:', device_id);
 
     // Get employee info
     const user = await User.findById(userId).populate('nhan_vien_id');
     if (!user || !user.nhan_vien_id) {
       return res.status(404).json({ msg: 'Không tìm thấy thông tin nhân viên' });
     }
+
+    // VERIFY BIOMETRIC
+    // Check if user has registered biometric
+    if (!user.biometric_device || !user.biometric_device.fingerprint_signature) {
+      console.log('❌ User has not registered biometric yet');
+      return res.status(403).json({
+        success: false,
+        msg: 'Bạn chưa đăng ký vân tay. Vui lòng đăng ký vân tay trước khi xác nhận lương.',
+        needs_biometric_registration: true,
+      });
+    }
+
+    // Verify device ID matches
+    if (device_id && user.biometric_device.device_id !== device_id) {
+      console.log('❌ Device ID mismatch');
+      console.log('Registered device:', user.biometric_device.device_id);
+      console.log('Current device:', device_id);
+      return res.status(403).json({
+        success: false,
+        msg: 'Thiết bị không khớp. Bạn chỉ có thể xác nhận lương trên thiết bị đã đăng ký vân tay.',
+        registered_device: user.biometric_device.device_name,
+      });
+    }
+
+    // Verify fingerprint signature matches
+    if (biometric_signature && user.biometric_device.fingerprint_signature !== biometric_signature) {
+      console.log('❌ Fingerprint signature mismatch');
+      return res.status(403).json({
+        success: false,
+        msg: 'Vân tay không khớp với vân tay đã đăng ký. Vui lòng sử dụng đúng vân tay đã đăng ký hoặc đăng ký lại.',
+      });
+    }
+
+    console.log('✅ Biometric verification passed');
+
+    // Update biometric last used time
+    user.biometric_device.last_used_at = new Date();
+    await user.save();
 
     const nhanVienId = user.nhan_vien_id._id;
     const nhanVienTen = user.nhan_vien_id.ho_ten;

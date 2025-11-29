@@ -1,5 +1,8 @@
 package com.hunghutech.hrm.data.api;
 
+import com.hunghutech.hrm.data.model.BiometricRegisterRequest;
+import com.hunghutech.hrm.data.model.BiometricRegisterResponse;
+import com.hunghutech.hrm.data.model.BiometricStatusResponse;
 import com.hunghutech.hrm.data.model.ConfirmRequest;
 import com.hunghutech.hrm.data.model.PayrollListResponse;
 import com.hunghutech.hrm.data.model.PayrollResponse;
@@ -44,4 +47,18 @@ public interface PayrollService {
             @Path("entryId") String entryId,
             @Body RejectRequest request
     );
+
+    /**
+     * Register biometric device
+     * POST /api/biometric/register
+     */
+    @POST("biometric/register")
+    Call<BiometricRegisterResponse> registerBiometric(@Body BiometricRegisterRequest request);
+
+    /**
+     * Get biometric registration status
+     * GET /api/biometric/status
+     */
+    @GET("biometric/status")
+    Call<BiometricStatusResponse> getBiometricStatus();
 }

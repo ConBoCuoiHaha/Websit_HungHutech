@@ -50,29 +50,98 @@ async function logAudit(req, options = {}) {
 router.post(
   '/register',
   [
-    body('deviceIdHash').isString().trim().isLength({ min: 10 }).withMessage('deviceIdHash khong hop le'),
-    body('publicKeyPem').isString().trim().isLength({ min: 50 }).withMessage('publicKeyPem khong hop le'),
+    body('deviceIdHash')
+      .isString()
+      .trim()
+      .isLength({ min: 10 })
+      .withMessage('deviceIdHash khong hop le'),
+    body('publicKeyPem')
+      .isString()
+      .trim()
+      .isLength({ min: 50 })
+      .withMessage('publicKeyPem khong hop le'),
+    // fingerprint bat buoc de dam bao moi van tay gan voi duy nhat mot tai khoan
+    body('fingerprint_signature')
+      .isString()
+      .trim()
+      .isLength({ min: 10 })
+      .withMessage('fingerprint_signature khong hop le'),
+    body('device_name').optional().isString().trim().withMessage('device_name khong hop le'),
   ],
   handleValidation,
   async (req, res) => {
     const start = Date.now();
     try {
-      const { deviceIdHash, publicKeyPem } = req.body;
+      const { deviceIdHash, publicKeyPem, fingerprint_signature, device_name } = req.body;
       const userId = req.user.id || req.user._id;
       const nhanVienId = req.user.nhan_vien_id || null;
 
+      console.log('=== DEVICE REGISTRATION ===');
+      console.log('userId:', userId);
+      console.log('fingerprint_signature:', fingerprint_signature ? 'present' : 'missing');
+
+      // Kiem tra fingerprint dang duoc dung boi user khac
+      const existingFingerprintDevice = await Device.findOne({
+        fingerprint_signature,
+        user_id: { $ne: userId },
+      });
+      if (existingFingerprintDevice) {
+        console.log('Fingerprint already registered to another user:', existingFingerprintDevice.user_id);
+        await logAudit(req, {
+          action: 'CREATE',
+          resource: 'mobile_device',
+          resourceId: String(userId),
+          statusCode: 409,
+          responseTime: Date.now() - start,
+          details: { error: 'fingerprint_duplicate', conflictUserId: String(existingFingerprintDevice.user_id) },
+        });
+        return res.status(409).json({
+          msg: 'Van tay nay da duoc dang ky cho tai khoan khac.',
+          type: 'fingerprint_duplicate',
+        });
+      }
+
+      // Kiem tra deviceIdHash dang duoc dung boi user khac
+      const existingByDeviceHash = await Device.findOne({
+        deviceIdHash,
+        user_id: { $ne: userId },
+      });
+      if (existingByDeviceHash) {
+        await logAudit(req, {
+          action: 'CREATE',
+          resource: 'mobile_device',
+          resourceId: String(userId),
+          statusCode: 409,
+          responseTime: Date.now() - start,
+          details: { error: 'device_in_use', conflictUserId: String(existingByDeviceHash.user_id) },
+        });
+        return res.status(409).json({
+          msg: 'Thiet bi nay da duoc lien ket voi tai khoan khac.',
+          type: 'device_in_use',
+        });
+      }
+
+      // Mot user chi co mot device
       const existingByUser = await Device.findOne({ user_id: userId });
       if (existingByUser) {
         existingByUser.deviceIdHash = deviceIdHash;
         existingByUser.publicKeyPem = publicKeyPem;
+        existingByUser.fingerprint_signature = fingerprint_signature;
+        existingByUser.device_name = device_name || existingByUser.device_name;
         existingByUser.revokedAt = null;
         await existingByUser.save();
+        console.log('Device updated for user:', userId);
       } else {
-        await Device.findOneAndUpdate(
-          { deviceIdHash },
-          { user_id: userId, nhan_vien_id: nhanVienId, publicKeyPem, revokedAt: null },
-          { upsert: true, new: true, setDefaultsOnInsert: true },
-        );
+        await Device.create({
+          user_id: userId,
+          nhan_vien_id: nhanVienId,
+          deviceIdHash,
+          publicKeyPem,
+          fingerprint_signature,
+          device_name: device_name || null,
+          revokedAt: null,
+        });
+        console.log('New device created for user:', userId);
       }
 
       await logAudit(req, {
@@ -81,7 +150,7 @@ router.post(
         resourceId: String(userId),
         statusCode: 200,
         responseTime: Date.now() - start,
-        details: { body: { deviceIdHash }, nhanVienId },
+        details: { body: { deviceIdHash, has_fingerprint: !!fingerprint_signature }, nhanVienId },
       });
 
       res.json({ success: true });

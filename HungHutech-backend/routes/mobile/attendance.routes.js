@@ -160,6 +160,7 @@ const checkBodyValidators = [
   body('deviceIdHash').isString().trim().isLength({ min: 10 }),
   body('nonce').isString().trim().isLength({ min: 10 }),
   body('signature').isString().trim().isLength({ min: 20 }),
+  body('fingerprint_signature').isString().trim().isLength({ min: 10 }).withMessage('fingerprint_signature khong hop le'),
   body('lat').isFloat({ min: -90, max: 90 }),
   body('lng').isFloat({ min: -180, max: 180 }),
   body('accuracy').optional().isFloat({ min: 0, max: 5000 }),
@@ -170,7 +171,12 @@ async function processCheck(req, res, type) {
   try {
     const userId = req.user.id || req.user._id;
     const employeeId = req.user.nhan_vien_id || null;
-    const { deviceIdHash, nonce, signature, lat, lng, accuracy = 0 } = req.body;
+    const { deviceIdHash, nonce, signature, fingerprint_signature, lat, lng, accuracy = 0 } = req.body;
+
+    console.log('=== ATTENDANCE CHECK ===');
+    console.log('userId:', userId);
+    console.log('type:', type);
+    console.log('fingerprint_signature:', fingerprint_signature ? 'present' : 'missing');
 
     const nonceDoc = await Nonce.findOne({ user_id: userId, nonce, used: false, expiresAt: { $gt: new Date() } });
     if (!nonceDoc) return res.status(400).json({ msg: 'Nonce khong hop le hoac da het han', type: 'invalid_nonce' });
@@ -179,6 +185,35 @@ async function processCheck(req, res, type) {
     if (!device) return res.status(409).json({ msg: 'Thiet bi chua dang ky', type: 'device_not_registered' });
     if (device.deviceIdHash !== deviceIdHash) return res.status(409).json({ msg: 'Thiet bi khong khop', type: 'device_mismatch' });
     if (device.revokedAt) return res.status(409).json({ msg: 'Thiet bi da bi thu hoi', type: 'device_revoked' });
+
+    // CRITICAL: Verify fingerprint signature matches the registered one
+    if (!device.fingerprint_signature) {
+      console.log('⚠️ Device has no fingerprint registered');
+      return res.status(400).json({
+        msg: 'Thiết bị chưa đăng ký vân tay. Vui lòng đăng ký lại thiết bị.',
+        type: 'fingerprint_not_registered'
+      });
+    }
+
+    if (!fingerprint_signature) {
+      console.log('⚠️ Missing fingerprint_signature in request');
+      return res.status(400).json({
+        msg: 'Thiếu chữ ký vân tay',
+        type: 'missing_fingerprint'
+      });
+    }
+
+    if (device.fingerprint_signature !== fingerprint_signature) {
+      console.log('⚠️ Fingerprint mismatch');
+      console.log('  Expected:', device.fingerprint_signature.substring(0, 20) + '...');
+      console.log('  Received:', fingerprint_signature.substring(0, 20) + '...');
+      return res.status(403).json({
+        msg: 'Vân tay không khớp. Vui lòng sử dụng vân tay đã đăng ký.',
+        type: 'fingerprint_mismatch'
+      });
+    }
+
+    console.log('✅ Fingerprint verified successfully');
 
     const isValid = crypto.createVerify('sha256').update(Buffer.from(nonce)).verify(device.publicKeyPem, Buffer.from(signature, 'base64'));
     if (!isValid) return res.status(400).json({ msg: 'Chu ky khong hop le', type: 'invalid_signature' });

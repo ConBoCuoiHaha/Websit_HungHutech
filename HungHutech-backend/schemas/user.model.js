@@ -8,6 +8,15 @@ const UserSchema = new Schema(
     role: { type: String, enum: ['admin', 'manager', 'employee'], default: 'employee' },
     nhan_vien_id: { type: Schema.Types.ObjectId, ref: 'NhanVien', default: null },
     active: { type: Boolean, default: true },
+
+    // Biometric device binding
+    biometric_device: {
+      device_id: { type: String, default: null }, // Unique device identifier
+      device_name: { type: String, default: null }, // e.g., "Samsung Galaxy S21"
+      fingerprint_signature: { type: String, default: null }, // SHA-256 hash of biometric data
+      registered_at: { type: Date, default: null },
+      last_used_at: { type: Date, default: null },
+    },
   },
   { timestamps: { createdAt: 'ngay_tao', updatedAt: 'ngay_cap_nhat' } }
 );

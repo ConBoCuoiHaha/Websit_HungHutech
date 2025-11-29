@@ -61,6 +61,7 @@ const shiftAssignmentRoutes = require('./routes/shiftAssignment.routes.js');
 const timeRuleEngineRoutes = require('./routes/timeRuleEngine.routes.js');
 const salaryConfigRoutes = require('./routes/salaryConfig.routes.js');
 const payrollConfirmationRoutes = require('./routes/payrollConfirmation.routes.js');
+const biometricRoutes = require('./routes/biometric.routes.js');
 
 // CORS must be configured BEFORE helmet
 app.use(cors({
@@ -147,6 +148,7 @@ app.use('/api/sites', siteRoutes);
 app.use('/api/mobile/sites', mobileSiteRoutes);
 app.use('/api/payroll', payrollRoutes);
 app.use('/api/payroll', payrollConfirmationRoutes);
+app.use('/api/biometric', biometricRoutes);
 app.use('/api/employee-documents', employeeDocumentRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/profile-requests', profileRequestRoutes);

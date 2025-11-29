@@ -5,11 +5,13 @@ public class ConfirmRequest {
     public String device_info;
     public String os_version;
     public String app_version;
+    public String device_id; // NEW: Device unique ID for biometric binding
 
-    public ConfirmRequest(String biometricSignature, String deviceInfo, String osVersion, String appVersion) {
+    public ConfirmRequest(String biometricSignature, String deviceInfo, String osVersion, String appVersion, String deviceId) {
         this.biometric_signature = biometricSignature;
         this.device_info = deviceInfo;
         this.os_version = osVersion;
         this.app_version = appVersion;
+        this.device_id = deviceId; // NEW
     }
 }
