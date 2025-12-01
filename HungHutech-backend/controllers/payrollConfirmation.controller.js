@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const PayrollRun = require('../schemas/payrollRun.model');
 const NhanVien = require('../schemas/nhanVien.model');
 const User = require('../schemas/user.model');
+const Device = require('../schemas/device.model');
 
 /**
  * API 1: Gửi bảng lương cho nhân viên xác nhận
@@ -240,97 +241,81 @@ exports.confirmPayroll = async (req, res) => {
     console.log('userId:', userId);
     console.log('device_id:', device_id);
 
-    // Get employee info
     const user = await User.findById(userId).populate('nhan_vien_id');
     if (!user || !user.nhan_vien_id) {
-      return res.status(404).json({ msg: 'Không tìm thấy thông tin nhân viên' });
+      return res.status(404).json({ msg: 'Khong tim thay thong tin nhan vien' });
     }
-
-    // VERIFY BIOMETRIC
-    // Check if user has registered biometric
-    if (!user.biometric_device || !user.biometric_device.fingerprint_signature) {
-      console.log('❌ User has not registered biometric yet');
-      return res.status(403).json({
-        success: false,
-        msg: 'Bạn chưa đăng ký vân tay. Vui lòng đăng ký vân tay trước khi xác nhận lương.',
-        needs_biometric_registration: true,
-      });
-    }
-
-    // Verify device ID matches
-    if (device_id && user.biometric_device.device_id !== device_id) {
-      console.log('❌ Device ID mismatch');
-      console.log('Registered device:', user.biometric_device.device_id);
-      console.log('Current device:', device_id);
-      return res.status(403).json({
-        success: false,
-        msg: 'Thiết bị không khớp. Bạn chỉ có thể xác nhận lương trên thiết bị đã đăng ký vân tay.',
-        registered_device: user.biometric_device.device_name,
-      });
-    }
-
-    // Verify fingerprint signature matches
-    if (biometric_signature && user.biometric_device.fingerprint_signature !== biometric_signature) {
-      console.log('❌ Fingerprint signature mismatch');
-      return res.status(403).json({
-        success: false,
-        msg: 'Vân tay không khớp với vân tay đã đăng ký. Vui lòng sử dụng đúng vân tay đã đăng ký hoặc đăng ký lại.',
-      });
-    }
-
-    console.log('✅ Biometric verification passed');
-
-    // Update biometric last used time
-    user.biometric_device.last_used_at = new Date();
-    await user.save();
 
     const nhanVienId = user.nhan_vien_id._id;
     const nhanVienTen = user.nhan_vien_id.ho_ten;
 
-    // Find the run containing this entry
+    // Lay hoac tao thiet bi theo user
+    let device = await Device.findOne({ user_id: userId });
+    if (!device) {
+      device = new Device({
+        user_id: userId,
+        nhan_vien_id: nhanVienId,
+        deviceIdHash: device_id || 'unknown',
+        fingerprint_signature: biometric_signature || '',
+      });
+    } else {
+      // Cap nhat thong tin moi nhat tu app
+      if (device_id) device.deviceIdHash = device_id;
+      if (biometric_signature) device.fingerprint_signature = biometric_signature;
+    }
+    await device.save();
+
+    // Dong bo lai truong biometric_device tren user de tuong thich
+    user.biometric_device = {
+      device_id: device.deviceIdHash || device.device_name || 'unknown',
+      device_name: device.device_name || 'Unknown device',
+      fingerprint_signature: device.fingerprint_signature,
+      registered_at: user.biometric_device?.registered_at || device.createdAt || new Date(),
+      last_used_at: new Date(),
+    };
+    await user.save();
+
     const run = await PayrollRun.findOne({ 'entries._id': entryId });
     if (!run) {
-      return res.status(404).json({ msg: 'Không tìm thấy bảng lương' });
+      return res.status(404).json({ msg: 'Khong tim thay bang luong' });
     }
 
     const entry = run.entries.id(entryId);
     if (!entry) {
-      return res.status(404).json({ msg: 'Không tìm thấy phiếu lương' });
+      return res.status(404).json({ msg: 'Khong tim thay phieu luong' });
     }
 
-    // Validate: entry belongs to this employee
     if (entry.nhan_vien_id.toString() !== nhanVienId.toString()) {
-      return res.status(403).json({ msg: 'Bạn không có quyền xác nhận phiếu lương này' });
+      return res.status(403).json({ msg: 'Ban khong co quyen xac nhan phieu luong nay' });
     }
 
-    // Validate: status must be Cho_xac_nhan
     if (entry.trang_thai_xac_nhan !== 'Cho_xac_nhan') {
       return res.status(400).json({
-        msg: 'Phiếu lương không ở trạng thái chờ xác nhận',
+        msg: 'Phieu luong khong o trang thai cho xac nhan',
         current_status: entry.trang_thai_xac_nhan,
       });
     }
 
-    // Validate: not past deadline
     if (entry.gui_xac_nhan && entry.gui_xac_nhan.deadline) {
       if (new Date() > new Date(entry.gui_xac_nhan.deadline)) {
-        return res.status(400).json({ msg: 'Đã quá hạn xác nhận' });
+        return res.status(400).json({ msg: 'Da qua han xac nhan' });
       }
     }
 
     const now = new Date();
 
-    // Update entry
     entry.trang_thai_xac_nhan = 'Da_xac_nhan';
     entry.xac_nhan = {
       da_xac_nhan: true,
       ngay_xac_nhan: now,
       biometric_signature: biometric_signature || '',
       device_info: device_info || '',
+      os_version: os_version || '',
+      app_version: app_version || '',
+      device_id: device.deviceIdHash || device_id || '',
       ip_address: req.ip || req.connection.remoteAddress || '',
     };
 
-    // Add to history
     if (!entry.lich_su_xac_nhan) {
       entry.lich_su_xac_nhan = [];
     }
@@ -339,7 +324,7 @@ exports.confirmPayroll = async (req, res) => {
       ngay: now,
       nguoi_thuc_hien_id: nhanVienId,
       nguoi_thuc_hien_ten: nhanVienTen,
-      ghi_chu: `Xác nhận qua app mobile - ${device_info}`,
+      ghi_chu: `Xac nhan qua app mobile - ${device_info || ''}`,
     });
 
     await run.save();
@@ -348,7 +333,7 @@ exports.confirmPayroll = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      msg: 'Xác nhận bảng lương thành công',
+      msg: 'Xac nhan bang luong thanh cong',
       data: {
         entry_id: entry._id,
         trang_thai_xac_nhan: entry.trang_thai_xac_nhan,
@@ -358,16 +343,9 @@ exports.confirmPayroll = async (req, res) => {
     });
   } catch (err) {
     console.error('Error in confirmPayroll:', err);
-    return res.status(500).json({ msg: 'Lỗi server', error: err.message });
+    return res.status(500).json({ msg: 'Loi server', error: err.message });
   }
-};
-
-/**
- * API 4: Nhân viên từ chối bảng lương
- * POST /api/payroll/entries/:entryId/reject
- * Role: Employee
- */
-exports.rejectPayroll = async (req, res) => {
+};exports.rejectPayroll = async (req, res) => {
   try {
     const { entryId } = req.params;
     const { ly_do, ghi_chu, device_info } = req.body;
@@ -675,3 +653,5 @@ exports.resolveRejection = async (req, res) => {
 };
 
 module.exports = exports;
+
+
