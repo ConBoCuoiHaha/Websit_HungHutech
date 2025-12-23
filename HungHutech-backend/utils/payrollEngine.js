@@ -103,6 +103,23 @@ function calculatePayrollEntry(rawEntry, settings, meta = {}) {
     workdayThreshold > 0 && effectiveWorkdays > 0 && effectiveWorkdays < workdayThreshold;
   const minBhxhBase = toNumber(settings.luong_co_ban_bhxh_bhyt);
   const minBhtnBase = toNumber(settings.luong_toi_thieu_vung_bhtn);
+  const hasWorkdayInfo =
+    Object.prototype.hasOwnProperty.call(meta, 'so_ngay_cong') ||
+    Object.prototype.hasOwnProperty.call(meta.metadata || {}, 'so_ngay_cong');
+  const workdaysInMonth = toNumber(
+    meta.workdays_in_month ??
+      meta.workdaysInMonth ??
+      settings.so_ngay_cong_chuan ??
+      0,
+  );
+  let proration = 1;
+  if (workdaysInMonth > 0 && hasWorkdayInfo) {
+    const ratio = effectiveWorkdays / workdaysInMonth;
+    if (Number.isFinite(ratio)) {
+      proration = Math.max(0, Math.min(ratio, 1));
+    }
+  }
+  const effectiveBaseSalary = roundVnd(baseSalary * proration);
 
   const allowanceList = Array.isArray(rawEntry.phu_cap) ? rawEntry.phu_cap : [];
   const bonusList = Array.isArray(rawEntry.thuong) ? rawEntry.thuong : [];
@@ -114,7 +131,7 @@ function calculatePayrollEntry(rawEntry, settings, meta = {}) {
   const totalOt = roundVnd(sumAmounts(overtimeList));
   const otherDeductions = roundVnd(sumAmounts(extraDeductionList));
 
-  const grossIncome = roundVnd(baseSalary + totalAllowances + totalBonus + totalOt);
+  const grossIncome = roundVnd(effectiveBaseSalary + totalAllowances + totalBonus + totalOt);
 
   const tiLeBhxh = toNumber(settings.ti_le_bhxh ?? 0.08);
   const tiLeBhyt = toNumber(settings.ti_le_bhyt ?? 0.015);
@@ -124,17 +141,17 @@ function calculatePayrollEntry(rawEntry, settings, meta = {}) {
 
   const bhxhBase =
     minBhxhBase > 0
-      ? Math.max(baseSalary, minBhxhBase)
-      : baseSalary;
+      ? Math.max(effectiveBaseSalary, minBhxhBase)
+      : effectiveBaseSalary;
   const bhtnBase =
     minBhtnBase > 0
-      ? Math.max(baseSalary, minBhtnBase)
-      : baseSalary;
+      ? Math.max(effectiveBaseSalary, minBhtnBase)
+      : effectiveBaseSalary;
 
   const bhxh = skipBhxhBhyt ? 0 : roundVnd(bhxhBase * tiLeBhxh);
   const bhyt = skipBhxhBhyt ? 0 : roundVnd(bhxhBase * tiLeBhyt);
   const bhtn = roundVnd(bhtnBase * tiLeBhtn); // BHTN không phụ thuộc ngày công
-  const kpcd = apDungKpcd ? roundVnd(baseSalary * tiLeKpcd) : 0;
+  const kpcd = apDungKpcd ? roundVnd(effectiveBaseSalary * tiLeKpcd) : 0;
   const mandatoryDeductions = bhxh + bhyt + bhtn + kpcd;
 
   const dependentsRaw =

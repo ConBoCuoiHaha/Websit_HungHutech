@@ -286,6 +286,7 @@ exports.previewPayrollData = async (req, res) => {
           employee,
           dependents: entry.so_nguoi_phu_thuoc,
           so_ngay_cong: entry.so_ngay_cong ?? entry.metadata?.so_ngay_cong ?? 0,
+          workdays_in_month: WORKING_DAYS_IN_MONTH,
         });
         console.log('Calculated BHTN:', calculated.bhtn);
         return {
@@ -647,6 +648,7 @@ exports.previewPayrollData = async (req, res) => {
         timesheet: timesheetInfo,
         overtime: otBreakdown,
         so_ngay_cong: uniqueWorkdays,
+        workdays_in_month: WORKING_DAYS_IN_MONTH,
       });
 
       totals.gross += calculated.tong_thu_nhap || 0;
@@ -744,6 +746,7 @@ exports.createPayrollRun = async (req, res) => {
         employee,
         dependents: entry.so_nguoi_phu_thuoc,
         so_ngay_cong: entry.so_ngay_cong ?? entry.metadata?.so_ngay_cong ?? 0,
+        workdays_in_month: WORKING_DAYS_IN_MONTH,
       });
     });
 
